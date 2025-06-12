@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "Task 1: Project Kickoff",
+    "description": "Preparar la agenda para la reunión inicial del proyecto X.",
+    "deadline": "2025-06-16T12:46:59", 
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 2,
+    "title": "Task 2: UI Design Review",
+    "description": "Revisar los mockups de la interfaz de usuario para la pantalla de perfil.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 3,
+    "title": "Task 3: Backend API Integration",
+    "description": "Implementar la integración con la API de autenticación de usuarios.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 4,
+    "title": "Task 4: Database Schema Update",
+    "description": "Aplicar migraciones para añadir la tabla de notificaciones a la base de datos.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 5,
+    "title": "Task 5: Frontend Component Dev",
+    "description": "Desarrollar el componente de tarjeta de producto para la sección de catálogo.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 6,
+    "title": "Task 6: Testing & Bug Fixes",
+    "description": "Ejecutar pruebas unitarias para el módulo de pagos y corregir errores encontrados.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 7,
+    "title": "Task 7: Documentation Update",
+    "description": "Actualizar la documentación de la API para los nuevos endpoints de carrito.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 8,
+    "title": "Task 8: Code Refactoring",
+    "description": "Refactorizar el código del servicio de usuarios para mejorar la legibilidad.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 9,
+    "title": "Task 9: Security Audit Prep",
+    "description": "Preparar el reporte inicial para la auditoría de seguridad de la aplicación.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  },
+  {
+    "id": 10,
+    "title": "Task 10: Deploy to Staging",
+    "description": "Desplegar la última versión de la aplicación al entorno de staging para QA.",
+    "deadline": "2025-06-16T12:46:59",
+    "created_at": "2025-06-11T12:46:59"
+  }
+]
