@@ -1,113 +1,137 @@
-import { getData } from '@/db/store';
-import { Button } from '@react-navigation/elements';
-import { useRouter, useFocusEffect } from 'expo-router';
-import React, { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+    View,
+    Text,
+    Button,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Alert
+} from 'react-native';
 
-interface TaskItem {
-    id: number,
-    title: string,
-    description: string,
-    deadline: string,
-    created_at: string
-}
-const TaskItem = ({ id, title, description, deadline }: TaskItem) => {
-    return <View
-        style={styles.taskitemContainer}
-    >
-        <Text>{title}</Text>
-        <Text>{description}</Text>
-        <Text>{deadline}</Text>
-    </View>
-}
-const index = () => {
-    const router = useRouter();
-    const [mockTasks, setMockTask] = useState<TaskItem[]>([]);
+import { IAppState, initialAppState } from '@/types'; // Importa tus tipos
+import { loadAppState, saveAppState, clearAppState } from '@/db/store';
+import uuid from "react-native-uuid"; 
 
-    const fetchTasks = async () => {
+
+const Tasks = () => {
+    const [appState, setAppState] = useState<IAppState>(initialAppState);
+    const [loading, setLoading] = useState(true);
+
+    const loadData = useCallback(async () => {
+        setLoading(true);
+        const loadedState = await loadAppState();
+        setAppState(loadedState);
+        setLoading(false);
+    }, []);
+
+    const saveData = useCallback(async () => {
+        await saveAppState(appState);
+    }, [appState]);
+
+    const addDummyTask = useCallback(async () => {
+     
         try {
-            const data = await getData('db');
-            if (data == null) throw Error('no data');
-            // console.log(data)
-            setMockTask(data);
-        } catch (e) {
-            console.error(e);
-        }
-    };
+             const newTask = {
+            id: uuid.v4(), // Genera un ID único para la tarea
+            title: `Tarea de prueba ${appState.tasks.length + 1}`,
+            description: "Esta es una tarea creada para probar el almacenamiento.",
+            dueDate: new Date().toISOString(),
+            tags: ["test", "dummy"],
+            isCompleted: false,
+            completedAt: null,
+            scheduledNotifications: [], // Por ahora, sin notificaciones
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+        alert(newTask); 
+        // Actualiza el estado de React con la nueva tarea
+        setAppState(prevState => ({
+            ...prevState,
+            tasks: [...prevState.tasks, newTask], // Añade la nueva tarea al array existente
+        }));
 
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchTasks();
-        }, [])
-    );
+        // IMPORTANTE: Luego de actualizar el estado, guárdalo en AsyncStorage
+        await saveData(); // Llama a saveData para persistir el cambio
+        Alert.alert("Tarea Añadida", `Se añadió "${newTask.title}".`);
+            
+        } catch (error) {
+            console.error(error); 
+        }
+       
+        
+    }, [appState, saveData]);
+
+
+
+
+     useEffect(() => {
+        loadData();
+    }, [loadData]); // Se ejecuta una sola vez al montar el componente
+
+    if (loading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text>Cargando datos...</Text>
+            </View>
+        );
+    }
 
     return (
-        <SafeAreaView style={styles.container}>
+       <ScrollView>
+            {/* Searchbar */}
 
-            {/* add task button */}
-            <Button 
-            onPress={() => router.push('/tasks/add-task')}
-            style={{ margin: 2, borderRadius: 0, }}>
-                Agregar Tarea
-            </Button>
-            {/* Lista de Tareas */}
+            <View>
+                <Button title="Añadir Tarea de Prueba" onPress={addDummyTask} />
+            </View>
 
-           { mockTasks.length > 0 ? 
-            <FlatList
-                data={mockTasks}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => <TaskItem {...item} />}
-            />
-                :
-            <Text>No hay tareas</Text>
-        }
-
-
-        </SafeAreaView>
-
+         
+           
+        </ScrollView>
     )
-
 }
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // gap: 2,
-        // padding: 5,
-
-
+        padding: 20,
+        backgroundColor: '#f8f8f8',
+        paddingTop: 50,
     },
-    searchContainer: {
-        backgroundColor: 'green',
-        borderColor: 'black',
-        borderStyle: 'solid',
-        borderWidth: 0.5,
-        flexDirection: 'row',
-        paddingHorizontal: 2,
-
-    },
-    searchInput: {
-        flex: 6,
-
-    },
-    searchIcon: {
+    centered: {
         flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: '#f8f8f8',
     },
-    filterContainer: {
-        padding: 2,
-        backgroundColor: 'blue'
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+        color: '#333',
     },
-    taskitemContainer: {
-        borderRadius: 10,
-        backgroundColor: 'orange',
-        margin: 3,
-        minHeight: 100,
-        justifyContent: 'space-around',
-        padding: 10
+    subheader: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginTop: 20,
+        marginBottom: 10,
+        color: '#555',
+    },
+    jsonOutput: {
+        backgroundColor: '#eee',
+        padding: 10,
+        borderRadius: 5,
+        fontFamily: 'monospace',
+        minHeight: 200,
+        color: '#000',
+    },
+    buttonContainer: {
+        flexDirection: 'column',
+        gap: 10, // Espacio entre botones
+        marginBottom: 20,
     }
-})
+});
 
-export default index
+export default Tasks
