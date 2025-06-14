@@ -1,6 +1,6 @@
 // src/services/dataService.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IAppState, initialAppState } from '../types';
+import { IAppState, initialAppState } from './types';
 
 const APP_STATE_KEY = '@MyApp:AppState';
 

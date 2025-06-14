@@ -6,12 +6,12 @@ import {
 } from 'react-native';
 
 import { loadAppState, saveAppState } from '@/db/store';
-import { IAppState, initialAppState, ITask } from '@/db/types';
+import { IAppState, IHabit, initialAppState } from '@/db/types';
 import { router, useFocusEffect } from 'expo-router';
 import { FlatList } from 'react-native-gesture-handler';
-import { Button, Card, Checkbox, Searchbar, Text } from 'react-native-paper';
+import { Button, Card, Searchbar, Text } from 'react-native-paper';
 
-const Tasks = () => {
+const Habits = () => {
     const [appState, setAppState] = useState<IAppState>(initialAppState);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -23,23 +23,23 @@ const Tasks = () => {
         setLoading(false);
     }, []);
 
-    const handleCreateTask = () => {
-        router.push('/tasks/new');
+    const handleCreateHabit = () => {
+        router.push('/habits/new');
     };
 
-    const handleDeleteTask = async (id: string) => {
+    const handleDeleteHabit = async (id: string) => {
         import('react-native').then(({ Alert }) => {
             Alert.alert(
-                "Eliminar tarea",
-                "¿Estás seguro de que deseas eliminar esta tarea?",
+                "Eliminar habito",
+                "¿Estás seguro de que deseas eliminar esta habito?",
                 [
                     { text: "Cancelar", style: "cancel" },
                     {
                         text: "Eliminar",
                         style: "destructive",
                         onPress: async () => {
-                            const updatedTasks = appState.tasks.filter(task => task.id !== id);
-                            const updatedState = { ...appState, tasks: updatedTasks };
+                            const updatedHabits = appState.habits.filter(habit => habit.id !== id);
+                            const updatedState = { ...appState, habits: updatedHabits };
                             await saveAppState(updatedState);
                             setAppState(updatedState);
                         }
@@ -49,7 +49,7 @@ const Tasks = () => {
         });
     };
 
-    const handleDetails = (id: string) => router.push(`/tasks/${id}`)
+    const handleDetails = (id: string) => router.push(`/habits/${id}`)
 
     useFocusEffect(
         useCallback(() => {
@@ -66,26 +66,18 @@ const Tasks = () => {
         );
     }
 
-    const renderTaskItem = ({ item }: { item: ITask }) => (
+    const renderHabitItem = ({ item }: { item: IHabit }) => (
         <Card style={styles.card} elevation={1}>
             <Card.Content style={styles.cardContent}>
-                <Checkbox.Android
-                    status={item.isCompleted ? 'checked' : 'unchecked'}
-                    onPress={() => console.log(item.id)}
-                />
+                
                 <View style={{ flex: 1 }}>
                     <Text variant="titleMedium">{item.title}</Text>
                     <Text variant="bodyMedium" numberOfLines={2}>{item.description}</Text>
-                    {item.dueDate && (
-                        <Text variant="labelSmall" style={{ marginTop: 4 }}>
-                            Vence: {new Date(item.dueDate).toLocaleDateString()}
-                        </Text>
-                    )}
                 </View>
             </Card.Content>
             <Card.Actions>
                 <Button onPress={() => handleDetails(item.id)}>Detalles</Button>
-                <Button onPress={() => handleDeleteTask(item.id)} buttonColor='red' textColor="white">Eliminar</Button>
+                <Button onPress={() => handleDeleteHabit(item.id)} buttonColor='red' textColor="white">Eliminar</Button>
             </Card.Actions>
         </Card>
     );
@@ -98,18 +90,18 @@ const Tasks = () => {
                 value={searchQuery}
                 style={styles.searchbar}
             />
-            <Button mode='contained' onPress={handleCreateTask} style={styles.addButton}>
-                Agregar Tarea
+            <Button mode='contained' onPress={handleCreateHabit} style={styles.addButton}>
+                Agregar habito
             </Button>
             {appState.tasks.length !== 0 ? (
                 <FlatList
-                    data={appState.tasks}
-                    renderItem={renderTaskItem}
+                    data={appState.habits}
+                    renderItem={renderHabitItem}
                     keyExtractor={item => item.id}
                     contentContainerStyle={styles.list}
                 />
             ) : (
-                <Text style={styles.noTasks}>No hay tareas</Text>
+                <Text style={styles.noTasks}>No hay habitos</Text>
             )}
         </View>
     );
@@ -150,4 +142,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Tasks;
+export default Habits;

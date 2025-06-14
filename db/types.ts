@@ -46,7 +46,7 @@ export interface IHabit {
     title: string;
     description: string; // Contenido Markdown
     tags: string[];
-    recurrence: IHabitRecurrenceDetails; // Define cuándo se "espera" que se realice el hábito
+    recurrence: IHabitRecurrenceDetails | null; // Define cuándo se "espera" que se realice el hábito
     scheduledNotifications: IScheduledNotification[]; // Recordatorios para el hábito
     currentStreak: number; // Racha actual de días consecutivos completados
     bestStreak: number;    // Mejor racha histórica
