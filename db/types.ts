@@ -4,14 +4,28 @@ export enum timeToSeconds {
     DAY = 24 * HOUR, 
     WEEK = 7 + DAY
 }
-export type ReminderType = 'date' | 'interval'; 
+
+//TODO ADD REMINDER TYPES DAILY AND WEEKLY - ALMOST DONE
+
+export type ReminderType = 'date' | 'interval' | 'daily' | 'weekly'; 
 export type IntervalUnit = 'MINUTE' | 'HOUR' | 'DAY' | 'WEEK' ; 
+export type Day = 'DOMINGO' | 'LUNES' | 'MARTES' | 'MIERCOLES' | 'JUEVES' | 'VIERNES' | 'SABADO'; 
+export enum DayNumber {
+    DOMINGO = 1, 
+    LUNES = 2, 
+    MARTES = 3, 
+    MIERCOLES = 4, 
+    JUEVES = 5, 
+    VIERNES = 6, 
+    SABADO = 7
+}
 export interface IReminder {
     id: string
     type: ReminderType;
     interval?: number
-    timestamp?: string; // ISO 8601 execution time
+    timestamp?: string; // ISO 8601 execution time -> to save either the whole date or the hour and minute for weekly and daily types
     unit?: IntervalUnit ;
+    day?: Day,
     title: string; 
     message: string;
     sound: string; // Notification sound

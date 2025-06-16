@@ -1,5 +1,7 @@
 import * as Notifications from 'expo-notifications';
-import { IReminder, timeToSeconds } from '@/db/types';
+import { DayNumber, IReminder, timeToSeconds } from '@/db/types';
+
+
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -21,8 +23,13 @@ export const cancelNotificationsForItem = async (itemId: string) => {
   await Notifications.cancelScheduledNotificationAsync(itemId);
 };
 
+// ADD DAILY AND WEEKLY TYPES
+
 export async function setReminder(reminder: IReminder) {
-    if (reminder.type == 'date' && reminder.timestamp) {
+    
+    const dateTimestamp = new Date(reminder.timestamp!);
+    
+    if (reminder.type == 'date') {
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: reminder.title,
@@ -30,11 +37,12 @@ export async function setReminder(reminder: IReminder) {
             },
             trigger: {
                 type: Notifications.SchedulableTriggerInputTypes.DATE,
-                date: new Date(reminder.timestamp),
+                date: dateTimestamp,
             },
         });
-    } else {
-        if (reminder.interval && reminder.unit) {
+    } 
+
+        if (reminder.type == 'interval' && reminder.unit && reminder.interval) {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: reminder.title,
@@ -47,8 +55,37 @@ export async function setReminder(reminder: IReminder) {
             });
         }
 
+
+        if (reminder.type == 'daily') {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: reminder.title,
+                    body: reminder.message,
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                    hour: dateTimestamp.getHours(),
+                    minute: dateTimestamp.getMinutes()
+                },
+            });
+        }
+
+        if (reminder.type == 'weekly' && reminder.day) {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: reminder.title,
+                    body: reminder.message,
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+                    weekday: DayNumber[reminder.day], 
+                    hour: dateTimestamp.getHours(), 
+                    minute: dateTimestamp.getMinutes()
+                },
+            });
+        }
+
     }
 
 
 
-}

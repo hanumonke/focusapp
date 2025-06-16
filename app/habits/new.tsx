@@ -120,7 +120,7 @@ const CreateHabit = () => {
 
   return (
     <>
-      <CustomHeader title="Nuevo habito"  backRoute='/habits'/>
+      <CustomHeader title="Nuevo habito"  backRoute='/habits' addAction={handleSubmit(onSubmit)}/>
       <View style={styles.container}>
         {/* TITULO */}
         <Controller

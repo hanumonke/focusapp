@@ -1,77 +1,113 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates'; // Import DatePickerInput
 
 type Props = {
-  value: string | undefined;
-  onChange: (val: string) => void;
-  label?: string;
+  value: string | undefined; // ISO string for the combined date and time
+  onChange: (val: string | undefined) => void; // Function to update the ISO string
+  label?: string; // Label for the date input
 };
 
-const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Seleccionar fecha y hora" }) => {
-  const [show, setShow] = useState(false);
-  const [mode, setMode] = useState<'date' | 'time'>('date');
-  const [tempDate, setTempDate] = useState<Date | null>(null);
+const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Seleccionar fecha" }) => {
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
-  const handlePress = () => {
-    setMode('date');
-    setShow(true);
-  };
+  // Derive Date object from value for DatePickerInput and TimePickerModal
+  // If value is undefined, default to current date/time to avoid errors in pickers
+  const currentSelectedDate: Date = value ? new Date(value) : new Date();
 
-  const handleChange = (_: any, selectedDate?: Date) => {
-    if (mode === 'date' && selectedDate) {
-      setTempDate(selectedDate);
-      setMode('time');
-      setShow(true);
-    } else if (mode === 'time' && selectedDate && tempDate) {
-      const combined = new Date(
-        tempDate.getFullYear(),
-        tempDate.getMonth(),
-        tempDate.getDate(),
-        selectedDate.getHours(),
-        selectedDate.getMinutes()
+  // Handle DatePickerInput change
+  const onDateChange = useCallback(
+    (pickedDate: Date | undefined) => {
+      if (pickedDate) {
+        // We need to preserve the time if it was already set, otherwise default to current time or midnight
+        const year = pickedDate.getFullYear();
+        const month = pickedDate.getMonth();
+        const date = pickedDate.getDate();
+
+        // If a full date-time value already exists, use its time components
+        // Otherwise, default to the time from `currentSelectedDate` (which might be the current time)
+        const hours = value ? currentSelectedDate.getHours() : new Date().getHours();
+        const minutes = value ? currentSelectedDate.getMinutes() : new Date().getMinutes();
+
+        const combined = new Date(year, month, date, hours, minutes, 0, 0);
+        onChange(combined.toISOString());
+      } else {
+        // If date picker is cleared, clear the whole value
+        onChange(undefined);
+      }
+    },
+    [value, onChange, currentSelectedDate] // Add currentSelectedDate to dependencies
+  );
+
+  // Handle TimePickerModal dismissal
+  const onDismissTimePicker = useCallback(() => {
+    setIsTimePickerVisible(false);
+  }, []);
+
+  // Handle TimePickerModal confirmation
+  const onConfirmTimePicker = useCallback(
+    ({ hours, minutes }: { hours: number; minutes: number }) => {
+      setIsTimePickerVisible(false);
+
+      // We need to use the date part from the currently selected date (or today's date if no date picked yet)
+      const dateToCombineWithTime = value ? new Date(value) : new Date();
+
+      const combinedDateTime = new Date(
+        dateToCombineWithTime.getFullYear(),
+        dateToCombineWithTime.getMonth(),
+        dateToCombineWithTime.getDate(),
+        hours,
+        minutes,
+        0, 0
       );
-      onChange(combined.toISOString());
-      setShow(false);
-      setMode('date');
-      setTempDate(null);
-    } else {
-      setShow(false);
-      setMode('date');
-      setTempDate(null);
-    }
+      onChange(combinedDateTime.toISOString());
+    },
+    [value, onChange]
+  );
+
+  const handleOpenTimePicker = () => {
+    setIsTimePickerVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Button mode="contained" onPress={handlePress}>
-        {label}
-      </Button>
-      {value ? (
-        <Text style={styles.selectedText}>
-          {new Date(value).toLocaleDateString()} {new Date(value).toLocaleTimeString()}
-        </Text>
-      ) : null}
-      {show && (
-        <DateTimePicker
-          value={value ? new Date(value) : new Date()}
-          mode={mode}
-          is24Hour={true}
-          onChange={handleChange}
+      <View style={styles.inputRow}>
+      
+        <DatePickerInput
+          mode='outlined'
+          locale="es" // Set locale for language of picker
+          value={value ? new Date(value) : undefined} // Pass Date object or undefined
+          onChange={onDateChange}
+          inputMode="start" // Opens calendar on focus
         />
-      )}
+
+        <Button mode="contained" onPress={handleOpenTimePicker} icon="clock-edit-outline" style={{alignSelf: 'center'}}>
+          {value ? currentSelectedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Hora"}
+        </Button>
+      </View>
+
+      {/* TimePickerModal */}
+      <TimePickerModal
+        visible={isTimePickerVisible}
+        onDismiss={onDismissTimePicker}
+        onConfirm={onConfirmTimePicker}
+        hours={currentSelectedDate.getHours()}
+        minutes={currentSelectedDate.getMinutes()}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    
   },
-  selectedText: {
-    marginTop: 8,
-    textAlign: 'center',
+  inputRow: {
+    flexDirection: 'row', 
+    gap: 10, 
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
 });
 

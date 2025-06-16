@@ -41,7 +41,7 @@ const Details = () => {
 
   return (
     <>
-    <CustomHeader title={`${task.title || 'Cargando...'}`} />
+    <CustomHeader materialIcon='note-edit' backRoute='/tasks' title={`${task.title || 'Cargando...'}`} addAction={() => router.push(`/tasks/new?id=${task.id}`)} />
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <Card>
         <Card.Title title={task.title} />
@@ -59,14 +59,18 @@ const Details = () => {
               ))}
             </View>
           )}
+
+          {task.reminders && task.reminders.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 }}>
+              {task.reminders.map((reminder, idx) => (
+                <Text key={idx} style={{ marginRight: 4, marginBottom: 4 }}>{reminder.message}</Text>
+              ))}
+            </View>
+          )}
           <Text variant="labelSmall">
             Estado: {task.isCompleted ? 'Completada' : 'Pendiente'}
           </Text>
         </Card.Content>
-        <Card.Actions>
-          <Button onPress={() => router.push(`/tasks/new?id=${task.id}`)}>Editar</Button>
-          <Button onPress={() => router.back()}>Volver</Button>
-        </Card.Actions>
       </Card>
     </ScrollView>
     </>
