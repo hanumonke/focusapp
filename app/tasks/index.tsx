@@ -5,7 +5,7 @@ import {
     View
 } from 'react-native';
 
-import { loadAppState, saveAppState } from '@/db/store';
+import { loadAppState, saveAppState } from '@/db/storage';
 import { IAppState, initialAppState, ITask } from '@/db/types';
 import { router, useFocusEffect } from 'expo-router';
 import { FlatList } from 'react-native-gesture-handler';

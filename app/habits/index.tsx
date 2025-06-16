@@ -5,7 +5,12 @@ import {
     View
 } from 'react-native';
 
-import { loadAppState, saveAppState } from '@/db/store';
+// TODO: implement search feature
+// TODO: build the real habit card
+// TODO: connect with the details page
+
+
+import { loadAppState, saveAppState } from '@/db/storage';
 import { IAppState, IHabit, initialAppState } from '@/db/types';
 import { router, useFocusEffect } from 'expo-router';
 import { FlatList } from 'react-native-gesture-handler';
@@ -54,6 +59,7 @@ const Habits = () => {
     useFocusEffect(
         useCallback(() => {
             loadData();
+            console.log('Habitos:', appState.habits)
         }, [loadData])
     );
 
@@ -67,9 +73,8 @@ const Habits = () => {
     }
 
     const renderHabitItem = ({ item }: { item: IHabit }) => (
-        <Card style={styles.card} elevation={1}>
+         <Card style={styles.card} elevation={1}>
             <Card.Content style={styles.cardContent}>
-                
                 <View style={{ flex: 1 }}>
                     <Text variant="titleMedium">{item.title}</Text>
                     <Text variant="bodyMedium" numberOfLines={2}>{item.description}</Text>

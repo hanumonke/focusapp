@@ -4,6 +4,7 @@ import { MD3LightTheme, PaperProvider } from 'react-native-paper';
 export default function RootLayout() {
 
   return (
+    
     <PaperProvider theme={MD3LightTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
 

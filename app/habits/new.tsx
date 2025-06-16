@@ -1,26 +1,27 @@
 
+// Components
 import CustomHeader from '@/components/CustomHeader';
-import { TimePickerModal } from 'react-native-paper-dates';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import TagsInput from '@/components/TagsInput';
-import { loadAppState, saveAppState } from '@/db/store';
-import { HabitRecurrenceType, IHabit, IHabitNotificationSettings, IHabitRecurrence, } from '@/db/types';
+import { IHabit, HabitRecurrenceType} from '@/db/types';
+import { StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { TimePickerModal } from 'react-native-paper-dates';
+import { Dropdown } from 'react-native-paper-dropdown';
+// logic
+import { loadAppState, saveAppState } from '@/db/storage';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput, SegmentedButtons } from 'react-native-paper';
-
 import uuid from 'react-native-uuid';
-import { FlatList } from 'react-native-gesture-handler';
 
 
-
+//TODO make reminders config
 const CreateHabit = () => {
 
   const [recurrenceTime, setRecurrenceTime] = useState(new Date());
-  const [recurrenceUnit, setRecurrenceUnit] = useState<'day' | 'hour'>('day');
-  const [recurrenceDaysOfWeek, setRecurrenceDaysOfWeek] = useState<string[]>([]);
+  const [recurrenceUnit, setRecurrenceUnit] = useState<string>('day');
+  const [recurrenceDaysOfWeek, setRecurrenceDaysOfWeek] = useState<number[]>([]);
   const [recurrenceInterval, setRecurrenceInterval] = useState(0);
 
   const [visible, setVisible] = useState(false);
@@ -33,18 +34,13 @@ const CreateHabit = () => {
     //@ts-ignore
     ({ hours, minutes }) => {
       setVisible(false);
-      console.log({ hours, minutes });
+
       recurrenceTime.setSeconds(0, 0);
       recurrenceTime.setHours(hours);
       recurrenceTime.setMinutes(minutes)
-
-      console.log(recurrenceTime);
-
     },
     [setVisible]
   );
-
-
 
   const router = useRouter();
   const {
@@ -56,18 +52,17 @@ const CreateHabit = () => {
       title: "",
       description: "",
       tags: [] as string[],
-      recurrenceType: '' as HabitRecurrenceType,
-      notificationSettings: {} as IHabitNotificationSettings,
+      recurrenceType: "daily" as HabitRecurrenceType,
     },
   });
 
-  const toggleDay = (index: string) => {
-  setRecurrenceDaysOfWeek(prev => 
-    prev.includes(index) 
-      ? prev.filter(i => i !== index)  // Remove if already selected
-      : [...prev, index]               // Add if not selected
-  );
-};
+  const toggleDay = (index: number) => {
+    setRecurrenceDaysOfWeek(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)  // Remove if already selected
+        : [...prev, index]               // Add if not selected
+    );
+  };
 
 
   const onSubmit = async (data: {
@@ -75,54 +70,57 @@ const CreateHabit = () => {
     description: string,
     tags: string[],
     recurrenceType: HabitRecurrenceType,
-    notificationSettings: IHabitNotificationSettings,
+
   }) => {
 
+    console.log('Guardando habito')
+
+    try {
+
+      const newHabit: IHabit = {
+        id: uuid.v4() as string,
+        title: data.title ?? "",
+        description: data.description ?? "",
+        tags: data.tags ?? [],
+        recurrence: {
+          type: data.recurrenceType,
+          daysOfWeek: recurrenceDaysOfWeek.sort(),
+          interval: recurrenceInterval,
+          unit: recurrenceUnit as 'day' | 'hour',
+          time: recurrenceTime
+        },
+        reminders: [], 
+        currentStreak: 0,
+        bestStreak: 0,
+        lastCompletedDate: null,
+        completionHistory: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      console.log(newHabit);
+
+      const appState = await loadAppState();
+      const updatedState = {
+        ...appState,
+        habits: [...appState.habits, newHabit]
+      };
+      await saveAppState(updatedState);
+      router.push('/habits');
 
 
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar el habito");
+    }
 
-    const newHabit: IHabit = {
-      id: uuid.v4() as string,
-      title: data.title ?? "",
-      description: data.description ?? "",
-      tags: data.tags ?? [],
-      recurrence: {
-        type: data.recurrenceType,
-        daysOfWeek: recurrenceDaysOfWeek.map(day => parseInt(day)).toSorted(),
-        interval: recurrenceInterval,
-        unit: recurrenceUnit,
-        time: recurrenceTime
-      },
-      notificationSettings: {},
-      currentStreak: 0,
-      bestStreak: 0,
-      lastCompletedDate: null,
-      completionHistory: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    console.log(newHabit); 
-
-    // try {
-    //   const appState = await loadAppState();
-    //   const updatedState = {
-    //     ...appState,
-    //     habits: [...(appState.habits ?? []), newHabit],
-    //   };
-    //   await saveAppState(updatedState);
-    //   router.push('/habits');
-    // } catch (error) {
-    //   console.error(error);
-    //   alert("Error al guardar el habito");
-    // }
   };
 
 
 
   return (
     <>
-      <CustomHeader title="Nuevo habito" />
+      <CustomHeader title="Nuevo habito"  backRoute='/habits'/>
       <View style={styles.container}>
         {/* TITULO */}
         <Controller
@@ -199,7 +197,7 @@ const CreateHabit = () => {
 
               {/* IF DAILY RENDER THIS */}
               {value == 'daily' &&
-                <View style={{paddingVertical: 10}}>
+                <View style={{ paddingVertical: 10 }}>
                   <Button onPress={() => setVisible(true)} mode='outlined' icon='clock-edit'>{recurrenceTime.toLocaleTimeString('en-US', { timeStyle: "short" })}</Button>
 
                 </View>
@@ -210,18 +208,26 @@ const CreateHabit = () => {
                 <View>
                   <View >
                     <FlatList
-                      contentContainerStyle={{flexDirection: 'row', justifyContent: 'space-evenly',paddingVertical: 10, gap: 2}}
-                      data={['Dom', 'Lun', 'Mar', "Mie", 'Jue', 'Vie', 'Sab']}
+                      contentContainerStyle={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10, gap: 2 }}
+                      data={[
+                        { label: 'Dom', dayNumber: 0 },
+                        { label: 'Lun', dayNumber: 1 },
+                        { label: 'Mar', dayNumber: 2 },
+                        { label: 'Mie', dayNumber: 3 },
+                        { label: 'Jue', dayNumber: 4 },
+                        { label: 'Vie', dayNumber: 5 },
+                        { label: 'Sab', dayNumber: 6 },
+                      ]}
                       renderItem={({ item }) =>
-                        <Button 
-                           mode={recurrenceDaysOfWeek.includes(item) ? 'contained' : 'outlined'}
-                           onPress={() => toggleDay(item)}
+                        <Button
+                          mode={recurrenceDaysOfWeek.includes(item.dayNumber) ? 'contained' : 'outlined'}
+                          onPress={() => toggleDay(item.dayNumber)}
                           compact
-                           
-                           contentStyle={styles.weekButton}
+
+                          contentStyle={styles.weekButton}
                         >
-                          {item}
-                          
+                          {item.label}
+
                         </Button>
                       }
                     />
@@ -231,12 +237,23 @@ const CreateHabit = () => {
                 </View>
               }
 
-              {/* IF CUSTOM RENDER THIS */}
+              {/* IF CUSTOM(INTERVAL) RENDER THIS */}
               {value == 'custom' &&
-                <View>
-                  <Text>Intervalo</Text>
-                  <Button>{recurrenceTime.toLocaleTimeString()}</Button>
-                </View>
+                <>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 10, alignItems: 'center' }}>
+                    <Text>Repetir cada</Text>
+                    <TextInput mode='outlined' inputMode='numeric' />
+                    <Dropdown
+                      mode='outlined'
+                      options={[{ label: 'dias', value: 'day' }, { label: 'horas', value: 'hour' }]}
+                      value={recurrenceUnit}
+                      onSelect={(selectedValue?: string) => setRecurrenceUnit(selectedValue ?? '')}
+                    />
+
+                  </View>
+                  <Button onPress={() => setVisible(true)} mode='outlined' icon='clock-edit'>{recurrenceTime.toLocaleTimeString('en-US', { timeStyle: "short" })}</Button>
+
+                </>
               }
 
               <TimePickerModal
@@ -257,11 +274,10 @@ const CreateHabit = () => {
 
         <Button
           mode="contained"
-          icon="plus"
           onPress={handleSubmit(onSubmit)}
           style={styles.button}
         >
-          Agregar
+          Guardar
         </Button>
       </View>
     </>
@@ -288,10 +304,10 @@ const styles = StyleSheet.create({
   },
   weekButton: {
     width: 50,
-    height: 40, 
+    height: 40,
     alignItems: 'center',
     fontSize: 10
-    
+
   },
 });
 

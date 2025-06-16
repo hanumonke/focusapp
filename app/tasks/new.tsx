@@ -1,18 +1,23 @@
 import CustomDateTimePicker from '@/components/CustomDateTimePicker';
 import CustomHeader from '@/components/CustomHeader';
+import RemindersInput from '@/components/RemindersInput';
 import TagsInput from '@/components/TagsInput';
-import { loadAppState, saveAppState } from '@/db/store';
-import { ITask } from '@/db/types';
+import { loadAppState, saveAppState } from '@/db/storage';
+import { IReminder, ITask } from '@/db/types';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { Button, Divider, IconButton, Text, TextInput } from 'react-native-paper';
 
 import uuid from 'react-native-uuid';
 
+// TODO: toast for succesful task creation
+// TODO: reminders config 
+
 const CreateTask = () => {
     const router = useRouter();
+   
     const {
         control,
         handleSubmit,
@@ -23,6 +28,7 @@ const CreateTask = () => {
             description: "",
             dueDate: '',
             tags: [] as string[],
+            reminders: [] as IReminder[]
         },
     });
 
@@ -36,7 +42,7 @@ const CreateTask = () => {
                 dueDate: data.dueDate,
                 tags: data.tags,
                 isCompleted: false,
-                scheduledNotifications: [],
+                reminders: [], 
                 
             };
             const updatedState = {
@@ -53,7 +59,7 @@ const CreateTask = () => {
 
     return (
         <>
-            <CustomHeader title="Nueva Tarea" />
+            <CustomHeader title="Nueva Tarea" backRoute='/tasks' />
             <View style={styles.container}>
                 {/* TITULO */}
                 <Controller
@@ -100,6 +106,8 @@ const CreateTask = () => {
                     )}
                 />
 
+                <Divider />
+
                 {/* DATETIMEPICKER */}
                 <Controller
                     control={control}
@@ -110,6 +118,22 @@ const CreateTask = () => {
                     )}
                 />
                 {errors.dueDate && <Text style={styles.error}>Este campo es obligatorio</Text>}
+
+                {/* REMINDERS */}
+
+                <Divider />
+
+                {/*TODO: INPUT PARA TITULO DEL REMINDER -> DEBERIA SER EL MISMO TITULO LA TAREA */}
+                {/*TODO: INPUT PARA EL MENSAJE DEL REMINDER */}
+                {/*TODO: INPUT PARA EL MOMENTO DE EJECUCION: DOS TIPOS: FECHA E INTERVALO. SI ES FECHA SOLO ES UN BOTON CON EL DATETIMEPICKER, SI ES INTERVAL INPUT PARA CANTIDAD Y DROPDOWN PARA UNIDADES */}
+                <Controller
+                    control={control}
+                    name='reminders'
+                    rules={{required: true}}
+                    render={({ field: {value, onChange} }) => (
+                        <RemindersInput title={'nuevo recordatorio'} onChange={onChange} value={value} />
+                    )}
+                />
 
                 <Button
                     mode="contained"
