@@ -4,7 +4,7 @@ import { Button, Text } from 'react-native-paper';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates'; // Import DatePickerInput
 
 type Props = {
-  value: string | undefined; // ISO string for the combined date and time
+  value: string | null; // ISO string for the combined date and time
   onChange: (val: string | undefined) => void; // Function to update the ISO string
   label?: string; // Label for the date input
 };

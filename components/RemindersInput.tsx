@@ -1,7 +1,7 @@
-import { Day, IntervalUnit, IReminder, ReminderType, DayNumber } from '@/db/types'; // Import all types
+import { Day, IntervalUnit, IReminder, ReminderType, DayNumber } from '@/db/types';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
-import { Button, Card, IconButton, Text, TextInput } from 'react-native-paper';
+import { Button, Card, IconButton, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { Dropdown } from 'react-native-paper-dropdown';
 import uuid from 'react-native-uuid';
 import CustomDateTimePicker from './CustomDateTimePicker';
@@ -11,21 +11,19 @@ type RemindersInputProps = {
     value: IReminder[];
     onChange: (reminders: IReminder[]) => void;
     label?: string;
-    title: string; // Habit / Task title
+    title: string;
 };
 
-// Define initial state for a new reminder, aligning with IReminder structure
 const initialNewReminderState = {
     message: '',
     type: 'interval' as ReminderType,
-    interval: undefined as number | undefined, // Explicitly undefined for optional properties
+    interval: undefined as number | undefined,
     unit: 'DAY' as IntervalUnit,
-    timestamp: undefined as string | undefined, // ISO string, undefined for optional
+    timestamp: undefined as string | undefined,
     day: 'DOMINGO' as Day,
 };
 
 const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label = "Recordatorios", title }) => {
-    console.log("RemindersInput Rendered. Current 'value' prop:", value);
     const [newReminderData, setNewReminderData] = useState(initialNewReminderState);
     const { message, type, interval, unit, timestamp, day } = newReminderData;
 
@@ -49,8 +47,8 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
 
     const clearInputs = () => {
         setNewReminderData(prev => ({
-            ...initialNewReminderState, // Copia el estado inicial para message, interval, unit, timestamp, day
-            type: prev.type // PERO sobrescribe el 'type' con el valor que tenía antes de resetear
+            ...initialNewReminderState,
+            type: prev.type
         }));
     };
 
@@ -60,16 +58,15 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
             return;
         }
 
-        let validatedReminder: IReminder | null = null; // Initialize as null to handle default case
+        let validatedReminder: IReminder | null = null;
 
         switch (type) {
             case 'interval':
                 const numericInterval = Number(interval);
-                if (isNaN(numericInterval) || numericInterval <= 0) { // Check for NaN or non-positive number
+                if (isNaN(numericInterval) || numericInterval <= 0) {
                     Alert.alert('Error de validación', 'El intervalo debe ser un número positivo válido.');
                     return;
                 }
-                // No need to check 'unit' as it defaults to 'DAY' and is handled by Dropdown's onSelect
                 validatedReminder = {
                     id: uuid.v4() as string,
                     type: 'interval',
@@ -95,7 +92,6 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 };
                 break;
             case 'weekly':
-                // No need to check 'day' as it defaults to 'DOMINGO' and is handled by Dropdown's onSelect
                 if (!timestamp) {
                     Alert.alert('Error de validación', 'Debe seleccionar una hora para el recordatorio semanal.');
                     return;
@@ -126,15 +122,13 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 break;
             default:
                 Alert.alert('Error de validación', 'Tipo de recordatorio no válido.');
-                return; // Stop execution if type is invalid
+                return;
         }
 
-        // Only proceed if validatedReminder was successfully created
         if (validatedReminder && !value.some(existingReminder => existingReminder.id === validatedReminder!.id)) {
             onChange([...value, validatedReminder]);
-
             clearInputs();
-        } else if (validatedReminder) { // If validatedReminder exists but is a duplicate
+        } else if (validatedReminder) {
             Alert.alert('Recordatorio Existente', 'Este recordatorio ya ha sido agregado.');
         }
     };
@@ -151,8 +145,8 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                         <TextInput
                             mode='outlined'
                             inputMode='numeric'
-                            value={interval !== undefined ? String(interval) : ''} // Ensure string for TextInput
-                            onChangeText={(text) => setNewReminderData(prev => ({ ...prev, interval: Number(text) || undefined }))} // Store as number or undefined
+                            value={interval !== undefined ? String(interval) : ''}
+                            onChangeText={(text) => setNewReminderData(prev => ({ ...prev, interval: Number(text) || undefined }))}
                             style={styles.intervalTextInput}
                             placeholder='Cantidad'
                         />
@@ -162,7 +156,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                                 { label: 'minuto(s)', value: 'MINUTE' },
                                 { label: 'hora(s)', value: 'HOUR' },
                                 { label: 'dia(s)', value: 'DAY' },
-                                { label: 'semana(s)', value: 'WEEK' }, // Added WEEK
+                                { label: 'semana(s)', value: 'WEEK' },
                             ]}
                             value={unit}
                             onSelect={(selectedValue) => setNewReminderData(prev => ({ ...prev, unit: (selectedValue as IntervalUnit) ?? 'DAY' }))}
@@ -174,8 +168,8 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 return (
                     <View style={styles.datePickerContainer}>
                         <CustomDateTimePicker
-                            value={timestamp || ''} // Pass empty string if undefined
-                            onChange={(isoDate) => setNewReminderData(prev => ({ ...prev, timestamp: isoDate || undefined }))} // Store as string or undefined
+                            value={timestamp || ''}
+                            onChange={(isoDate) => setNewReminderData(prev => ({ ...prev, timestamp: isoDate || undefined }))}
                             label="Fecha"
                         />
                     </View>
@@ -185,8 +179,8 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                     <View style={styles.weeklyDailyContainer}>
                         <Dropdown
                             mode='outlined'
-                            options={Object.keys(DayNumber).filter(key => isNaN(Number(key))).map(dayKey => ({ // Dynamically create options from enum
-                                label: dayKey.charAt(0) + dayKey.slice(1).toLowerCase(), // Capitalize first letter
+                            options={Object.keys(DayNumber).filter(key => isNaN(Number(key))).map(dayKey => ({
+                                label: dayKey.charAt(0) + dayKey.slice(1).toLowerCase(),
                                 value: dayKey
                             }))}
                             value={day}
@@ -212,7 +206,6 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
     };
 
     return (
-
         <>
             <View style={{ flexGrow: 1 }}>
                 <Text variant="titleMedium">{label}</Text>
@@ -227,29 +220,26 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                     />
 
                     <View style={styles.typeSelectionAndInputs}>
-                        <Dropdown
-                            mode='outlined'
-                            options={[
-                                { label: 'Intervalo', value: 'interval' },
-                                { label: 'Unico', value: 'date' },
-                                { label: 'Semanal', value: 'weekly' },
-                                { label: 'Diario', value: 'daily' },
-                            ]}
+                        <SegmentedButtons
                             value={type}
-                            onSelect={(selectedValue) => {
+                            onValueChange={(value) => {
                                 setNewReminderData(prev => ({
                                     ...prev,
-                                    type: (selectedValue as ReminderType),
-                                    timestamp: undefined, // Reset optional fields when type changes
+                                    type: value as ReminderType,
+                                    timestamp: undefined,
                                     day: 'DOMINGO',
                                     interval: undefined,
-                                    unit: 'DAY' // Reset unit as well for consistency
-                                }))
+                                    unit: 'DAY'
+                                }));
                                 onChange([]);
-                            }
-                            }
-                            menuContentStyle={styles.dropdown}
-
+                            }}
+                            buttons={[
+                                { value: 'interval', label: 'Intervalo' },
+                                { value: 'date', label: 'Único' },
+                                { value: 'weekly', label: 'Semanal' },
+                                { value: 'daily', label: 'Diario' },
+                            ]}
+                            style={styles.segmentedButtons}
                         />
 
                         {renderReminderInputs()}
@@ -279,7 +269,6 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                                         <Text>
                                             <Text style={{ fontWeight: 'bold' }}>Mensaje:</Text> {reminder.message}
                                         </Text>
-                                        {/* Conditionally render interval/timestamp based on type and if they exist */}
                                         {reminder.type === 'interval' && typeof reminder.interval === 'number' && reminder.unit && (
                                             <Text>
                                                 <Text style={{ fontWeight: 'bold' }}>Cada:</Text> {reminder.interval} {reminder.unit.toLowerCase()}(s)
@@ -295,14 +284,11 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                                     <Card.Actions>
                                         <IconButton icon="delete" mode='outlined' onPress={() => handleDeleteReminder(reminder.id)} />
                                     </Card.Actions>
-
-
                                 </Card>
                             ))}
                         </View>
                     )}
                 </View>
-
             </View>
         </>
     );
@@ -311,17 +297,17 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
-        
     },
     textInput: {
         marginBottom: 10,
     },
     typeSelectionAndInputs: {
-        flexDirection: 'row',
-        flex: 2, 
-        gap: 5,
+        flexDirection: 'column',
+        gap: 10,
         marginVertical: 10,
-        justifyContent: 'center'
+    },
+    segmentedButtons: {
+        marginBottom: 10,
     },
     dropdown: {
         flex: 1,
@@ -330,23 +316,20 @@ const styles = StyleSheet.create({
     },
     intervalContainer: {
         flexDirection: "row",
-        justifyContent: "space-evenly",
-        gap: 10,
-        flex: 2,
+        justifyContent: "space-around",
+        gap: 5,
         minWidth: 200,
     },
     intervalTextInput: {
         flex: 1,
     },
     datePickerContainer: {
-        flex: 2,
         minWidth: 200,
     },
     weeklyDailyContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        flex: 2,
         minWidth: 200,
     },
     addButton: {
@@ -355,9 +338,7 @@ const styles = StyleSheet.create({
     remindersList: {
         marginTop: 10,
         gap: 10
-
     },
-
 });
 
 export default RemindersInput;

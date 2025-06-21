@@ -10,6 +10,15 @@ export default function RootLayout() {
 
         <Drawer>
           <Drawer.Screen
+            name='index'
+            options={{
+              drawerLabel: 'Pendientes',
+              title: 'Pendientes'
+            }}
+          />
+
+          <Drawer.Screen
+          
             name="tasks/index" // Corresponde al directorio 'tasks'
             options={{
               drawerLabel: 'Mis Tareas',
@@ -51,6 +60,14 @@ export default function RootLayout() {
             options={{
               drawerItemStyle: { display: 'none' },
               headerShown: false
+            }}
+          />
+
+          <Drawer.Screen
+            name='settings'
+            options={{
+              drawerLabel: 'Ajustes',
+              title: 'Ajustes'
             }}
           />
         </Drawer>

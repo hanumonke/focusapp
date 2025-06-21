@@ -35,10 +35,22 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      ["expo-build-properties", {
+        "android": {
+          "useLegacyPackaging": true
+        }
+      }]
+      
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8a849272-92a6-4fc5-9e09-59165015ac91"
+      }
     }
   }
 }

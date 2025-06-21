@@ -39,6 +39,8 @@ export interface ITask {
     tags: string[];
     isCompleted: boolean;
     reminders: IReminder[];
+    createdAt: string, 
+    updatedAt: string
 }
 
 export type HabitRecurrenceType = "daily" | "weekly" | "custom"
@@ -48,7 +50,7 @@ export interface IHabitRecurrence {
     daysOfWeek?: number[]; // Solo si type === 'weekly'. Array de números (0=Domingo, 1=Lunes, ..., 6=Sábado)
     interval?: number; // Para 'custom', ej: 2 para "cada 2 días"
     unit?: 'day' | 'hour'; // Para 'custom', la unidad del intervalo
-    time?: Date
+    time?: string
 }
 
 
@@ -58,8 +60,6 @@ export interface IHabit {
     description: string; // Contenido Markdown
     tags: string[];
     recurrence: IHabitRecurrence | null;  // Define cuándo se "espera" que se realice el hábito
-
-    reminders: IReminder[]
     // STREAK
     currentStreak: number; // Racha actual de días consecutivos completados
     bestStreak: number;    // Mejor racha histórica

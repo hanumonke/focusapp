@@ -1,314 +1,338 @@
-
-// Components
+// CreateHabit.tsx
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Divider, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { TimePickerModal } from 'react-native-paper-dates';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import uuid from 'react-native-uuid';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { loadAppState, saveAppState } from '@/db/storage';
+import { IHabit } from '@/db/types';
 import CustomHeader from '@/components/CustomHeader';
 import TagsInput from '@/components/TagsInput';
-import { IHabit, HabitRecurrenceType} from '@/db/types';
-import { StyleSheet, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import { Button, SegmentedButtons, Text, TextInput } from 'react-native-paper';
-import { TimePickerModal } from 'react-native-paper-dates';
-import { Dropdown } from 'react-native-paper-dropdown';
-// logic
-import { loadAppState, saveAppState } from '@/db/storage';
-import { useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { Controller, useForm } from "react-hook-form";
-import uuid from 'react-native-uuid';
+import { scheduleHabitReminders, scheduleReminders } from '@/utils/notificationService';
 
-
-//TODO make reminders config
 const CreateHabit = () => {
-
-  const [recurrenceTime, setRecurrenceTime] = useState(new Date());
-  const [recurrenceUnit, setRecurrenceUnit] = useState<string>('day');
-  const [recurrenceDaysOfWeek, setRecurrenceDaysOfWeek] = useState<number[]>([]);
-  const [recurrenceInterval, setRecurrenceInterval] = useState(0);
-
-  const [visible, setVisible] = useState(false);
-
-  const onDismiss = useCallback(() => {
-    setVisible(false)
-  }, [setVisible]);
-
-  const onConfirm = React.useCallback(
-    //@ts-ignore
-    ({ hours, minutes }) => {
-      setVisible(false);
-
-      recurrenceTime.setSeconds(0, 0);
-      recurrenceTime.setHours(hours);
-      recurrenceTime.setMinutes(minutes)
-    },
-    [setVisible]
-  );
-
+  const { id: habitId } = useLocalSearchParams();
   const router = useRouter();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { control, handleSubmit, setValue, reset } = useForm<IHabit>({
     defaultValues: {
+      id: '',
       title: "",
       description: "",
-      tags: [] as string[],
-      recurrenceType: "daily" as HabitRecurrenceType,
-    },
+      tags: [],
+      recurrence: {
+        type: "daily",
+        daysOfWeek: [],
+        interval: 0,
+        unit: 'day',
+        time: new Date().toISOString()
+      },
+      currentStreak: 0,
+      bestStreak: 0,
+      lastCompletedDate: null,
+      completionHistory: [],
+      createdAt: '',
+      updatedAt: ''
+    }
   });
 
-  const toggleDay = (index: number) => {
-    setRecurrenceDaysOfWeek(prev =>
-      prev.includes(index)
-        ? prev.filter(i => i !== index)  // Remove if already selected
-        : [...prev, index]               // Add if not selected
-    );
+  // Watch form values
+  const recurrenceType = useWatch({ control, name: "recurrence.type" });
+  const recurrenceDaysOfWeek = useWatch({ control, name: "recurrence.daysOfWeek" });
+  const recurrenceTime = useWatch({ control, name: "recurrence.time" });
+
+  // Load habit for editing
+  useEffect(() => {
+    const loadHabit = async () => {
+      if (!habitId) return;
+      setLoading(true);
+      try {
+        const appState = await loadAppState();
+        const habit = appState.habits.find(h => h.id === habitId);
+        if (habit) {
+      
+          reset(habit);
+        }
+      } catch (error) {
+        Alert.alert("Error", "Failed to load habit");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadHabit();
+  }, [habitId]);
+
+  // Toggle day selection
+  const toggleDay = (dayIndex: number) => {
+    const newDays = recurrenceDaysOfWeek?.includes(dayIndex)
+      ? recurrenceDaysOfWeek.filter(d => d !== dayIndex)
+      : [...(recurrenceDaysOfWeek || []), dayIndex];
+    setValue("recurrence.daysOfWeek", newDays);
   };
 
+  // Time picker handlers
+  const onDismiss = useCallback(() => setVisible(false), []);
+  const onConfirm = useCallback(({ hours, minutes }: { hours: number; minutes: number }) => {
+    setVisible(false);
+    const newDate = new Date(recurrenceTime || new Date());
+    newDate.setHours(hours);
+    newDate.setMinutes(minutes);
+    setValue("recurrence.time", newDate.toISOString());
+  }, [recurrenceTime]);
 
-  const onSubmit = async (data: {
-    title: string,
-    description: string,
-    tags: string[],
-    recurrenceType: HabitRecurrenceType,
-
-  }) => {
-
-    console.log('Guardando habito')
-
+  // Submit handler
+  const onSubmit = async (data: IHabit) => {
     try {
-
-      const newHabit: IHabit = {
-        id: uuid.v4() as string,
-        title: data.title ?? "",
-        description: data.description ?? "",
-        tags: data.tags ?? [],
-        recurrence: {
-          type: data.recurrenceType,
-          daysOfWeek: recurrenceDaysOfWeek.sort(),
-          interval: recurrenceInterval,
-          unit: recurrenceUnit as 'day' | 'hour',
-          time: recurrenceTime
-        },
-        reminders: [], 
-        currentStreak: 0,
-        bestStreak: 0,
-        lastCompletedDate: null,
-        completionHistory: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      console.log(newHabit);
-
+      setLoading(true);
       const appState = await loadAppState();
-      const updatedState = {
-        ...appState,
-        habits: [...appState.habits, newHabit]
+      const now = new Date().toISOString();
+
+      const updatedHabit: IHabit = {
+        ...data,
+        updatedAt: now,
+        createdAt: habitId ? data.createdAt : now
       };
-      await saveAppState(updatedState);
-      router.push('/habits');
 
+      const updatedHabits = habitId
+        ? appState.habits.map(h => h.id === habitId ? updatedHabit : h)
+        : [...appState.habits, { ...updatedHabit, id: uuid.v4() as string }];
 
-    } catch (error) {
-      console.error(error);
-      alert("Error al guardar el habito");
+      await saveAppState({ ...appState, habits: updatedHabits });
+      // Schedule notifications if enabled
+          // Schedule habit reminders based on recurrence
+    if (appState.settings.enableNotifications) {
+      await scheduleHabitReminders(updatedHabit);
     }
 
+      router.push('/habits');
+    } catch (error) {
+      Alert.alert("Error", "Failed to save habit");
+    } finally {
+      setLoading(false);
+    }
   };
 
-
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
-    <>
-      <CustomHeader title="Nuevo habito"  backRoute='/habits' addAction={handleSubmit(onSubmit)}/>
-      <View style={styles.container}>
-        {/* TITULO */}
+    <SafeAreaView style={styles.safeArea}>
+      <CustomHeader
+        title={habitId ? "Edit Habit" : "New Habit"}
+        backRoute="/habits"
+        addAction={handleSubmit(onSubmit)}
+        materialIcon="check"
+      />
+
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" >
+        {/* Title */}
         <Controller
           control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value } }) => (
+          name="title"
+          rules={{ required: "Title is required" }}
+          render={({ field, fieldState }) => (
+            <>
+              <TextInput
+                mode="outlined"
+                label="Title"
+                value={field.value}
+                onChangeText={field.onChange}
+                error={!!fieldState.error}
+                style={styles.input}
+              />
+              {fieldState.error && (
+                <Text style={styles.error}>{fieldState.error.message}</Text>
+              )}
+            </>
+          )}
+        />
+
+        {/* Description */}
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
             <TextInput
-              mode='outlined'
-              placeholder="Nombre del habito"
-              onChangeText={onChange}
-              value={value}
+              mode="outlined"
+              label="Description"
+              value={field.value}
+              onChangeText={field.onChange}
+              multiline
+              numberOfLines={4}
               style={styles.input}
             />
           )}
-          name="title"
         />
-        {errors.title && <Text style={styles.error}>Este campo es obligatorio</Text>}
 
-        {/* DESCRIPCION */}
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              mode='outlined'
-              placeholder="Descripcion"
-              onChangeText={onChange}
-              value={value}
-              multiline
-              numberOfLines={4}
-              style={{ paddingVertical: 10 }}
-            />
-          )}
-          name="description"
-        />
-        {errors.description && <Text style={styles.error}>Este campo es obligatorio</Text>}
-
-        {/* TAGS */}
+        {/* Tags */}
         <Controller
           control={control}
           name="tags"
-          render={({ field: { value, onChange } }) => (
-            <TagsInput value={value} onChange={onChange} label="Etiquetas" />
+          render={({ field }) => (
+            <TagsInput value={field.value} onChange={field.onChange} />
           )}
         />
 
         {/* Recurrence */}
+        <Text variant="titleMedium" style={styles.sectionTitle}>
+          Recurrence
+        </Text>
 
         <Controller
           control={control}
-          name="recurrenceType"
-          render={({ field: { value, onChange } }) => (
-            <View>
-              <Text variant='titleMedium'>Recurrencia</Text>
-              <SegmentedButtons
-                value={value}
-                onValueChange={onChange}
-                buttons={[
-                  {
-                    value: 'daily',
-                    label: 'Diario',
-                  },
-                  {
-                    value: 'weekly',
-                    label: 'Semanal',
-                  },
-                  {
-                    value: 'custom',
-                    label: 'Otro',
-                  },
-
-                ]}
-              />
-
-              {/* IF DAILY RENDER THIS */}
-              {value == 'daily' &&
-                <View style={{ paddingVertical: 10 }}>
-                  <Button onPress={() => setVisible(true)} mode='outlined' icon='clock-edit'>{recurrenceTime.toLocaleTimeString('en-US', { timeStyle: "short" })}</Button>
-
-                </View>
-              }
-
-              {/* IF WEEKLY RENDER THIS */}
-              {value == 'weekly' &&
-                <View>
-                  <View >
-                    <FlatList
-                      contentContainerStyle={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10, gap: 2 }}
-                      data={[
-                        { label: 'Dom', dayNumber: 0 },
-                        { label: 'Lun', dayNumber: 1 },
-                        { label: 'Mar', dayNumber: 2 },
-                        { label: 'Mie', dayNumber: 3 },
-                        { label: 'Jue', dayNumber: 4 },
-                        { label: 'Vie', dayNumber: 5 },
-                        { label: 'Sab', dayNumber: 6 },
-                      ]}
-                      renderItem={({ item }) =>
-                        <Button
-                          mode={recurrenceDaysOfWeek.includes(item.dayNumber) ? 'contained' : 'outlined'}
-                          onPress={() => toggleDay(item.dayNumber)}
-                          compact
-
-                          contentStyle={styles.weekButton}
-                        >
-                          {item.label}
-
-                        </Button>
-                      }
-                    />
-                  </View>
-                  <Button onPress={() => setVisible(true)} mode='outlined' icon='clock-edit'>{recurrenceTime.toLocaleTimeString('en-US', { timeStyle: "short" })}</Button>
-
-                </View>
-              }
-
-              {/* IF CUSTOM(INTERVAL) RENDER THIS */}
-              {value == 'custom' &&
-                <>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', margin: 10, alignItems: 'center' }}>
-                    <Text>Repetir cada</Text>
-                    <TextInput mode='outlined' inputMode='numeric' />
-                    <Dropdown
-                      mode='outlined'
-                      options={[{ label: 'dias', value: 'day' }, { label: 'horas', value: 'hour' }]}
-                      value={recurrenceUnit}
-                      onSelect={(selectedValue?: string) => setRecurrenceUnit(selectedValue ?? '')}
-                    />
-
-                  </View>
-                  <Button onPress={() => setVisible(true)} mode='outlined' icon='clock-edit'>{recurrenceTime.toLocaleTimeString('en-US', { timeStyle: "short" })}</Button>
-
-                </>
-              }
-
-              <TimePickerModal
-                visible={visible}
-                onDismiss={onDismiss}
-                onConfirm={onConfirm}
-                hours={12}
-                minutes={14}
-              />
-            </View>
+          name="recurrence.type"
+          render={({ field }) => (
+            <SegmentedButtons
+              value={field.value}
+              onValueChange={field.onChange}
+              buttons={[
+                { value: 'daily', label: 'Daily' },
+                { value: 'weekly', label: 'Weekly' },
+                { value: 'custom', label: 'Custom' },
+              ]}
+            />
           )}
         />
 
+        {recurrenceType === 'weekly' && (
+          <View style={styles.weekDaysContainer}>
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+              <Button
+                key={day}
+                mode={recurrenceDaysOfWeek?.includes(index) ? 'contained' : 'outlined'}
+                onPress={() => toggleDay(index)}
+                style={styles.dayButton}
+              >
+                {day}
+              </Button>
+            ))}
+          </View>
+        )}
 
-        {/* Reminders  */}
-
-
+        {recurrenceType === 'custom' && (
+          <View style={styles.customRecurrence}>
+            <Text>Repeat every</Text>
+            <Controller
+              control={control}
+              name="recurrence.interval"
+              render={({ field }) => (
+                <TextInput
+                  mode="outlined"
+                  value={field.value?.toString()}
+                  onChangeText={v => field.onChange(Number(v) || 1)}
+                  keyboardType="numeric"
+                  style={styles.intervalInput}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="recurrence.unit"
+              render={({ field }) => (
+                <TextInput
+                  mode="outlined"
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  style={styles.unitInput}
+                />
+              )}
+            />
+          </View>
+        )}
 
         <Button
-          mode="contained"
-          onPress={handleSubmit(onSubmit)}
-          style={styles.button}
+          onPress={() => setVisible(true)}
+          mode="outlined"
+          icon="clock"
+          style={styles.timeButton}
         >
-          Guardar
+          {recurrenceTime
+            ? new Date(recurrenceTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : "Select time"}
         </Button>
-      </View>
-    </>
-  )
-}
+
+        <TimePickerModal
+          visible={visible}
+          onDismiss={onDismiss}
+          onConfirm={onConfirm}
+          hours={recurrenceTime ? new Date(recurrenceTime).getHours() : 12}
+          minutes={recurrenceTime ? new Date(recurrenceTime).getMinutes() : 0}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
+   safeArea: {
+    flex: 1,
+    paddingBottom: Platform.OS === 'android' ? 20 : 0, // Extra padding for Android nav buttons
+  },
+  contentContainer: {
+    flexGrow: 1, // Ensures the content can grow to fill available space
+  },
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#fff',
-    justifyContent: 'flex-start',
+  },
+  scrollContent: {
+    padding: 16,
+     paddingBottom: 32,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {
-    marginBottom: 8,
+    marginBottom: 16,
   },
   error: {
     color: 'red',
-    marginBottom: 8,
+    marginTop: -12,
+    marginBottom: 16,
     marginLeft: 4,
   },
-  button: {
-    marginTop: 16,
+  sectionTitle: {
+    marginVertical: 16,
   },
-  weekButton: {
-    width: 50,
-    height: 40,
+  weekDaysContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    marginVertical: 16,
+  },
+  dayButton: {
+    minWidth: 40,
+  },
+  customRecurrence: {
+    flexDirection: 'row',
     alignItems: 'center',
-    fontSize: 10
-
+    gap: 8,
+    marginVertical: 16,
   },
+  intervalInput: {
+    width: 60,
+  },
+  unitInput: {
+    flex: 1,
+  },
+  timeButton: {
+    marginVertical: 16,
+  },
+  divider: {
+    marginVertical: 24,
+  }
 });
 
-export default CreateHabit
+export default CreateHabit;

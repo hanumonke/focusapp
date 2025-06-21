@@ -16,8 +16,24 @@ export const loadAppState = async (): Promise<IAppState> => {
 
 export const saveAppState = async (state: IAppState): Promise<void> => {
     try {
-        const jsonValue = JSON.stringify(state);
-        await AsyncStorage.setItem(APP_STATE_KEY, jsonValue);
+        const serializedState = {
+            ...state,
+            habits: state.habits.map(habit => ({
+                ...habit,
+                tags: habit.tags || [], // Ensure tags is always an array
+                recurrence: habit.recurrence ? {
+                    ...habit.recurrence,
+                    time: habit.recurrence.time
+                        ? new Date(habit.recurrence.time).toISOString()
+                        : undefined
+                } : null,
+                createdAt: new Date(habit.createdAt).toISOString(),
+                updatedAt: new Date().toISOString()
+            }))
+        };
+
+        await AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(serializedState));
+
         console.log("Estado guardado exitosamente.");
     } catch (e) {
         console.error("Error al guardar el estado de la app:", e);
