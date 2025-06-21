@@ -42,11 +42,13 @@ const Habits = () => {
             text: "Delete",
             style: "destructive",
             onPress: async () => {
+              setLoading(true);
               await cancelNotificationsForItem(id);
               const updatedHabits = appState.habits.filter(habit => habit.id !== id);
               const updatedState = { ...appState, habits: updatedHabits };
               await saveAppState(updatedState);
               setAppState(updatedState);
+              setLoading(false);
             }
           }
         ]
