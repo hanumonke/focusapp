@@ -25,7 +25,8 @@ export interface IReminder {
     interval?: number
     timestamp?: string; // ISO 8601 execution time -> to save either the whole date or the hour and minute for weekly and daily types
     unit?: IntervalUnit ;
-    day?: Day,
+    day?: Day;
+    days?: Day[];
     title: string; 
     message: string;
     sound: string; // Notification sound

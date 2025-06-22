@@ -1,32 +1,35 @@
 import { Day, IntervalUnit, IReminder, ReminderType, DayNumber } from '@/db/types';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
-import { Button, Card, IconButton, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { Button, Card, Chip, IconButton, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { Dropdown } from 'react-native-paper-dropdown';
 import uuid from 'react-native-uuid';
 import CustomDateTimePicker from './CustomDateTimePicker';
 import { TimePickerModal } from 'react-native-paper-dates';
+import { FlatList } from 'react-native-gesture-handler';
 
 type RemindersInputProps = {
     value: IReminder[];
     onChange: (reminders: IReminder[]) => void;
     label?: string;
     title: string;
+    dueDate?: string | undefined | null;
 };
 
 const initialNewReminderState = {
     message: '',
-    type: 'interval' as ReminderType,
+    type: 'date' as ReminderType,
     interval: undefined as number | undefined,
     unit: 'DAY' as IntervalUnit,
     timestamp: undefined as string | undefined,
     day: 'DOMINGO' as Day,
+    days: ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'] as Day[]
 };
 
-const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label = "Recordatorios", title }) => {
+const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label = "Recordatorios", title, dueDate }) => {
     const [newReminderData, setNewReminderData] = useState(initialNewReminderState);
-    const { message, type, interval, unit, timestamp, day } = newReminderData;
-
+    const { message, type, interval, unit, timestamp, day, days } = newReminderData;
+    // const [selectedDays, setSelectedDays] = useState<Day[]>([]);
     const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
     const onDismissTimePicker = useCallback(() => {
@@ -82,6 +85,12 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                     Alert.alert('Error de validación', 'Debe seleccionar una fecha y hora para el recordatorio único.');
                     return;
                 }
+
+                if (dueDate && timestamp && new Date(timestamp) > new Date(dueDate)) {
+                    Alert.alert('Error de validación', 'La hora del recordatorio no puede ser posterior a la fecha límite de la tarea.');
+                    return;
+                }
+
                 validatedReminder = {
                     id: uuid.v4() as string,
                     type: 'date',
@@ -101,7 +110,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                     type: 'weekly',
                     title: title,
                     message: message.trim(),
-                    day: day,
+                    days: days,
                     timestamp: timestamp,
                     sound: 'default'
                 };
@@ -139,35 +148,36 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
 
     const renderReminderInputs = () => {
         switch (type) {
-            case 'interval':
-                return (
-                    <View style={styles.intervalContainer}>
-                        <TextInput
-                            mode='outlined'
-                            inputMode='numeric'
-                            value={interval !== undefined ? String(interval) : ''}
-                            onChangeText={(text) => setNewReminderData(prev => ({ ...prev, interval: Number(text) || undefined }))}
-                            style={styles.intervalTextInput}
-                            placeholder='Cantidad'
-                        />
-                        <Dropdown
-                            mode='outlined'
-                            options={[
-                                { label: 'minuto(s)', value: 'MINUTE' },
-                                { label: 'hora(s)', value: 'HOUR' },
-                                { label: 'dia(s)', value: 'DAY' },
-                                { label: 'semana(s)', value: 'WEEK' },
-                            ]}
-                            value={unit}
-                            onSelect={(selectedValue) => setNewReminderData(prev => ({ ...prev, unit: (selectedValue as IntervalUnit) ?? 'DAY' }))}
-                            menuContentStyle={styles.dropdown}
-                        />
-                    </View>
-                );
+            // case 'interval':
+            //     return (
+            //         <View style={styles.intervalContainer}>
+            //             <TextInput
+            //                 mode='outlined'
+            //                 inputMode='numeric'
+            //                 value={interval !== undefined ? String(interval) : ''}
+            //                 onChangeText={(text) => setNewReminderData(prev => ({ ...prev, interval: Number(text) || undefined }))}
+            //                 style={styles.intervalTextInput}
+            //                 placeholder='Cantidad'
+            //             />
+            //             <Dropdown
+            //                 mode='outlined'
+            //                 options={[
+            //                     { label: 'minuto(s)', value: 'MINUTE' },
+            //                     { label: 'hora(s)', value: 'HOUR' },
+            //                     { label: 'dia(s)', value: 'DAY' },
+            //                     { label: 'semana(s)', value: 'WEEK' },
+            //                 ]}
+            //                 value={unit}
+            //                 onSelect={(selectedValue) => setNewReminderData(prev => ({ ...prev, unit: (selectedValue as IntervalUnit) ?? 'DAY' }))}
+            //                 menuContentStyle={styles.dropdown}
+            //             />
+            //         </View>
+            //     );
             case 'date':
                 return (
                     <View style={styles.datePickerContainer}>
                         <CustomDateTimePicker
+                            limitDate={dueDate}
                             value={timestamp || ''}
                             onChange={(isoDate) => setNewReminderData(prev => ({ ...prev, timestamp: isoDate || undefined }))}
                             label="Fecha"
@@ -176,25 +186,26 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 );
             case 'weekly':
                 return (
-                    <View style={styles.weeklyDailyContainer}>
-                        <Dropdown
-                            mode='outlined'
-                            options={Object.keys(DayNumber).filter(key => isNaN(Number(key))).map(dayKey => ({
-                                label: dayKey.charAt(0) + dayKey.slice(1).toLowerCase(),
-                                value: dayKey
-                            }))}
-                            value={day}
-                            onSelect={(selectedValue) => setNewReminderData(prev => ({ ...prev, day: (selectedValue as Day) ?? 'DOMINGO' }))}
-                            menuContentStyle={styles.dropdown}
-                        />
+                    
+                        <View style={styles.chipContainer}>
+                            {days.map(day => {
+                                return <Chip
+                                compact
+                                style={{ height: 36}}
+                                key={day}
+
+                                >{day.slice(0, 3)}</Chip>
+                            })}
                         <Button onPress={() => setIsTimePickerVisible(true)} mode='outlined' icon='clock-edit'>
                             {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "Hora"}
                         </Button>
-                    </View>
+                        </View>
+
+                   
                 );
             case 'daily':
                 return (
-                    <View style={styles.weeklyDailyContainer}>
+                    <View style={styles.dailyDailyContainer}>
                         <Button onPress={() => setIsTimePickerVisible(true)} mode='outlined' icon='clock-edit'>
                             {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "Hora"}
                         </Button>
@@ -234,7 +245,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                                 onChange([]);
                             }}
                             buttons={[
-                                { value: 'interval', label: 'Intervalo' },
+                                // { value: 'interval', label: 'Intervalo' },
                                 { value: 'date', label: 'Único' },
                                 { value: 'weekly', label: 'Semanal' },
                                 { value: 'daily', label: 'Diario' },
@@ -327,10 +338,22 @@ const styles = StyleSheet.create({
         minWidth: 200,
     },
     weeklyDailyContainer: {
-        flexDirection: 'row',
+       
+        justifyContent: 'center',
         alignItems: 'center',
-        gap: 10,
-        minWidth: 200,
+        gap: 10
+    },
+    chipContainer: {
+       
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+        justifyContent: 'center', 
+        gap: 10, 
+    },
+     dailyDailyContainer: {
+       
+        justifyContent: 'center',
+     
     },
     addButton: {
         alignSelf: 'center',

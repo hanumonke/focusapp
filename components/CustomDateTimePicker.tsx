@@ -7,9 +7,10 @@ type Props = {
   value: string | null; // ISO string for the combined date and time
   onChange: (val: string | undefined) => void; // Function to update the ISO string
   label?: string; // Label for the date input
+  limitDate?: string | undefined | null
 };
 
-const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Seleccionar fecha" }) => {
+const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Seleccionar fecha", limitDate }) => {
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
   // Derive Date object from value for DatePickerInput and TimePickerModal
@@ -75,11 +76,14 @@ const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Selec
       <View style={styles.inputRow}>
       
         <DatePickerInput
+          validRange={{startDate: new Date(), endDate: limitDate ? new Date(limitDate) : undefined }}
+          presentationStyle='pageSheet'
           mode='outlined'
-          locale="es" // Set locale for language of picker
+          locale="en" // Set locale for language of picker
           value={value ? new Date(value) : undefined} // Pass Date object or undefined
           onChange={onDateChange}
           inputMode="start" // Opens calendar on focus
+          
         />
 
         <Button mode="contained" onPress={handleOpenTimePicker} icon="clock-edit-outline" style={{alignSelf: 'center'}}>

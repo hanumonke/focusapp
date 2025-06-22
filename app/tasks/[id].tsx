@@ -1,7 +1,7 @@
 import CustomHeader from '@/components/CustomHeader';
 import { loadAppState } from '@/db/storage';
 import { IReminder, ITask } from '@/db/types';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { ActivityIndicator, Card, Chip, Divider, IconButton, Text, useTheme } from 'react-native-paper';

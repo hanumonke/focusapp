@@ -30,11 +30,12 @@ const CreateTask = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    watch
   } = useForm<ITask>({
     defaultValues: {
       title: "",
       description: "",
-      dueDate: null,
+      dueDate: undefined,
       tags: [],
       reminders: [],
       isCompleted: false,
@@ -181,6 +182,7 @@ const CreateTask = () => {
                 value={field.value} 
                 onChange={field.onChange} 
                 title={'Reminders'} 
+                dueDate={watch('dueDate')}
               />
             )}
           />
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    gap: 16,
+    gap: 5,
   },
   input: {
     marginBottom: 8,
