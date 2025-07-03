@@ -1,16 +1,23 @@
 // CreateHabit.tsx
+import CustomHeader from '@/components/CustomHeader';
+import TagsInput from '@/components/TagsInput';
+import { loadHabits, saveHabits } from '@/db/storage';
+import { DayNumber, HabitsState, IHabit } from '@/db/types';
+import { scheduleHabitReminders } from '@/utils/notificationService';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Divider, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { TimePickerModal } from 'react-native-paper-dates';
-import { Controller, useForm, useWatch } from 'react-hook-form';
 import uuid from 'react-native-uuid';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { loadAppState, saveAppState } from '@/db/storage';
-import { IHabit } from '@/db/types';
-import CustomHeader from '@/components/CustomHeader';
-import TagsInput from '@/components/TagsInput';
-import { scheduleHabitReminders, scheduleReminders } from '@/utils/notificationService';
+
+const defaultReminderConfig = {
+  enabled: false,
+  minutesBefore: 10,
+  snoozeMinutes: 0,
+  message: '',
+};
 
 const CreateHabit = () => {
   const { id: habitId } = useLocalSearchParams();
@@ -27,10 +34,10 @@ const CreateHabit = () => {
       recurrence: {
         type: "daily",
         daysOfWeek: [],
-        interval: 0,
-        unit: 'day',
-        time: new Date().toISOString()
+        time: new Date().toISOString().slice(0, 16), // "YYYY-MM-DDTHH:mm"
       },
+      reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
+      reminderBefore: { ...defaultReminderConfig },
       currentStreak: 0,
       bestStreak: 0,
       lastCompletedDate: null,
@@ -51,10 +58,9 @@ const CreateHabit = () => {
       if (!habitId) return;
       setLoading(true);
       try {
-        const appState = await loadAppState();
-        const habit = appState.habits.find(h => h.id === habitId);
+        const habits = await loadHabits();
+        const habit = habits.find(h => h.id === habitId);
         if (habit) {
-      
           reset(habit);
         }
       } catch (error) {
@@ -64,10 +70,10 @@ const CreateHabit = () => {
       }
     }
     loadHabit();
-  }, [habitId]);
+  }, [habitId, reset]);
 
   // Toggle day selection
-  const toggleDay = (dayIndex: number) => {
+  const toggleDay = (dayIndex: DayNumber) => {
     const newDays = recurrenceDaysOfWeek?.includes(dayIndex)
       ? recurrenceDaysOfWeek.filter(d => d !== dayIndex)
       : [...(recurrenceDaysOfWeek || []), dayIndex];
@@ -78,35 +84,36 @@ const CreateHabit = () => {
   const onDismiss = useCallback(() => setVisible(false), []);
   const onConfirm = useCallback(({ hours, minutes }: { hours: number; minutes: number }) => {
     setVisible(false);
-    const newDate = new Date(recurrenceTime || new Date());
+    const newDate = new Date();
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
-    setValue("recurrence.time", newDate.toISOString());
-  }, [recurrenceTime]);
+    // Store only the time as "HH:mm"
+    setValue("recurrence.time", `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
+  }, [setValue]);
 
   // Submit handler
   const onSubmit = async (data: IHabit) => {
     try {
       setLoading(true);
-      const appState = await loadAppState();
+      const habits = await loadHabits();
       const now = new Date().toISOString();
+
+      const id = habitId ? habitId as string : uuid.v4() as string;
 
       const updatedHabit: IHabit = {
         ...data,
+        id,
         updatedAt: now,
         createdAt: habitId ? data.createdAt : now
       };
 
-      const updatedHabits = habitId
-        ? appState.habits.map(h => h.id === habitId ? updatedHabit : h)
-        : [...appState.habits, { ...updatedHabit, id: uuid.v4() as string }];
+      const updatedHabits: HabitsState = habitId
+        ? habits.map(h => h.id === habitId ? updatedHabit : h)
+        : [...habits, updatedHabit];
 
-      await saveAppState({ ...appState, habits: updatedHabits });
-      // Schedule notifications if enabled
-          // Schedule habit reminders based on recurrence
-    if (appState.settings.enableNotifications) {
+      await saveHabits(updatedHabits);
+
       await scheduleHabitReminders(updatedHabit);
-    }
 
       router.push('/habits');
     } catch (error) {
@@ -197,7 +204,6 @@ const CreateHabit = () => {
               buttons={[
                 { value: 'daily', label: 'Daily' },
                 { value: 'weekly', label: 'Weekly' },
-                { value: 'custom', label: 'Custom' },
               ]}
             />
           )}
@@ -205,47 +211,16 @@ const CreateHabit = () => {
 
         {recurrenceType === 'weekly' && (
           <View style={styles.weekDaysContainer}>
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+            {(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const).map((day, index) => (
               <Button
                 key={day}
-                mode={recurrenceDaysOfWeek?.includes(index) ? 'contained' : 'outlined'}
-                onPress={() => toggleDay(index)}
+                mode={recurrenceDaysOfWeek?.includes(index as DayNumber) ? 'contained' : 'outlined'}
+                onPress={() => toggleDay(index as DayNumber)}
                 style={styles.dayButton}
               >
                 {day}
               </Button>
             ))}
-          </View>
-        )}
-
-        {recurrenceType === 'custom' && (
-          <View style={styles.customRecurrence}>
-            <Text>Repeat every</Text>
-            <Controller
-              control={control}
-              name="recurrence.interval"
-              render={({ field }) => (
-                <TextInput
-                  mode="outlined"
-                  value={field.value?.toString()}
-                  onChangeText={v => field.onChange(Number(v) || 1)}
-                  keyboardType="numeric"
-                  style={styles.intervalInput}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="recurrence.unit"
-              render={({ field }) => (
-                <TextInput
-                  mode="outlined"
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  style={styles.unitInput}
-                />
-              )}
-            />
           </View>
         )}
 
@@ -256,7 +231,7 @@ const CreateHabit = () => {
           style={styles.timeButton}
         >
           {recurrenceTime
-            ? new Date(recurrenceTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            ? new Date(recurrenceTime).toLocaleTimeString()
             : "Select time"}
         </Button>
 
@@ -264,8 +239,116 @@ const CreateHabit = () => {
           visible={visible}
           onDismiss={onDismiss}
           onConfirm={onConfirm}
-          hours={recurrenceTime ? new Date(recurrenceTime).getHours() : 12}
-          minutes={recurrenceTime ? new Date(recurrenceTime).getMinutes() : 0}
+          hours={recurrenceTime ? Number(recurrenceTime.split(':')[0]) : 12}
+          minutes={recurrenceTime ? Number(recurrenceTime.split(':')[1]) : 0}
+        />
+
+        <Divider style={styles.divider} />
+
+        {/* Reminder On Time */}
+        <Text variant="titleMedium" style={styles.sectionTitle}>
+          Reminder at scheduled time
+        </Text>
+        <Controller
+          control={control}
+          name="reminderOnTime.enabled"
+          render={({ field }) => (
+            <Button
+              mode={field.value ? "contained" : "outlined"}
+              onPress={() => field.onChange(!field.value)}
+              style={styles.input}
+            >
+              {field.value ? "Enabled" : "Disabled"}
+            </Button>
+          )}
+        />
+        <Controller
+          control={control}
+          name="reminderOnTime.message"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Reminder message"
+              value={field.value}
+              onChangeText={field.onChange}
+              style={styles.input}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="reminderOnTime.snoozeMinutes"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Snooze (minutes)"
+              value={field.value?.toString()}
+              onChangeText={v => field.onChange(Number(v) || 0)}
+              keyboardType="numeric"
+              style={styles.input}
+            />
+          )}
+        />
+
+        <Divider style={styles.divider} />
+
+        {/* Reminder Before */}
+        <Text variant="titleMedium" style={styles.sectionTitle}>
+          Reminder before
+        </Text>
+        <Controller
+          control={control}
+          name="reminderBefore.enabled"
+          render={({ field }) => (
+            <Button
+              mode={field.value ? "contained" : "outlined"}
+              onPress={() => field.onChange(!field.value)}
+              style={styles.input}
+            >
+              {field.value ? "Enabled" : "Disabled"}
+            </Button>
+          )}
+        />
+        <Controller
+          control={control}
+          name="reminderBefore.minutesBefore"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Minutes before"
+              value={field.value?.toString()}
+              onChangeText={v => field.onChange(Number(v) || 0)}
+              keyboardType="numeric"
+              style={styles.input}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="reminderBefore.message"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Reminder message"
+              value={field.value}
+              onChangeText={field.onChange}
+              style={styles.input}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="reminderBefore.snoozeMinutes"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Snooze (minutes)"
+              value={field.value?.toString()}
+              onChangeText={v => field.onChange(Number(v) || 0)}
+              keyboardType="numeric"
+              style={styles.input}
+            />
+          )}
         />
       </ScrollView>
     </SafeAreaView>
@@ -273,12 +356,12 @@ const CreateHabit = () => {
 };
 
 const styles = StyleSheet.create({
-   safeArea: {
+  safeArea: {
     flex: 1,
-    paddingBottom: Platform.OS === 'android' ? 20 : 0, // Extra padding for Android nav buttons
+    paddingBottom: Platform.OS === 'android' ? 20 : 0,
   },
   contentContainer: {
-    flexGrow: 1, // Ensures the content can grow to fill available space
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -286,7 +369,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-     paddingBottom: 32,
+    paddingBottom: 32,
   },
   loadingContainer: {
     flex: 1,

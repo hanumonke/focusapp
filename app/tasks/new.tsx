@@ -7,22 +7,23 @@ import CustomDateTimePicker from '@/components/CustomDateTimePicker';
 import CustomHeader from '@/components/CustomHeader';
 import RemindersInput from '@/components/RemindersInput';
 import TagsInput from '@/components/TagsInput';
-import { loadAppState, saveAppState } from '@/db/storage';
+import { loadSettings, loadTasks, saveTasks } from '@/db/storage';
 import { IReminder, ITask } from '@/db/types';
-import { scheduleReminders } from '@/utils/notificationService';
+import { scheduleReminders} from '@/utils/notificationService';
+import { loadOptions } from '@babel/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from "react-hook-form";
 import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Divider, Text, TextInput, useTheme } from 'react-native-paper';
+import { Button, Divider, Text, TextInput, useTheme } from 'react-native-paper';
 import uuid from 'react-native-uuid';
 
 
 
 const CreateTask = () => {
   const router = useRouter();
-  const { id: taskId } = useLocalSearchParams();
+  const { id: taskId  } = useLocalSearchParams();
   const theme = useTheme();
 
   const {
@@ -46,8 +47,8 @@ const CreateTask = () => {
     const fetchTaskData = async () => {
       if (taskId) {
         try {
-          const appState = await loadAppState();
-          const taskToEdit = appState.tasks.find(task => task.id === taskId);
+          const tasks = await loadTasks();
+          const taskToEdit = tasks.find(task => task.id === taskId);
           if (taskToEdit) {
             reset(taskToEdit);
           } else {
@@ -66,24 +67,39 @@ const CreateTask = () => {
 
   const onSubmit = async (data: ITask) => {
     try {
-      const appState = await loadAppState();
+      const tasksState = await loadTasks();
+      const settingsState = await loadSettings();
       const now = new Date().toISOString();
+
+    // Generate ID BEFORE saving
+    const id = taskId ? taskId as string : uuid.v4() as string; 
+
+    const updatedTask: ITask = {
+      ...data,
+      id: id, // Use generated ID here
+      updatedAt: now,
+      createdAt: taskId ? data.createdAt : now
+    };
+
       
-      const updatedTask: ITask = {
-        ...data,
-        updatedAt: now,
-        createdAt: taskId ? data.createdAt : now
-      };
 
       const updatedTasks = taskId
-        ? appState.tasks.map(t => t.id === taskId ? updatedTask : t)
-        : [...appState.tasks, { ...updatedTask, id: uuid.v4() as string }];
+        ? tasksState.map(t => t.id === taskId ? updatedTask : t)
+        : [...tasksState, { ...updatedTask, id: uuid.v4() as string }];
 
-      await saveAppState({ ...appState, tasks: updatedTasks });
-
+      await saveTasks(updatedTasks)
          // Schedule notifications if enabled
-    if (appState.settings.enableNotifications) {
-      await scheduleReminders(data.reminders, updatedTask.id);
+    if (settingsState.enableNotifications) {
+      // add reminder for due date
+      const dueDateReminder: IReminder = {
+         id: uuid.v4() as string,
+        type: 'date',
+        title: data.title,
+        message: data.description.slice(0, 30) + "...",
+        timestamp: data.dueDate!,
+        sound: 'default'
+      }
+      await scheduleReminders([...data.reminders, dueDateReminder], updatedTask.id);
     }
     
       router.push('/tasks');
@@ -92,6 +108,8 @@ const CreateTask = () => {
       console.error(error);
     }
   };
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -187,6 +205,8 @@ const CreateTask = () => {
             )}
           />
         </View>
+
+        <Button onPress={() => reset()} mode="contained">Clear fields</Button>
       </ScrollView>
     </SafeAreaView>
   );

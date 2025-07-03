@@ -1,11 +1,11 @@
 import CustomHeader from '@/components/CustomHeader';
-import { loadAppState } from '@/db/storage';
+import { loadTasks } from '@/db/storage';
 import { IReminder, ITask } from '@/db/types';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
-import { ActivityIndicator, Card, Chip, Divider, IconButton, Text, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Card, Chip, Divider, Text, useTheme } from 'react-native-paper';
 
 const TaskDetails = () => {
   const { id } = useLocalSearchParams();
@@ -17,8 +17,8 @@ const TaskDetails = () => {
   useEffect(() => {
     const fetchTask = async () => {
       setLoading(true);
-      const appState = await loadAppState();
-      const found = appState.tasks.find(t => t.id === id);
+      const tasks = await loadTasks();
+      const found = tasks.find(t => t.id === id);
       setTask(found || null);
       setLoading(false);
     };
@@ -51,11 +51,13 @@ const TaskDetails = () => {
         icon = 'calendar-today';
         break;
       case 'weekly':
-        details = `Weekly on ${reminder.day} at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
+        details = `Weekly${reminder.daysOfWeek && reminder.daysOfWeek.length > 0
+          ? ` on ${reminder.daysOfWeek.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}`
+          : ''} at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
         icon = 'calendar-week';
         break;
       case 'interval':
-        details = `Every ${reminder.interval} ${reminder.unit?.toLowerCase()}s`;
+        details = `Every ${reminder.interval} ${reminder.unit?.toLowerCase()}${reminder.interval === 1 ? '' : 's'}`;
         icon = 'timer';
         break;
       case 'date':

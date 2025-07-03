@@ -1,101 +1,86 @@
+// --- UTILS ---
 export enum timeToSeconds {
     MINUTE = 60,
-    HOUR = 60 * MINUTE,
-    DAY = 24 * HOUR, 
-    WEEK = 7 + DAY
+    HOUR = 60 * 60,
+    DAY = 24 * 60 * 60,
+    WEEK = 7 * 24 * 60 * 60
 }
 
-//TODO ADD REMINDER TYPES DAILY AND WEEKLY - ALMOST DONE
+export type IntervalUnit = 'MINUTE' | 'HOUR' | 'DAY' | 'WEEK';
+export type DayNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0=Domingo, 6=Sábado
 
-export type ReminderType = 'date' | 'interval' | 'daily' | 'weekly'; 
-export type IntervalUnit = 'MINUTE' | 'HOUR' | 'DAY' | 'WEEK' ; 
-export type Day = 'DOMINGO' | 'LUNES' | 'MARTES' | 'MIERCOLES' | 'JUEVES' | 'VIERNES' | 'SABADO'; 
-export enum DayNumber {
-    DOMINGO = 1, 
-    LUNES = 2, 
-    MARTES = 3, 
-    MIERCOLES = 4, 
-    JUEVES = 5, 
-    VIERNES = 6, 
-    SABADO = 7
-}
+// --- TASKS ---
+
+export type ReminderType = 'date' | 'interval' | 'daily' | 'weekly';
+
 export interface IReminder {
-    id: string
-    type: ReminderType;
-    interval?: number
-    timestamp?: string; // ISO 8601 execution time -> to save either the whole date or the hour and minute for weekly and daily types
-    unit?: IntervalUnit ;
-    day?: Day;
-    days?: Day[];
-    title: string; 
-    message: string;
-    sound: string; // Notification sound
-}
-
-export interface ITask {
     id: string;
+    type: ReminderType;
+    timestamp?: string; // ISO 8601 (para 'date'), o solo hora/minuto para daily/weekly
+    interval?: number; // Para 'interval'
+    unit?: IntervalUnit; // Para 'interval'
+    daysOfWeek?: DayNumber[]; // Para 'weekly'
     title: string;
-    description: string; // Markdown
-    dueDate: string | null; // ISO
-    tags: string[];
-    isCompleted: boolean;
-    reminders: IReminder[];
-    createdAt: string, 
-    updatedAt: string
+    message: string;
+    sound?: string;
 }
 
-export type HabitRecurrenceType = "daily" | "weekly" | "custom"
+// --- HABITS ---
+
+export type HabitRecurrenceType = "daily" | "weekly";
 
 export interface IHabitRecurrence {
-    type: HabitRecurrenceType
-    daysOfWeek?: number[]; // Solo si type === 'weekly'. Array de números (0=Domingo, 1=Lunes, ..., 6=Sábado)
-    interval?: number; // Para 'custom', ej: 2 para "cada 2 días"
-    unit?: 'day' | 'hour'; // Para 'custom', la unidad del intervalo
-    time?: string
+    type: HabitRecurrenceType;
+    daysOfWeek?: DayNumber[]; // Solo si type === 'weekly'
+    time: string; // "HH:mm" formato 24h
 }
 
+// Simplificado: solo dos recordatorios posibles para hábitos
+export interface IHabitReminderConfig {
+    enabled: boolean;
+    minutesBefore?: number; // Para "antes"
+    snoozeMinutes?: number; // Repetir si no se marca como hecho
+    message?: string;
+}
 
 export interface IHabit {
     id: string;
     title: string;
-    description: string; // Contenido Markdown
+    description: string;
     tags: string[];
-    recurrence: IHabitRecurrence | null;  // Define cuándo se "espera" que se realice el hábito
-    // STREAK
-    currentStreak: number; // Racha actual de días consecutivos completados
-    bestStreak: number;    // Mejor racha histórica
-    lastCompletedDate: string | null; // Fecha (ISO 8601, solo YYYY-MM-DD) de la última vez que se marcó como completado
-    completionHistory: string[]; // Array de fechas (ISO 8601, solo YYYY-MM-DD) cuando el hábito fue completado
-    createdAt: string; // Fecha de creación (ISO 8601)
-    updatedAt: string; // Fecha de última actualización (ISO 8601)
+    recurrence: IHabitRecurrence;
+    reminderOnTime: IHabitReminderConfig;   // Notificación puntual
+    reminderBefore?: IHabitReminderConfig;  // Notificación antes (opcional)
+    currentStreak: number;
+    bestStreak: number;
+    lastCompletedDate: string | null; // YYYY-MM-DD
+    completionHistory: string[]; // YYYY-MM-DD[]
+    createdAt: string;
+    updatedAt: string;
 }
 
-export type IPendingItem = (ITask | IHabit) & {
-    sortKey: string; // Para ordenar la lista (fecha/hora más próxima primero)
-    itemType: 'task' | 'habit'; // Para saber qué tipo de ítem es al renderizarlo en la lista
-    isDueToday?: boolean; // Para hábitos, indica si está debido hoy (útil para la interfaz)
-};
+// --- APP STATE (solo para tipado, no para guardar todo junto) ---
 
-
-// ESTADO GLOBAL
-
-
-export interface IAppState {
-    tasks: ITask[];   // Un array de todas tus tareas
-    habits: IHabit[]; // Un array de todos tus hábitos
-    settings: {       // Tus configuraciones de la app
-        theme: 'light' | 'dark';
-        enableNotifications: boolean;
-        defaultNotificationSound: string;
-    };
+export interface ISettingsState {
+    theme: 'light' | 'dark';
+    enableNotifications: boolean;
+    defaultNotificationSound: string;
 }
 
-export const initialAppState: IAppState = {
-    tasks: [],
-    habits: [],
-    settings: {
-        theme: 'light',
-        enableNotifications: true,
-        defaultNotificationSound: 'default',
-    },
-};
+// Para separar en AsyncStorage:
+export type TasksState = ITask[];
+export type HabitsState = IHabit[];
+export type SettingsState = ISettingsState;
+
+// --- TASKS ---
+export interface ITask {
+    id: string;
+    title: string;
+    description: string;
+    dueDate: string | null; // ISO
+    tags: string[];
+    isCompleted: boolean;
+    reminders: IReminder[];
+    createdAt: string;
+    updatedAt: string;
+}

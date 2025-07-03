@@ -40,7 +40,8 @@
         "android": {
           "useLegacyPackaging": true
         }
-      }]
+      }], 
+      "expo-document-picker"
       
     ],
     "experiments": {

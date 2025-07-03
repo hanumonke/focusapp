@@ -1,14 +1,14 @@
+import { loadHabits, saveHabits } from '@/db/storage';
+import { HabitsState, IHabit } from '@/db/types';
+import { cancelNotificationsForItem } from '@/utils/notificationService';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { loadAppState, saveAppState } from '@/db/storage';
-import { IAppState, IHabit, initialAppState } from '@/db/types';
-import { router, useFocusEffect } from 'expo-router';
 import { FlatList } from 'react-native-gesture-handler';
-import { Button, Card, Searchbar, Text, useTheme, IconButton, Avatar, Chip, Badge } from 'react-native-paper';
-import { cancelNotificationsForItem } from '@/utils/notificationService';
+import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
 const Habits = () => {
-  const [appState, setAppState] = useState<IAppState>(initialAppState);
+  const [habits, setHabits] = useState<HabitsState>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -16,8 +16,8 @@ const Habits = () => {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const loadedState = await loadAppState();
-    setAppState(loadedState);
+    const loadedHabits = await loadHabits();
+    setHabits(loadedHabits);
     setLoading(false);
   }, []);
 
@@ -44,10 +44,9 @@ const Habits = () => {
             onPress: async () => {
               setLoading(true);
               await cancelNotificationsForItem(id);
-              const updatedHabits = appState.habits.filter(habit => habit.id !== id);
-              const updatedState = { ...appState, habits: updatedHabits };
-              await saveAppState(updatedState);
-              setAppState(updatedState);
+              const updatedHabits = habits.filter(habit => habit.id !== id);
+              await saveHabits(updatedHabits);
+              setHabits(updatedHabits);
               setLoading(false);
             }
           }
@@ -66,9 +65,9 @@ const Habits = () => {
 
   const getRecurrenceText = (recurrence: IHabit['recurrence']) => {
     if (!recurrence) return 'No schedule';
-    
+
     const time = recurrence.time 
-      ? new Date(recurrence.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      ? recurrence.time
       : 'No time set';
 
     switch (recurrence.type) {
@@ -78,14 +77,12 @@ const Habits = () => {
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const selectedDays = recurrence.daysOfWeek?.map(dayIndex => days[dayIndex]).join(', ');
         return `Weekly on ${selectedDays || 'no days'} at ${time}`;
-      case 'custom':
-        return `Every ${recurrence.interval} ${recurrence.unit}(s) at ${time}`;
       default:
         return 'Custom schedule';
     }
   };
 
-  const filteredHabits = appState.habits.filter(habit =>
+  const filteredHabits = habits.filter(habit =>
     habit.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -103,10 +100,12 @@ const Habits = () => {
       switch (item.recurrence?.type) {
         case 'daily': return 'calendar-today';
         case 'weekly': return 'calendar-week';
-        case 'custom': return 'calendar-sync';
         default: return 'calendar-blank';
       }
     };
+
+    // Show reminders indicator if any reminder is enabled
+    const hasReminders = item.reminderOnTime?.enabled || item.reminderBefore?.enabled;
 
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
@@ -125,6 +124,14 @@ const Habits = () => {
                 {getRecurrenceText(item.recurrence)}
               </Text>
             </View>
+            {hasReminders && (
+              <View style={styles.remindersIndicator}>
+                <IconButton icon="bell" size={20} iconColor={theme.colors.primary} />
+                <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+                  Reminders
+                </Text>
+              </View>
+            )}
           </View>
 
           {item.description && (

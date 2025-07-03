@@ -79,7 +79,7 @@ const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Selec
           validRange={{startDate: new Date(), endDate: limitDate ? new Date(limitDate) : undefined }}
           presentationStyle='pageSheet'
           mode='outlined'
-          locale="en" // Set locale for language of picker
+          locale="es" // Set locale for language of picker
           value={value ? new Date(value) : undefined} // Pass Date object or undefined
           onChange={onDateChange}
           inputMode="start" // Opens calendar on focus

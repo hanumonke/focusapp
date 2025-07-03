@@ -1,6 +1,10 @@
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { es, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('es', es)
+
+
 export default function RootLayout() {
 
   return (
@@ -16,6 +20,7 @@ export default function RootLayout() {
               title: 'Pendientes'
             }}
           />
+
 
           <Drawer.Screen
           

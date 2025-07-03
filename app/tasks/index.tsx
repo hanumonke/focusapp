@@ -1,14 +1,14 @@
+import { loadTasks, saveTasks } from '@/db/storage';
+import { ITask, TasksState } from '@/db/types';
+import { cancelNotificationsForItem } from '@/utils/notificationService';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { loadAppState, saveAppState } from '@/db/storage';
-import { IAppState, ITask, initialAppState } from '@/db/types';
-import { router, useFocusEffect } from 'expo-router';
 import { FlatList } from 'react-native-gesture-handler';
-import { Button, Card, Searchbar, Text, useTheme, IconButton, Avatar, Chip, Badge } from 'react-native-paper';
-import { cancelNotificationsForItem } from '@/utils/notificationService';
+import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
 const Tasks = () => {
-  const [appState, setAppState] = useState<IAppState>(initialAppState);
+  const [tasks, setTasks] = useState<TasksState>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -16,8 +16,8 @@ const Tasks = () => {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const loadedState = await loadAppState();
-    setAppState(loadedState);
+    const loadedTasks = await loadTasks();
+    setTasks(loadedTasks);
     setLoading(false);
   }, []);
 
@@ -42,11 +42,10 @@ const Tasks = () => {
             text: "Delete",
             style: "destructive",
             onPress: async () => {
-            await cancelNotificationsForItem(id);
-              const updatedTasks = appState.tasks.filter(task => task.id !== id);
-              const updatedState = { ...appState, tasks: updatedTasks };
-              await saveAppState(updatedState);
-              setAppState(updatedState);
+              await cancelNotificationsForItem(id);
+              const updatedTasks = tasks.filter(task => task.id !== id);
+              await saveTasks(updatedTasks);
+              setTasks(updatedTasks);
             }
           }
         ]
@@ -57,12 +56,11 @@ const Tasks = () => {
   const handleDetails = (id: string) => router.push(`/tasks/${id}`);
 
   const toggleTaskCompletion = async (id: string) => {
-    const updatedTasks = appState.tasks.map(task => 
+    const updatedTasks = tasks.map(task =>
       task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
     );
-    const updatedState = { ...appState, tasks: updatedTasks };
-    await saveAppState(updatedState);
-    setAppState(updatedState);
+    await saveTasks(updatedTasks);
+    setTasks(updatedTasks);
   };
 
   useFocusEffect(
@@ -71,9 +69,13 @@ const Tasks = () => {
     }, [loadData])
   );
 
-  const filteredTasks = appState.tasks.filter(task =>
+  const filteredTasks = tasks.filter(task =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  console.log('tasks:', tasks);
+  console.log('filteredTasks:', filteredTasks);
+  console.log('searchQuery:', searchQuery);
 
   if (loading) {
     return (
@@ -85,9 +87,9 @@ const Tasks = () => {
   }
 
   const renderTaskItem = ({ item }: { item: ITask }) => {
-    const dueDateText = item.dueDate 
-      ? new Date(item.dueDate).toLocaleDateString([], { 
-          month: 'short', 
+    const dueDateText = item.dueDate
+      ? new Date(item.dueDate).toLocaleDateString([], {
+          month: 'short',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
@@ -98,19 +100,19 @@ const Tasks = () => {
       <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
         <Card.Content style={styles.cardContent}>
           <View style={styles.taskHeader}>
-            <Avatar.Icon 
-              size={44} 
-              icon={item.isCompleted ? 'check' : 'format-list-checks'} 
-              style={{ 
-                backgroundColor: item.isCompleted 
-                  ? theme.colors.primaryContainer 
-                  : theme.colors.surfaceVariant 
+            <Avatar.Icon
+              size={44}
+              icon={item.isCompleted ? 'check' : 'format-list-checks'}
+              style={{
+                backgroundColor: item.isCompleted
+                  ? theme.colors.primaryContainer
+                  : theme.colors.surfaceVariant
               }}
             />
             <View style={styles.taskInfo}>
-              <Text 
-                variant="titleMedium" 
-                numberOfLines={1} 
+              <Text
+                variant="titleMedium"
+                numberOfLines={1}
                 style={[
                   styles.taskTitle,
                   item.isCompleted && styles.completedTask
@@ -125,9 +127,9 @@ const Tasks = () => {
           </View>
 
           {item.description && (
-            <Text 
-              variant="bodyMedium" 
-              numberOfLines={2} 
+            <Text
+              variant="bodyMedium"
+              numberOfLines={2}
               style={styles.taskDescription}
             >
               {item.description}
@@ -141,9 +143,9 @@ const Tasks = () => {
               </Text>
               <View style={styles.tagsContainer}>
                 {item.tags.map((tag, idx) => (
-                  <Chip 
-                    key={idx} 
-                    mode="outlined" 
+                  <Chip
+                    key={idx}
+                    mode="outlined"
                     style={styles.tag}
                     textStyle={styles.tagText}
                   >
@@ -167,13 +169,13 @@ const Tasks = () => {
                 </Text>
               </View>
             )}
-            
-            <Badge 
-              size={24} 
+
+            <Badge
+              size={24}
               style={[
                 styles.statusBadge,
-                item.isCompleted 
-                  ? { backgroundColor: theme.colors.primary } 
+                item.isCompleted
+                  ? { backgroundColor: theme.colors.primary }
                   : { backgroundColor: theme.colors.error }
               ]}
             >
@@ -182,16 +184,16 @@ const Tasks = () => {
           </View>
         </Card.Content>
         <Card.Actions style={styles.cardActions}>
-          <Button 
-            mode="text" 
+          <Button
+            mode="text"
             onPress={() => toggleTaskCompletion(item.id)}
             textColor={theme.colors.primary}
             compact
           >
             {item.isCompleted ? 'Undo' : 'Complete'}
           </Button>
-          <Button 
-            mode="text" 
+          <Button
+            mode="text"
             onPress={() => handleDetails(item.id)}
             textColor={theme.colors.primary}
             compact
@@ -219,9 +221,9 @@ const Tasks = () => {
         inputStyle={{ color: theme.colors.onSurface }}
       />
 
-      <Button 
-        mode="contained" 
-        onPress={handleCreateTask} 
+      <Button
+        mode="contained"
+        onPress={handleCreateTask}
         style={styles.addButton}
         icon="plus"
         contentStyle={styles.addButtonContent}
@@ -248,8 +250,8 @@ const Tasks = () => {
           <Text variant="titleMedium" style={styles.emptyText}>
             No tasks yet
           </Text>
-          <Button 
-            mode="contained" 
+          <Button
+            mode="contained"
             onPress={handleCreateTask}
             style={styles.emptyButton}
           >

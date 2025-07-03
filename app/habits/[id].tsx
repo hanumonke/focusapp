@@ -1,11 +1,11 @@
 import CustomHeader from '@/components/CustomHeader';
-import { loadAppState } from '@/db/storage';
+import { loadHabits } from '@/db/storage';
 import { IHabit, IReminder } from '@/db/types';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
-import { ActivityIndicator, Card, Chip, Divider, IconButton, Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Card, Chip, Divider, Text } from 'react-native-paper';
 
 const Details = () => {
   const { id } = useLocalSearchParams();
@@ -18,8 +18,8 @@ const Details = () => {
     useCallback(() => {
       const fetchHabit = async () => {
         setLoading(true);
-        const appState = await loadAppState();
-        const found = appState.habits.find(t => t.id === id);
+        const habitsState = await loadHabits();
+        const found = habitsState.find(t => t.id === id);
         setHabit(found || null);
         setLoading(false);
       };
@@ -45,8 +45,7 @@ const Details = () => {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const selectedDays = recurrence.daysOfWeek?.map(dayIndex => days[dayIndex]).join(', ');
         return `Weekly on ${selectedDays || 'no days'} at ${time}`;
-      case 'custom':
-        return `Every ${recurrence.interval} ${recurrence.unit}(s) at ${time}`;
+
       default:
         return 'Custom recurrence';
     }
@@ -72,45 +71,38 @@ const Details = () => {
     );
   };
 
-  const renderReminderCard = (reminder: IReminder, index: number) => {
-    let details = '';
-    let icon = 'bell';
 
-    switch (reminder.type) {
-      case 'daily':
-        details = `Daily at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
-        icon = 'calendar-today';
-        break;
-      case 'weekly':
-        details = `Weekly on ${reminder.day} at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
-        icon = 'calendar-week';
-        break;
-      case 'interval':
-        details = `Every ${reminder.interval} ${reminder.unit?.toLowerCase()}s`;
-        icon = 'timer';
-        break;
-      case 'date':
-        details = `On ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleString() : 'no date'}`;
-        icon = 'calendar';
-        break;
-    }
 
-    return (
-      <Card key={index} style={styles.reminderCard}>
-        <Card.Content>
-          <View style={styles.reminderHeader}>
-            {/* @ts-ignore */}
-            <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
-            <Text variant="titleMedium" style={styles.reminderTitle}>
-              {reminder.type.charAt(0).toUpperCase() + reminder.type.slice(1)} Reminder
-            </Text>
-          </View>
-          <Text style={styles.reminderMessage}>{reminder.message}</Text>
-          <Text style={styles.reminderDetails}>{details}</Text>
-        </Card.Content>
-      </Card>
-    );
-  };
+  
+
+  // Helper to render a single reminder config
+const renderHabitReminder = (
+  config: IHabit['reminderOnTime'] | IHabit['reminderBefore'],
+  type: 'onTime' | 'before'
+) => {
+  if (!config || !config.enabled) return null;
+
+  let icon = type === 'onTime' ? 'bell' : 'bell-alert';
+  let label = type === 'onTime' ? 'At scheduled time' : `Before (${config.minutesBefore} min)`;
+  let snooze = config.snoozeMinutes ? `Snooze: ${config.snoozeMinutes} min` : '';
+  let message = config.message || (type === 'onTime' ? 'It\'s time for your habit!' : 'Reminder before habit time');
+
+  return (
+    <Card style={styles.reminderCard}>
+      <Card.Content>
+        <View style={styles.reminderHeader}>
+          {/* @ts-ignore */}
+          <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
+          <Text variant="titleMedium" style={styles.reminderTitle}>
+            {label}
+          </Text>
+        </View>
+        <Text style={styles.reminderMessage}>{message}</Text>
+        {snooze ? <Text style={styles.reminderDetails}>{snooze}</Text> : null}
+      </Card.Content>
+    </Card>
+  );
+};
 
   if (loading) {
     return (
@@ -189,17 +181,10 @@ const Details = () => {
         </Card>
 
         {/* Reminders Section */}
-        {habit.reminders && habit.reminders.length > 0 && (
-          <>
-            <Text variant="titleLarge" style={styles.remindersTitle}>
-              Reminders ({habit.reminders.length})
-            </Text>
-            {habit.reminders.map((reminder, index) => renderReminderCard(reminder, index))}
-          </>
-        )}
-
-        {/* Empty State for Reminders */}
-        {(!habit.reminders || habit.reminders.length === 0) && (
+        <Text variant="titleLarge" style={styles.remindersTitle}>
+          Reminders
+        </Text>
+        {(!habit.reminderOnTime?.enabled && !habit.reminderBefore?.enabled) && (
           <Card style={styles.emptyCard}>
             <Card.Content style={styles.emptyContent}>
               <MaterialCommunityIcons name="bell-off" size={40} color="#888" />
@@ -209,6 +194,10 @@ const Details = () => {
             </Card.Content>
           </Card>
         )}
+        {renderHabitReminder(habit.reminderOnTime, 'onTime')}
+        {renderHabitReminder(habit.reminderBefore, 'before')}
+
+       
       </ScrollView>
     </>
   );
