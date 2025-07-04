@@ -1,3 +1,4 @@
+import PointsBadge from '@/components/PointsBadge';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MD3LightTheme, PaperProvider } from 'react-native-paper';
@@ -12,7 +13,11 @@ export default function RootLayout() {
     <PaperProvider theme={MD3LightTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
 
-        <Drawer>
+        <Drawer
+          screenOptions={{
+            headerRight: () => <PointsBadge />,
+          }}
+        >
           <Drawer.Screen
             name='index'
             options={{

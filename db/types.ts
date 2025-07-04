@@ -73,6 +73,8 @@ export type HabitsState = IHabit[];
 export type SettingsState = ISettingsState;
 
 // --- TASKS ---
+export type TaskDifficulty = 'easy' | 'medium' | 'hard';
+
 export interface ITask {
     id: string;
     title: string;
@@ -83,4 +85,5 @@ export interface ITask {
     reminders: IReminder[];
     createdAt: string;
     updatedAt: string;
+    difficulty: TaskDifficulty;
 }

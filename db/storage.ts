@@ -76,6 +76,18 @@ export const saveSettings = async (settings: SettingsState): Promise<void> => {
   }
 };
 
+// --- POINTS ---
+export const POINTS_KEY = '@Fokus:Points';
+
+export const loadPoints = async (): Promise<number> => {
+  const value = await AsyncStorage.getItem(POINTS_KEY);
+  return value ? Number(value) : 0;
+};
+
+export const savePoints = async (points: number) => {
+  await AsyncStorage.setItem(POINTS_KEY, points.toString());
+};
+
 // --- LIMPIAR TODO (para pruebas) ---
 export const clearAllData = async (): Promise<void> => {
   try {

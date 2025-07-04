@@ -9,14 +9,13 @@ import RemindersInput from '@/components/RemindersInput';
 import TagsInput from '@/components/TagsInput';
 import { loadSettings, loadTasks, saveTasks } from '@/db/storage';
 import { IReminder, ITask } from '@/db/types';
-import { scheduleReminders} from '@/utils/notificationService';
-import { loadOptions } from '@babel/core';
+import { scheduleReminders } from '@/utils/notificationService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from "react-hook-form";
 import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button, Divider, Text, TextInput, useTheme } from 'react-native-paper';
+import { Button, Divider, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
 import uuid from 'react-native-uuid';
 
 
@@ -40,6 +39,7 @@ const CreateTask = () => {
       tags: [],
       reminders: [],
       isCompleted: false,
+      difficulty: 'easy'
     }
   });
 
@@ -201,6 +201,25 @@ const CreateTask = () => {
                 onChange={field.onChange} 
                 title={'Reminders'} 
                 dueDate={watch('dueDate')}
+              />
+            )}
+          />
+
+          {/* Difficulty Level */}
+          <Controller
+            control={control}
+            name="difficulty"
+            defaultValue="medium"
+            render={({ field }) => (
+              <SegmentedButtons
+                value={field.value}
+                onValueChange={field.onChange}
+                buttons={[
+                  { value: 'easy', label: 'Easy' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'hard', label: 'Hard' },
+                ]}
+                style={{ marginBottom: 16 }}
               />
             )}
           />

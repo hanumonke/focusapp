@@ -1,4 +1,4 @@
-import { loadTasks, saveTasks } from '@/db/storage';
+import { loadPoints, loadTasks, savePoints, saveTasks } from '@/db/storage';
 import { ITask, TasksState } from '@/db/types';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
@@ -6,6 +6,12 @@ import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
+
+const difficultyPoints: Record<'easy' | 'medium' | 'hard', number> = {
+  easy: 10,
+  medium: 20,
+  hard: 40,
+};
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<TasksState>([]);
@@ -61,6 +67,14 @@ const Tasks = () => {
     );
     await saveTasks(updatedTasks);
     setTasks(updatedTasks);
+
+    // Sumar puntos solo si la tarea se acaba de completar
+    const completedTask = tasks.find(task => task.id === id);
+    if (completedTask && !completedTask.isCompleted) {
+      const currentPoints = await loadPoints();
+      const add = difficultyPoints[completedTask.difficulty || 'medium'];
+      await savePoints(currentPoints + add);
+    }
   };
 
   useFocusEffect(
