@@ -1,7 +1,7 @@
 // src/app/pendientes/index.tsx
-import { loadHabits, loadTasks, saveTasks } from '@/db/storage';
+import { loadHabits, loadTasks, saveHabits, saveTasks } from '@/db/storage';
 import { IHabit, ITask } from '@/db/types';
-import { formatDueDate, getRecurrenceText } from '@/utils/helpers';
+import { formatDueDate } from '@/utils/helpers';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -68,8 +68,32 @@ const Pendientes = () => {
     if (overdueTasks.length === 1) setOverdueModalVisible(false);
   };
 
+  const handleCompleteHabit = async (habitId: string) => {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const updatedHabits = habits.map(habit => {
+      if (habit.id !== habitId) return habit;
+
+      const lastCompleted = habit.lastCompletedDate?.slice(0, 10);
+      if (lastCompleted === today) return habit; // Ya completado hoy
+
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      const newStreak = lastCompleted === yesterday ? habit.currentStreak + 1 : 1;
+
+      return {
+        ...habit,
+        currentStreak: newStreak,
+        bestStreak: Math.max(habit.bestStreak, newStreak),
+        lastCompletedDate: new Date().toISOString(),
+      };
+    });
+
+    await saveHabits(updatedHabits);
+    setHabits(updatedHabits);
+  };
+
   const getPendingItems = (): IPendingItem[] => {
-    const today = new Date().setHours(0, 0, 0, 0);
+    const todayStr = new Date().toISOString().slice(0, 10);
 
     return [
       ...tasks
@@ -78,27 +102,28 @@ const Pendientes = () => {
           ...task,
           sortKey: task.dueDate || new Date().toISOString(),
           itemType: 'task' as const,
-          isDueToday: !!task.dueDate && new Date(task.dueDate).setHours(0, 0, 0, 0) <= today
+          isDueToday: !!task.dueDate && new Date(task.dueDate).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0)
         })),
-      ...habits.map(habit => ({
-        ...habit,
-        sortKey: habit.recurrence?.time || new Date().toISOString(),
-        itemType: 'habit' as const,
-        isDueToday: !habit.lastCompletedDate ||
-          new Date(habit.lastCompletedDate).setHours(0, 0, 0, 0) < today
-      }))
+      ...habits
+        .filter(habit => !habit.lastCompletedDate || habit.lastCompletedDate.slice(0, 10) !== todayStr) // <-- SOLO los no completados hoy
+        .map(habit => ({
+          ...habit,
+          sortKey: habit.recurrence?.time || new Date().toISOString(),
+          itemType: 'habit' as const,
+          isDueToday: true // Ya filtraste, así que siempre true
+        }))
     ].sort((a, b) => new Date(a.sortKey).getTime() - new Date(b.sortKey).getTime());
   };
 
   const renderItem = ({ item }: { item: IPendingItem }) => (
-    <PendingItem item={item} theme={theme} />
+    <PendingItem item={item} theme={theme} onCompleteHabit={handleCompleteHabit} />
   );
 
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
-        <Text>Loading items...</Text>
+        <Text>Cargando...</Text>
       </View>
     );
   }
@@ -115,22 +140,22 @@ const Pendientes = () => {
           onDismiss={() => setOverdueModalVisible(false)}
           contentContainerStyle={styles.modal}
         >
-          <Text variant="titleLarge" style={styles.modalTitle}>Overdue Tasks</Text>
+          <Text variant="titleLarge" style={styles.modalTitle}>Tareas vencidas</Text>
 
           {overdueTasks.map(task => (
             <Card key={task.id} style={styles.taskCard}>
               <Card.Content>
                 <Text variant="bodyLarge">{task.title}</Text>
                 <Text variant="bodySmall">
-                  Due: {formatDueDate(task.dueDate)}
+                  Vence: {formatDueDate(task.dueDate)}
                 </Text>
               </Card.Content>
               <Card.Actions>
                 <Button onPress={() => handleOverdueAction(task.id, 'delete')}>
-                  Delete
+                  Eliminar
                 </Button>
                 <Button mode="contained" onPress={() => handleOverdueAction(task.id, 'complete')}>
-                  Complete
+                  Completar
                 </Button>
               </Card.Actions>
             </Card>
@@ -141,13 +166,13 @@ const Pendientes = () => {
             onPress={() => setOverdueModalVisible(false)}
             style={styles.modalButton}
           >
-            Close
+            Cerrar
           </Button>
         </Modal>
       </Portal>
 
       <Searchbar
-        placeholder="Search..."
+        placeholder="Buscar..."
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
@@ -162,7 +187,7 @@ const Pendientes = () => {
         onRefresh={handleRefresh}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text variant="titleMedium">No pending items</Text>
+            <Text variant="titleMedium">No hay tareas o habitos pendientes</Text>
           </View>
         }
       />
@@ -171,8 +196,15 @@ const Pendientes = () => {
 };
 
 // Simplified item component
-const PendingItem = ({ item, theme }: { item: IPendingItem, theme: any }) => {
+type PendingItemProps = {
+  item: IPendingItem;
+  theme: any;
+  onCompleteHabit: (habitId: string) => void;
+};
+
+const PendingItem = ({ item, theme, onCompleteHabit }: PendingItemProps) => {
   const isTask = item.itemType === 'task';
+  const isHabit = item.itemType === 'habit';
 
   return (
     <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
@@ -192,13 +224,13 @@ const PendingItem = ({ item, theme }: { item: IPendingItem, theme: any }) => {
               {item.title}
             </Text>
             <Text variant="bodySmall" style={styles.secondaryText}>
-              {isTask
-                ? formatDueDate((item as ITask).dueDate)
-                : getRecurrenceText((item as IHabit).recurrence)}
+              {isTask 
+                ? `${new Date(item.dueDate!).toDateString()}`
+                : `${item.recurrence.type.toUpperCase()} at ${item.recurrence.time}`}
             </Text>
           </View>
           <Chip mode="outlined" style={styles.chip}>
-            {isTask ? 'Task' : 'Habit'}
+            {isTask ? 'Tarea' : 'Hábito'}
           </Chip>
         </View>
 
@@ -219,7 +251,7 @@ const PendingItem = ({ item, theme }: { item: IPendingItem, theme: any }) => {
         )}
 
         {item.isDueToday && (
-          <Badge size={24} style={styles.badge}>Due Today</Badge>
+          <Badge size={24} style={styles.badge}>Vence hoy</Badge>
         )}
       </Card.Content>
       <Card.Actions>
@@ -227,8 +259,20 @@ const PendingItem = ({ item, theme }: { item: IPendingItem, theme: any }) => {
           mode="text"
           onPress={() => router.push(`/${isTask ? 'tasks' : 'habits'}/${item.id}`)}
         >
-          Details
+          Detalles
         </Button>
+        {/* Solo para hábitos pendientes de hoy */}
+        {isHabit && item.isDueToday && (
+          <Button
+            mode={item.lastCompletedDate?.slice(0, 10) === new Date().toISOString().slice(0, 10) ? "contained" : "outlined"}
+            onPress={() => onCompleteHabit(item.id)}
+            disabled={item.lastCompletedDate?.slice(0, 10) === new Date().toISOString().slice(0, 10)}
+            icon="check"
+            compact
+          >
+            {item.lastCompletedDate?.slice(0, 10) === new Date().toISOString().slice(0, 10) ? "Hecho" : "Completado"}
+          </Button>
+        )}
       </Card.Actions>
     </Card>
   );

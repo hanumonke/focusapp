@@ -54,8 +54,8 @@ export default function RootLayout() {
           <Drawer.Screen
             name="habits/index" // Corresponde al directorio 'tasks'
             options={{
-              drawerLabel: 'Mis Habitos',
-              title: 'Mis Habitos', // Título de la cabecera cuando esta pantalla está activa
+              drawerLabel: 'Mis Hábitos',
+              title: 'Mis Hábitos', // Título de la cabecera cuando esta pantalla está activa
             }}
           />
           <Drawer.Screen

@@ -23,16 +23,16 @@ const initialNewReminderState = {
 };
 
 const daysInOrder = [
-    { label: 'Sun', value: 0 as DayNumber },
-    { label: 'Mon', value: 1 as DayNumber },
-    { label: 'Tue', value: 2 as DayNumber },
-    { label: 'Wed', value: 3 as DayNumber },
-    { label: 'Thu', value: 4 as DayNumber },
-    { label: 'Fri', value: 5 as DayNumber },
-    { label: 'Sat', value: 6 as DayNumber },
+    { label: 'Dom', value: 0 as DayNumber },
+    { label: 'Lun', value: 1 as DayNumber },
+    { label: 'Mar', value: 2 as DayNumber },
+    { label: 'Mié', value: 3 as DayNumber },
+    { label: 'Jue', value: 4 as DayNumber },
+    { label: 'Vie', value: 5 as DayNumber },
+    { label: 'Sáb', value: 6 as DayNumber },
 ];
 
-const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label = "Reminders", title, dueDate }) => {
+const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label = "Recordatorios", title, dueDate }) => {
     const [newReminderData, setNewReminderData] = useState(initialNewReminderState);
     const { message, type, timestamp, daysOfWeek } = newReminderData;
     const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
@@ -62,7 +62,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
 
     const handleAddReminder = () => {
         if (!message.trim()) {
-            Alert.alert('Validation Error', 'Reminder message cannot be empty.');
+            Alert.alert('Error', 'El mensaje es obligatorio');
             return;
         }
 
@@ -71,11 +71,11 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
         switch (type) {
             case 'date':
                 if (!timestamp) {
-                    Alert.alert('Validation Error', 'You must select a date and time for the one-time reminder.');
+                    Alert.alert('Error', ' Debes seleccionar una fecha y hora para el recordatorio único');
                     return;
                 }
                 if (dueDate && timestamp && new Date(timestamp) > new Date(dueDate)) {
-                    Alert.alert('Validation Error', 'Reminder time cannot be after the task due date.');
+                    Alert.alert('Error', 'La hora del recordatorio no puede ser posterior a la fecha de vencimiento de la tarea');
                     return;
                 }
                 validatedReminder = {
@@ -89,11 +89,11 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 break;
             case 'weekly':
                 if (!timestamp) {
-                    Alert.alert('Validation Error', 'You must select a time for the weekly reminder.');
+                    Alert.alert('Error', 'Debes seleccionar una hora para el recordatorio semanal.');
                     return;
                 }
                 if (!daysOfWeek || daysOfWeek.length === 0) {
-                    Alert.alert('Validation Error', 'Select at least one day for the weekly reminder.');
+                    Alert.alert('Error', 'Selecciona al menos un día para el recordatorio semanal');
                     return;
                 }
                 validatedReminder = {
@@ -108,7 +108,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 break;
             case 'daily':
                 if (!timestamp) {
-                    Alert.alert('Validation Error', 'You must select a time for the daily reminder.');
+                    Alert.alert('Error', 'Debes seleccionar una hora para el recordatorio diario.');
                     return;
                 }
                 validatedReminder = {
@@ -121,7 +121,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 };
                 break;
             default:
-                Alert.alert('Validation Error', 'Invalid reminder type.');
+                Alert.alert('Error', 'Tipo de recordatorio inválido.');
                 return;
         }
 
@@ -129,7 +129,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
             onChange([...value, validatedReminder]);
             clearInputs();
         } else if (validatedReminder) {
-            Alert.alert('Duplicate Reminder', 'This reminder has already been added.');
+            Alert.alert('Recordatorio duplicado', 'Este recordatorio ya ha sido añadido.');
         }
     };
 

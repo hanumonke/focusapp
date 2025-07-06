@@ -74,6 +74,9 @@ export type SettingsState = ISettingsState;
 
 // --- TASKS ---
 export type TaskDifficulty = 'easy' | 'medium' | 'hard';
+export const TaskDifficultySpa = {
+    'easy': 'fácil', "medium": "medio", "hard": "difícil"
+}
 
 export interface ITask {
     id: string;

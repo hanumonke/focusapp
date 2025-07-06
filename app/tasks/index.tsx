@@ -40,12 +40,12 @@ const Tasks = () => {
   const handleDeleteTask = async (id: string) => {
     import('react-native').then(({ Alert }) => {
       Alert.alert(
-        "Delete Task",
-        "Are you sure you want to delete this task?",
+        "Eliminar tarea",
+        "¿Estás seguro que quieres eliminar esta tarea?",
         [
-          { text: "Cancel", style: "cancel" },
+          { text: "Cancelar", style: "cancel" },
           {
-            text: "Delete",
+            text: "Eliminar",
             style: "destructive",
             onPress: async () => {
               await cancelNotificationsForItem(id);
@@ -95,7 +95,7 @@ const Tasks = () => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
-        <Text>Loading tasks...</Text>
+        <Text>Cargando tareas...</Text>
       </View>
     );
   }
@@ -108,7 +108,7 @@ const Tasks = () => {
           hour: '2-digit',
           minute: '2-digit'
         })
-      : 'No due date';
+      : 'Sin fecha límite';
 
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
@@ -153,7 +153,7 @@ const Tasks = () => {
           {item.tags && item.tags.length > 0 && (
             <View style={styles.tagsSection}>
               <Text variant="labelSmall" style={styles.sectionLabel}>
-                TAGS
+                ETIQUETAS
               </Text>
               <View style={styles.tagsContainer}>
                 {item.tags.map((tag, idx) => (
@@ -193,7 +193,7 @@ const Tasks = () => {
                   : { backgroundColor: theme.colors.error }
               ]}
             >
-              {item.isCompleted ? 'Done' : 'Pending'}
+              {item.isCompleted ? 'Hecho' : 'Pendiente'}
             </Badge>
           </View>
         </Card.Content>
@@ -204,7 +204,7 @@ const Tasks = () => {
             textColor={theme.colors.primary}
             compact
           >
-            {item.isCompleted ? 'Undo' : 'Complete'}
+            {item.isCompleted ? 'Deshacer' : 'Completar'}
           </Button>
           <Button
             mode="text"
@@ -227,7 +227,7 @@ const Tasks = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Searchbar
-        placeholder="Search tasks..."
+        placeholder="Buscar tareas..."
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
@@ -242,7 +242,7 @@ const Tasks = () => {
         icon="plus"
         contentStyle={styles.addButtonContent}
       >
-        Add Task
+        Agregar Tareas
       </Button>
 
       {filteredTasks.length !== 0 ? (
@@ -255,21 +255,21 @@ const Tasks = () => {
           onRefresh={handleRefresh}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text variant="titleMedium">No tasks match your search</Text>
+              <Text variant="titleMedium">Sin coincidencias</Text>
             </View>
           }
         />
       ) : (
         <View style={styles.emptyContainer}>
           <Text variant="titleMedium" style={styles.emptyText}>
-            No tasks yet
+            No hay tareas todavía
           </Text>
           <Button
             mode="contained"
             onPress={handleCreateTask}
             style={styles.emptyButton}
           >
-            Create your first task
+            Crea tu primera tarea
           </Button>
         </View>
       )}

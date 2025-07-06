@@ -36,7 +36,7 @@ const TaskDetails = () => {
   if (!task) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Task not found.</Text>
+        <Text>Tarea no encontrada.</Text>
       </View>
     );
   }
@@ -47,21 +47,21 @@ const TaskDetails = () => {
 
     switch (reminder.type) {
       case 'daily':
-        details = `Daily at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
+        details = `Diario a las ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
         icon = 'calendar-today';
         break;
       case 'weekly':
-        details = `Weekly${reminder.daysOfWeek && reminder.daysOfWeek.length > 0
-          ? ` on ${reminder.daysOfWeek.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}`
-          : ''} at ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
+        details = `Semanal ${reminder.daysOfWeek && reminder.daysOfWeek.length > 0
+          ? ` los ${reminder.daysOfWeek.map(d => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][d]).join(', ')}`
+          : ''} a las ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
         icon = 'calendar-week';
         break;
       case 'interval':
-        details = `Every ${reminder.interval} ${reminder.unit?.toLowerCase()}${reminder.interval === 1 ? '' : 's'}`;
+        details = `Cada ${reminder.interval} ${reminder.unit?.toLowerCase()}${reminder.interval === 1 ? '' : 's'}`;
         icon = 'timer';
         break;
       case 'date':
-        details = `On ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleString() : 'no date'}`;
+        details = `El ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleString() : 'sin fecha'}`;
         icon = 'calendar';
         break;
     }
@@ -73,7 +73,7 @@ const TaskDetails = () => {
             {/* @ts-ignore */}
             <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
             <Text variant="titleMedium" style={styles.reminderTitle}>
-              {reminder.type.charAt(0).toUpperCase() + reminder.type.slice(1)} Reminder
+              {reminder.type.charAt(0).toUpperCase() + reminder.type.slice(1)} Recordatorio
             </Text>
           </View>
           <Text style={styles.reminderMessage}>{reminder.message}</Text>
@@ -88,7 +88,7 @@ const TaskDetails = () => {
       <CustomHeader 
         materialIcon='note-edit' 
         backRoute='/tasks' 
-        title={task.title || 'Task Details'} 
+        title={task.title || 'Detalles de la tarea'} 
         addAction={() => router.push(`/tasks/new?id=${task.id}`)} 
       />
       
@@ -98,7 +98,7 @@ const TaskDetails = () => {
             title={task.title} 
             titleVariant="headlineMedium"
             titleStyle={styles.taskTitle}
-            subtitle={`Status: ${task.isCompleted ? 'Completed' : 'Pending'}`}
+            subtitle={`Estado: ${task.isCompleted ? 'Completada' : 'Pendiente'}`}
             subtitleStyle={{ 
               color: task.isCompleted ? theme.colors.primary : theme.colors.error 
             }}
@@ -115,7 +115,7 @@ const TaskDetails = () => {
 
             {task.dueDate && (
               <>
-                <Text variant="labelLarge" style={styles.sectionLabel}>Due Date</Text>
+                <Text variant="labelLarge" style={styles.sectionLabel}>Vencimiento</Text>
                 <View style={styles.dueDateRow}>
                   <MaterialCommunityIcons name="calendar-clock" size={20} color="#6200ee" />
                   <Text style={styles.dueDateText}>
@@ -128,7 +128,7 @@ const TaskDetails = () => {
 
             {task.tags && task.tags.length > 0 && (
               <>
-                <Text variant="labelLarge" style={styles.sectionLabel}>Tags</Text>
+                <Text variant="labelLarge" style={styles.sectionLabel}>Etiquetas</Text>
                 <View style={styles.tagsContainer}>
                   {task.tags.map((tag, idx) => (
                     <Chip key={idx} style={styles.tag} textStyle={styles.tagText}>
@@ -141,8 +141,8 @@ const TaskDetails = () => {
             )}
 
             <View style={styles.metaInfo}>
-              <Text variant="labelSmall">Created: {new Date(task.createdAt).toLocaleDateString()}</Text>
-              <Text variant="labelSmall">Last updated: {new Date(task.updatedAt).toLocaleDateString()}</Text>
+              <Text variant="labelSmall">Creada: {new Date(task.createdAt).toLocaleDateString()}</Text>
+              <Text variant="labelSmall">Última actualización: {new Date(task.updatedAt).toLocaleDateString()}</Text>
             </View>
           </Card.Content>
         </Card>
@@ -150,7 +150,7 @@ const TaskDetails = () => {
         {task.reminders && task.reminders.length > 0 && (
           <>
             <Text variant="titleLarge" style={styles.remindersTitle}>
-              Reminders ({task.reminders.length})
+              Recordatorios ({task.reminders.length})
             </Text>
             {task.reminders.map((reminder, index) => renderReminderCard(reminder, index))}
           </>
@@ -161,7 +161,7 @@ const TaskDetails = () => {
             <Card.Content style={styles.emptyContent}>
               <MaterialCommunityIcons name="bell-off" size={40} color="#888" />
               <Text variant="titleMedium" style={styles.emptyText}>
-                No reminders set
+                Sin recordatorios
               </Text>
             </Card.Content>
           </Card>

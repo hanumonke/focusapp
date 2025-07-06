@@ -2,7 +2,7 @@ import { loadHabits, saveHabits } from '@/db/storage';
 import { HabitsState, IHabit } from '@/db/types';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
@@ -34,12 +34,12 @@ const Habits = () => {
   const handleDeleteHabit = async (id: string) => {
     import('react-native').then(({ Alert }) => {
       Alert.alert(
-        "Delete Habit",
-        "Are you sure you want to delete this habit?",
+        "Eliminar hábito",
+        "¿Seguro que deseas eliminar este hábito?",
         [
-          { text: "Cancel", style: "cancel" },
+          { text: "Cancelar", style: "cancel" },
           {
-            text: "Delete",
+            text: "Eliminar",
             style: "destructive",
             onPress: async () => {
               setLoading(true);
@@ -63,22 +63,50 @@ const Habits = () => {
     }, [loadData])
   );
 
+  // Reset streaks if missed (simple/pragmatic)
+  useEffect(() => {
+    const resetStreaksIfMissed = async () => {
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+      const yesterdayStr = new Date(today.getTime() - 86400000).toISOString().slice(0, 10);
+
+      let updated = false;
+      const updatedHabits = habits.map(habit => {
+        if (!habit.lastCompletedDate) return habit;
+        const last = habit.lastCompletedDate.slice(0, 10);
+        if (last !== todayStr && last !== yesterdayStr && habit.currentStreak !== 0) {
+          updated = true;
+          return { ...habit, currentStreak: 0 };
+        }
+        return habit;
+      });
+
+      if (updated) {
+        await saveHabits(updatedHabits);
+        setHabits(updatedHabits);
+      }
+    };
+
+    if (habits.length > 0) resetStreaksIfMissed();
+    
+  }, [habits.length]);
+
   const getRecurrenceText = (recurrence: IHabit['recurrence']) => {
-    if (!recurrence) return 'No schedule';
+    if (!recurrence) return 'Sin recurrencia';
 
     const time = recurrence.time 
       ? recurrence.time
-      : 'No time set';
+      : 'Sin hora';
 
     switch (recurrence.type) {
       case 'daily':
-        return `Daily at ${time}`;
+        return `Diario a las ${time}`;
       case 'weekly':
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
         const selectedDays = recurrence.daysOfWeek?.map(dayIndex => days[dayIndex]).join(', ');
-        return `Weekly on ${selectedDays || 'no days'} at ${time}`;
+        return `Semanal los ${selectedDays || 'sin días'} a las ${time}`;
       default:
-        return 'Custom schedule';
+        return 'Recurrencia personalizada';
     }
   };
 
@@ -90,10 +118,11 @@ const Habits = () => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
-        <Text>Loading habits...</Text>
+        <Text>Cargando hábitos...</Text>
       </View>
     );
   }
+  
 
   const renderHabitItem = ({ item }: { item: IHabit }) => {
     const getRecurrenceIcon = () => {
@@ -103,6 +132,7 @@ const Habits = () => {
         default: return 'calendar-blank';
       }
     };
+
 
     // Show reminders indicator if any reminder is enabled
     const hasReminders = item.reminderOnTime?.enabled || item.reminderBefore?.enabled;
@@ -128,7 +158,7 @@ const Habits = () => {
               <View style={styles.remindersIndicator}>
                 <IconButton icon="bell" size={20} iconColor={theme.colors.primary} />
                 <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-                  Reminders
+                  Recordatorios
                 </Text>
               </View>
             )}
@@ -147,7 +177,7 @@ const Habits = () => {
           {item.tags && item.tags.length > 0 && (
             <View style={styles.tagsSection}>
               <Text variant="labelSmall" style={styles.sectionLabel}>
-                TAGS
+                ETIQUETAS
               </Text>
               <View style={styles.tagsContainer}>
                 {item.tags.map((tag, idx) => (
@@ -168,17 +198,17 @@ const Habits = () => {
             <View style={styles.streakContainer}>
               <View style={styles.streakItem}>
                 <Text variant="labelSmall" style={styles.streakLabel}>
-                  CURRENT
+                  RACHA
                 </Text>
-                <Badge size={24} style={styles.streakBadge}>
+                <Badge size={24}>
                   {item.currentStreak}
                 </Badge>
               </View>
               <View style={styles.streakItem}>
                 <Text variant="labelSmall" style={styles.streakLabel}>
-                  BEST
+                  MEJOR
                 </Text>
-                <Badge size={24} style={styles.streakBadge}>
+                <Badge size={24}>
                   {item.bestStreak}
                 </Badge>
               </View>
@@ -192,7 +222,7 @@ const Habits = () => {
             textColor={theme.colors.primary}
             compact
           >
-            Details
+            Detalles
           </Button>
           <IconButton
             icon="pencil"
@@ -212,7 +242,7 @@ const Habits = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Searchbar
-        placeholder="Search habits..."
+        placeholder="Buscar hábitos..."
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
@@ -227,7 +257,7 @@ const Habits = () => {
         icon="plus"
         contentStyle={styles.addButtonContent}
       >
-        Add Habit
+        Agregar hábito
       </Button>
 
       {filteredHabits.length !== 0 ? (
@@ -240,21 +270,21 @@ const Habits = () => {
           onRefresh={handleRefresh}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text variant="titleMedium">No habits match your search</Text>
+              <Text variant="titleMedium">Ningún hábito coincide con tu búsqueda</Text>
             </View>
           }
         />
       ) : (
         <View style={styles.emptyContainer}>
           <Text variant="titleMedium" style={styles.emptyText}>
-            No habits yet
+            Aún no tienes hábitos
           </Text>
           <Button 
             mode="contained" 
             onPress={handleCreateHabit}
             style={styles.emptyButton}
           >
-            Create your first habit
+            Crea tu primer hábito
           </Button>
         </View>
       )}

@@ -64,7 +64,7 @@ const CreateHabit = () => {
           reset(habit);
         }
       } catch (error) {
-        Alert.alert("Error", "Failed to load habit");
+        Alert.alert("Error", "No se pudo cargar el hábito");
       } finally {
         setLoading(false);
       }
@@ -117,7 +117,7 @@ const CreateHabit = () => {
 
       router.push('/habits');
     } catch (error) {
-      Alert.alert("Error", "Failed to save habit");
+      Alert.alert("Error", "No se pudo guardar el hábito");
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,7 @@ const CreateHabit = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <CustomHeader
-        title={habitId ? "Edit Habit" : "New Habit"}
+        title={habitId ? "Editar hábito" : "Nuevo hábito"}
         backRoute="/habits"
         addAction={handleSubmit(onSubmit)}
         materialIcon="check"
@@ -145,7 +145,7 @@ const CreateHabit = () => {
         <Controller
           control={control}
           name="title"
-          rules={{ required: "Title is required" }}
+          rules={{ required: "El título es obligatorio" }}
           render={({ field, fieldState }) => (
             <>
               <TextInput
@@ -170,7 +170,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Description"
+              label="Descripción"
               value={field.value}
               onChangeText={field.onChange}
               multiline
@@ -191,7 +191,7 @@ const CreateHabit = () => {
 
         {/* Recurrence */}
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          Recurrence
+          Recurrencia
         </Text>
 
         <Controller
@@ -202,8 +202,8 @@ const CreateHabit = () => {
               value={field.value}
               onValueChange={field.onChange}
               buttons={[
-                { value: 'daily', label: 'Daily' },
-                { value: 'weekly', label: 'Weekly' },
+                { value: 'daily', label: 'Diario' },
+                { value: 'weekly', label: 'Semanal' },
               ]}
             />
           )}
@@ -211,7 +211,7 @@ const CreateHabit = () => {
 
         {recurrenceType === 'weekly' && (
           <View style={styles.weekDaysContainer}>
-            {(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const).map((day, index) => (
+            {(['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'] as const).map((day, index) => (
               <Button
                 key={day}
                 mode={recurrenceDaysOfWeek?.includes(index as DayNumber) ? 'contained' : 'outlined'}
@@ -232,7 +232,7 @@ const CreateHabit = () => {
         >
           {recurrenceTime
             ? new Date(recurrenceTime).toLocaleTimeString()
-            : "Select time"}
+            : "Hora"}
         </Button>
 
         <TimePickerModal
@@ -247,7 +247,7 @@ const CreateHabit = () => {
 
         {/* Reminder On Time */}
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          Reminder at scheduled time
+          Recordatorio a la hora programada
         </Text>
         <Controller
           control={control}
@@ -258,7 +258,7 @@ const CreateHabit = () => {
               onPress={() => field.onChange(!field.value)}
               style={styles.input}
             >
-              {field.value ? "Enabled" : "Disabled"}
+              {field.value ? "Activado" : "Desactivado"}
             </Button>
           )}
         />
@@ -268,7 +268,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Reminder message"
+              label="Mensaje de recordatorio"
               value={field.value}
               onChangeText={field.onChange}
               style={styles.input}
@@ -281,7 +281,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Snooze (minutes)"
+              label="Posponer (minutos)"
               value={field.value?.toString()}
               onChangeText={v => field.onChange(Number(v) || 0)}
               keyboardType="numeric"
@@ -294,7 +294,7 @@ const CreateHabit = () => {
 
         {/* Reminder Before */}
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          Reminder before
+          Recordatorio antes
         </Text>
         <Controller
           control={control}
@@ -305,7 +305,7 @@ const CreateHabit = () => {
               onPress={() => field.onChange(!field.value)}
               style={styles.input}
             >
-              {field.value ? "Enabled" : "Disabled"}
+              {field.value ? "Activado" : "Desactivado"}
             </Button>
           )}
         />
@@ -315,7 +315,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Minutes before"
+              label="Minutos antes"
               value={field.value?.toString()}
               onChangeText={v => field.onChange(Number(v) || 0)}
               keyboardType="numeric"
@@ -329,7 +329,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Reminder message"
+              label="Mensaje"
               value={field.value}
               onChangeText={field.onChange}
               style={styles.input}
@@ -342,7 +342,7 @@ const CreateHabit = () => {
           render={({ field }) => (
             <TextInput
               mode="outlined"
-              label="Snooze (minutes)"
+              label="Posponer (minutos)"
               value={field.value?.toString()}
               onChangeText={v => field.onChange(Number(v) || 0)}
               keyboardType="numeric"

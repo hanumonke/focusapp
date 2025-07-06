@@ -25,11 +25,11 @@ const SettingsScreen = () => {
         <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <List.Section>
                 <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Appearance
+                    Apariencia
                 </List.Subheader>
 
                 <List.Item
-                    title="Dark mode"
+                    title="Modo oscuro"
                     left={props => <List.Icon {...props} icon="theme-light-dark" />}
                     right={() => (
                         <Switch
@@ -105,12 +105,12 @@ const SettingsScreen = () => {
 
             <List.Section>
                 <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Account
+                    Cuenta
                 </List.Subheader>
 
                 <List.Item
-                    title="User Information"
-                    description="View and edit your profile"
+                    title="Información de usuario"
+                    description="Ver y editar tu perfil"
                     left={props => <List.Icon {...props} icon="account" />}
                     right={props => <List.Icon {...props} icon="chevron-right" />}
                 />
@@ -124,7 +124,7 @@ const SettingsScreen = () => {
             </List.Section>
 
             <View style={styles.footer}>
-                <Text style={styles.versionText}>App Version 1.0.0</Text>
+                <Text style={styles.versionText}>Versión de la app 1.0.0</Text>
             </View>
         </ScrollView>
     );

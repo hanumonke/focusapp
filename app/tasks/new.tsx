@@ -52,12 +52,12 @@ const CreateTask = () => {
           if (taskToEdit) {
             reset(taskToEdit);
           } else {
-            Alert.alert("Error", "Task not found.");
+            Alert.alert("Error", "Tarea no encontrada");
             router.replace('/tasks');
           }
         } catch (error) {
-          console.error("Error loading task:", error);
-          Alert.alert("Error", "Failed to load task.");
+          console.error("Error cargando la tarea:", error);
+          Alert.alert("Error", "No se pudo cargar la tarea");
           router.replace('/tasks');
         }
       }
@@ -104,7 +104,7 @@ const CreateTask = () => {
     
       router.push('/tasks');
     } catch (error) {
-      Alert.alert("Error", "Failed to save task");
+      Alert.alert("Error", "No se pudo guardar la tarea");
       console.error(error);
     }
   };
@@ -115,7 +115,7 @@ const CreateTask = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <CustomHeader 
         materialIcon='check' 
-        title={taskId ? "Edit Task" : "New Task"} 
+        title={taskId ? "Editar" : "Nueva"} 
         backRoute='/tasks' 
         addAction={handleSubmit(onSubmit)} 
       />
@@ -126,7 +126,7 @@ const CreateTask = () => {
           <Controller
             control={control}
             name="title"
-            rules={{ required: "Title is required" }}
+            rules={{ required: "El titulo es obligatorio" }}
             render={({ field, fieldState }) => (
               <>
                 <TextInput
@@ -151,7 +151,7 @@ const CreateTask = () => {
             render={({ field }) => (
               <TextInput
                 mode="outlined"
-                label="Description"
+                label="Descripción"
                 value={field.value}
                 onChangeText={field.onChange}
                 multiline
@@ -174,7 +174,7 @@ const CreateTask = () => {
 
           {/* Due Date */}
           <Text variant="titleMedium" style={styles.sectionTitle}>
-            Due Date
+            Vencimiento
           </Text>
           <Controller
             control={control}
@@ -183,7 +183,7 @@ const CreateTask = () => {
               <CustomDateTimePicker 
                 value={field.value} 
                 onChange={field.onChange} 
-                label="Select due date"
+                label="Fecha"
               />
             )}
           />
@@ -199,7 +199,7 @@ const CreateTask = () => {
               <RemindersInput 
                 value={field.value} 
                 onChange={field.onChange} 
-                title={'Reminders'} 
+                title={'Recordatorios'} 
                 dueDate={watch('dueDate')}
               />
             )}
@@ -215,9 +215,9 @@ const CreateTask = () => {
                 value={field.value}
                 onValueChange={field.onChange}
                 buttons={[
-                  { value: 'easy', label: 'Easy' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'hard', label: 'Hard' },
+                  { value: 'easy', label: 'Fácil' },
+                  { value: 'medium', label: 'Medio' },
+                  { value: 'hard', label: 'Difícil' },
                 ]}
                 style={{ marginBottom: 16 }}
               />
@@ -225,7 +225,7 @@ const CreateTask = () => {
           />
         </View>
 
-        <Button onPress={() => reset()} mode="contained">Clear fields</Button>
+        <Button onPress={() => reset()} mode="contained">Limpiar campos</Button>
       </ScrollView>
     </SafeAreaView>
   );

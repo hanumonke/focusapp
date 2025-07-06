@@ -32,22 +32,22 @@ const Details = () => {
   };
 
   const getRecurrenceText = (recurrence: IHabit['recurrence']) => {
-    if (!recurrence) return 'No recurrence set';
+    if (!recurrence) return 'No se configuró la recurrencia';
     
     const time = recurrence.time 
       ? new Date(recurrence.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : 'No time set';
+      : 'No se configuró el momento de recurrencia';
 
     switch (recurrence.type) {
       case 'daily':
-        return `Daily at ${time}`;
+        return `Diario - ${time}`;
       case 'weekly':
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
         const selectedDays = recurrence.daysOfWeek?.map(dayIndex => days[dayIndex]).join(', ');
-        return `Weekly on ${selectedDays || 'no days'} at ${time}`;
+        return `Semanal - ${selectedDays || 'Sin días'} - ${time}`;
 
       default:
-        return 'Custom recurrence';
+        return 'Recurrencia personalizada';
     }
   };
 
@@ -56,13 +56,13 @@ const Details = () => {
     return (
       <View style={styles.streakContainer}>
         <View style={styles.streakItem}>
-          <Text variant="labelMedium">Current Streak</Text>
+          <Text variant="labelMedium">Racha actual</Text>
           <Text variant="headlineMedium" style={styles.streakNumber}>
             {habit.currentStreak}
           </Text>
         </View>
         <View style={styles.streakItem}>
-          <Text variant="labelMedium">Best Streak</Text>
+          <Text variant="labelMedium">Mejor racha</Text>
           <Text variant="headlineMedium" style={styles.streakNumber}>
             {habit.bestStreak}
           </Text>
@@ -83,9 +83,9 @@ const renderHabitReminder = (
   if (!config || !config.enabled) return null;
 
   let icon = type === 'onTime' ? 'bell' : 'bell-alert';
-  let label = type === 'onTime' ? 'At scheduled time' : `Before (${config.minutesBefore} min)`;
-  let snooze = config.snoozeMinutes ? `Snooze: ${config.snoozeMinutes} min` : '';
-  let message = config.message || (type === 'onTime' ? 'It\'s time for your habit!' : 'Reminder before habit time');
+  let label = type === 'onTime' ? 'A la hora programada' : `Antes (${config.minutesBefore} min)`;
+  let snooze = config.snoozeMinutes ? `Posponer: ${config.snoozeMinutes} min` : '';
+  let message = config.message || (type === 'onTime' ? '¡Es hora de tu hábito!' : 'Recordatorio antes de la hora del hábito');
 
   return (
     <Card style={styles.reminderCard}>
@@ -115,7 +115,7 @@ const renderHabitReminder = (
   if (!habit) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Habit not found.</Text>
+        <Text>Hábito no encontrado.</Text>
       </View>
     );
   }
@@ -125,7 +125,7 @@ const renderHabitReminder = (
       <CustomHeader 
         materialIcon='note-edit' 
         backRoute='/habits' 
-        title={habit.title || 'Habit Details'} 
+        title={habit.title || 'Hábito no encontrado.'} 
         addAction={() => router.push(`/habits/new?id=${habit.id}`)} 
         refreshAction={handleRefresh} // Add this prop
       />
@@ -150,7 +150,7 @@ const renderHabitReminder = (
 
             {habit.tags && habit.tags.length > 0 && (
               <>
-                <Text variant="labelLarge" style={styles.sectionLabel}>Tags</Text>
+                <Text variant="labelLarge" style={styles.sectionLabel}>Etiquetas</Text>
                 <View style={styles.tagsContainer}>
                   {habit.tags.map((tag, idx) => (
                     <Chip key={idx} style={styles.tag} textStyle={styles.tagText}>
@@ -162,7 +162,7 @@ const renderHabitReminder = (
               </>
             )}
 
-            <Text variant="labelLarge" style={styles.sectionLabel}>Schedule</Text>
+            <Text variant="labelLarge" style={styles.sectionLabel}>Horario</Text>
             <View style={styles.scheduleRow}>
               <MaterialCommunityIcons name="calendar-clock" size={20} color="#6200ee" />
               <Text style={styles.scheduleText}>
@@ -174,22 +174,22 @@ const renderHabitReminder = (
             {getStreakInfo()}
             
             <View style={styles.metaInfo}>
-              <Text variant="labelSmall">Created: {new Date(habit.createdAt).toLocaleDateString()}</Text>
-              <Text variant="labelSmall">Last updated: {new Date(habit.updatedAt).toLocaleDateString()}</Text>
+              <Text variant="labelSmall">Creado: {new Date(habit.createdAt).toLocaleDateString()}</Text>
+              <Text variant="labelSmall">Última actualización: {new Date(habit.updatedAt).toLocaleDateString()}</Text>
             </View>
           </Card.Content>
         </Card>
 
         {/* Reminders Section */}
         <Text variant="titleLarge" style={styles.remindersTitle}>
-          Reminders
+          Recordatorios
         </Text>
         {(!habit.reminderOnTime?.enabled && !habit.reminderBefore?.enabled) && (
           <Card style={styles.emptyCard}>
             <Card.Content style={styles.emptyContent}>
               <MaterialCommunityIcons name="bell-off" size={40} color="#888" />
               <Text variant="titleMedium" style={styles.emptyText}>
-                No reminders set
+                Sin recordatorios
               </Text>
             </Card.Content>
           </Card>

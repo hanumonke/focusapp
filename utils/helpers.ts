@@ -1,5 +1,6 @@
 // src/utils/helpers.ts
 export const getRecurrenceText = (recurrence: any) => {
+  console.log("Recurrence", recurrence.time)
   if (!recurrence) return 'No schedule';
   
   const time = recurrence.time 
