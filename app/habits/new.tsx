@@ -1,4 +1,6 @@
 // CreateHabit.tsx
+
+//TODO: corroborar que se cree el habito y que ls validaciones se muestren
 import CustomHeader from '@/components/CustomHeader';
 import TagsInput from '@/components/TagsInput';
 import { loadHabits, saveHabits } from '@/db/storage';
@@ -34,7 +36,7 @@ const CreateHabit = () => {
       recurrence: {
         type: "daily",
         daysOfWeek: [],
-        time: new Date().toISOString().slice(0, 16), // "YYYY-MM-DDTHH:mm"
+        time: new Date().toLocaleTimeString(), // "YYYY-MM-DDTHH:mm"
       },
       reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
       reminderBefore: { ...defaultReminderConfig },
@@ -55,8 +57,10 @@ const CreateHabit = () => {
   // Load habit for editing
   useEffect(() => {
     const loadHabit = async () => {
-      if (!habitId) return;
+      console.log(habitId);
+      if (habitId) {
       setLoading(true);
+
       try {
         const habits = await loadHabits();
         const habit = habits.find(h => h.id === habitId);
@@ -68,7 +72,29 @@ const CreateHabit = () => {
       } finally {
         setLoading(false);
       }
+    } else {
+      reset({
+      id: '',
+      title: "",
+      description: "",
+      tags: [],
+      recurrence: {
+        type: "daily",
+        daysOfWeek: [],
+        time: new Date().toLocaleTimeString("es-VE", {timeStyle: "short"}), // "YYYY-MM-DDTHH:mm"
+      },
+      reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
+      reminderBefore: { ...defaultReminderConfig },
+      currentStreak: 0,
+      bestStreak: 0,
+      lastCompletedDate: null,
+      completionHistory: [],
+      createdAt: '',
+      updatedAt: ''
+    })
     }
+
+  }
     loadHabit();
   }, [habitId, reset]);
 
@@ -88,7 +114,7 @@ const CreateHabit = () => {
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
     // Store only the time as "HH:mm"
-    setValue("recurrence.time", `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
+    setValue("recurrence.time", newDate.toLocaleTimeString("es-VE", {timeStyle: "short"} ));
   }, [setValue]);
 
   // Submit handler
@@ -123,6 +149,11 @@ const CreateHabit = () => {
     }
   };
 
+  const handleRecurrenceTimeBtn = () => {
+    setVisible(true); 
+    console.log(recurrenceTime); 
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -140,7 +171,7 @@ const CreateHabit = () => {
         materialIcon="check"
       />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" >
+      <ScrollView key={habitId ? `edit-${habitId}` : `create`} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" >
         {/* Title */}
         <Controller
           control={control}
@@ -225,13 +256,13 @@ const CreateHabit = () => {
         )}
 
         <Button
-          onPress={() => setVisible(true)}
+          onPress={handleRecurrenceTimeBtn}
           mode="outlined"
           icon="clock"
           style={styles.timeButton}
         >
           {recurrenceTime
-            ? new Date(recurrenceTime).toLocaleTimeString()
+            ? recurrenceTime
             : "Hora"}
         </Button>
 
@@ -309,6 +340,8 @@ const CreateHabit = () => {
             </Button>
           )}
         />
+
+        
         <Controller
           control={control}
           name="reminderBefore.minutesBefore"

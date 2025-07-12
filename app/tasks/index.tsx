@@ -7,10 +7,12 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
+
+
 const difficultyPoints: Record<'easy' | 'medium' | 'hard', number> = {
-  easy: 10,
-  medium: 20,
-  hard: 40,
+  easy: 5,
+  medium: 10,
+  hard: 15,
 };
 
 const Tasks = () => {
@@ -74,6 +76,11 @@ const Tasks = () => {
       const currentPoints = await loadPoints();
       const add = difficultyPoints[completedTask.difficulty || 'medium'];
       await savePoints(currentPoints + add);
+    } else {
+     
+      const currentPoints = await loadPoints();
+      const subtract = difficultyPoints[completedTask?.difficulty || 'medium'];
+      await savePoints(currentPoints - subtract);
     }
   };
 
@@ -179,7 +186,7 @@ const Tasks = () => {
                   iconColor={theme.colors.primary}
                 />
                 <Text variant="labelSmall">
-                  {item.reminders.length} reminder{item.reminders.length !== 1 ? 's' : ''}
+                  {item.reminders.length} recordatorio{item.reminders.length !== 1 ? 's' : ''}
                 </Text>
               </View>
             )}
@@ -212,7 +219,7 @@ const Tasks = () => {
             textColor={theme.colors.primary}
             compact
           >
-            Details
+            Detalles
           </Button>
           <IconButton
             icon="delete"

@@ -1,0 +1,160 @@
+{
+  "title": "Sección de Ayuda: Funcionalidades de FocusApp",
+  "sections": [
+    {
+      "title": "Pantalla Principal",
+      "items": [
+        {
+          "type": "paragraph",
+          "content": "Al abrir FocusApp, verás dos opciones principales: Tareas y Hábitos. Usa el selector en la parte superior para cambiar entre ambas secciones. En el centro de la pantalla, encontrarás el botón Agregar (icono \"+\") que te permite crear una nueva tarea o hábito según la sección activa. También hay un campo de búsqueda para filtrar tus recordatorios por palabras clave."
+        }
+      ]
+    },
+    {
+      "title": "Sección de Tareas",
+      "items": [
+        {
+          "type": "paragraph",
+          "content": "Al crear una tarea, debes completar estos campos:"
+        },
+        {
+          "type": "list",
+          "listItems": [
+            {
+              "type": "paragraph",
+              "boldPrefix": "Título",
+              "content": "Nombre breve de la actividad (ej: \"Ensayo de Historia\")."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Descripción",
+              "content": "Detalles adicionales (materiales, pasos, etc.)."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Dificultad",
+              "content": "Selecciona entre Fácil, Medio o Difícil. Esto define los puntos que ganarás al completarla."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Fecha límite",
+              "content": "Fecha y hora de vencimiento obligatorio."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Recordatorio",
+              "content": "Opcional. Programa una alerta previa (ej: 1 hora antes)."
+            }
+          ]
+        },
+        {
+            "type": "paragraph",
+            "content": "Las tareas pendientes se muestran en orden de proximidad a su fecha límite. Al completar una, márcala como hecha para sumar puntos según su dificultad."
+        }
+      ]
+    },
+    {
+      "title": "Sección de Hábitos",
+      "items": [
+        {
+          "type": "paragraph",
+          "content": "Para crear un hábito, completa:"
+        },
+        {
+          "type": "list",
+          "listItems": [
+            {
+              "type": "paragraph",
+              "boldPrefix": "Título",
+              "content": "Nombre del hábito (ej: \"Repasar Matemáticas\")."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Descripción",
+              "content": "Objetivo o notas relevantes."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Frecuencia",
+              "content": "Define si es diario o semanal."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Hora",
+              "content": "Selecciona el momento exacto para la notificación recurrente."
+            }
+          ]
+        },
+        {
+            "type": "paragraph",
+            "content": "Los hábitos no tienen fecha límite, pero generan una racha al completarlos consecutivamente. Si omites uno, la racha se reinicia."
+        }
+      ]
+    },
+    {
+      "title": "Notificaciones",
+      "items": [
+        {
+          "type": "paragraph",
+          "content": "Recibirás alertas en dos casos:"
+        },
+        {
+          "type": "list",
+          "listItems": [
+            {
+              "type": "numberedItem",
+              "content": "1) Tareas: Notificación única a la hora programada en el recordatorio."
+            },
+            {
+              "type": "numberedItem",
+              "content": "2) Hábitos: Alertas recurrentes según la frecuencia establecida (ej: diario a las 17:00)."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": "Las notificaciones muestran el título y descripción. Toca una para abrir la app y marcar como completada."
+        }
+      ]
+    },
+    {
+      "title": "Puntos y Rachas",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Puntos",
+          "content": "Gánatelos completando tareas. Valores: Fácil (5 pts), Medio (10 pts), Difícil (15 pts). Acumúlalos para motivar tu progreso."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Rachas",
+          "content": "Solo para hábitos. Reflejan días consecutivos cumplidos. Ej: \"Racha de 7 días\". Se reinician si saltas un día."
+        }
+      ]
+    },
+    {
+      "title": "Configuración",
+      "items": [
+        {
+          "type": "paragraph",
+          "content": "Accede desde el ícono de engranaje en la esquina superior derecha:"
+        },
+        {
+          "type": "list",
+          "listItems": [
+            {
+              "type": "paragraph",
+              "boldPrefix": "Selector de sonido",
+              "content": "Cambia la alarma de notificaciones (3 tonos disponibles)."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Cuenta",
+              "content": "Edita tu nombre o cierra sesión (los datos se guardan localmente en tu dispositivo)."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

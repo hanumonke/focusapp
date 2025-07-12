@@ -4,7 +4,7 @@
     "slug": "fokus",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/fokus-logo.png",
     "scheme": "fokus",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,8 +14,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/fokus-logo.png",
+        "backgroundColor": "#a9cce3"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.hanumonke.fokus"
@@ -26,23 +26,49 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            
+            "./assets/sounds/x8bit.mp3",
+            "./assets/sounds/x8bit02.mp3",
+            "./assets/sounds/alarm.mp3",
+            "./assets/sounds/campanas.mp3",
+            "./assets/sounds/clocktower.mp3",
+            "./assets/sounds/guerra.mp3",
+            "./assets/sounds/guitarra.mp3",
+            "./assets/sounds/hellooooyou.mp3",
+            "./assets/sounds/nuclearalarm.mp3",
+            "./assets/sounds/pipipipi.mp3",
+            "./assets/sounds/pupetfnaf.mp3",
+            "./assets/sounds/suspenso.mp3",
+            "./assets/sounds/tuntun.mp3",
+            "./assets/sounds/vibracion.mp3",
+            "./assets/sounds/xilofono.mp3"
+          ]
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/fokus-logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#a9cce3"
         }
       ],
-      ["expo-build-properties", {
-        "android": {
-          "useLegacyPackaging": true
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "useLegacyPackaging": true
+          }
         }
-      }], 
-      "expo-document-picker"
-      
+      ],
+      "expo-document-picker",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

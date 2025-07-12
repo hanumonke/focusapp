@@ -220,9 +220,9 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                                 onChange([]);
                             }}
                             buttons={[
-                                { value: 'date', label: 'One-time' },
-                                { value: 'daily', label: 'Daily' },
-                                { value: 'weekly', label: 'Weekly' },
+                                { value: 'date', label: 'Único' },
+                                { value: 'daily', label: 'Diario' },
+                                { value: 'weekly', label: 'Semanal' },
                             ]}
                             style={styles.segmentedButtons}
                         />

@@ -1,0 +1,341 @@
+{
+  "introText": "Para mejorar tu atención y concentración, aquí ofrecemos una amplia variedad de estrategias y consejos, que se pueden agrupar en las siguientes categorías:",
+  "sections": [
+    {
+      "title": "1. Preparación del Entorno y Manejo de Distracciones",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Encuentra un espacio tranquilo y dedicado",
+          "content": "Busca un lugar que se utilice exclusivamente para estudiar o trabajar, donde las distracciones sean mínimas [1-3]. Un espacio de trabajo ordenado y libre de objetos innecesarios es fundamental para mantener la concentración [4-6]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Ajusta la iluminación y la temperatura",
+          "content": "de tu espacio para sentirte cómodo y evitar el sueño [6]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Minimiza las distracciones electrónicas",
+          "content": "Silencia tu celular, apaga notificaciones o usa modos \"No molestar\" [4, 6]. Aléjate de las redes sociales y evita ingresar a plataformas de entretenimiento o al correo si no es necesario [4]. Incluso la simple presencia del celular, aunque no lo mires, puede disminuir tu capacidad de atención [7]. Considera usar aplicaciones de bloqueo de sitios web o apps que midan tu tiempo de enfoque [8]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Utiliza ruido blanco o música instrumental",
+          "content": "Si el silencio absoluto te abruma, prueba con sonidos de lluvia, café, o playlists de lofi o música clásica a volumen bajito [8, 9]. Sin embargo, si tienes trastornos de atención, la música no está indicada para estudiar [10]."
+        },
+        {
+          "type": "list",
+          "boldPrefix": "Gestiona las interrupciones",
+          "listItems": [
+            {
+              "type": "paragraph",
+              "boldPrefix": "Practica el single-tasking",
+              "content": "Bloquea todo lo que no sea la tarea actual y cambia de pestaña solo cuando termines [11]."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Comunica tus horarios",
+              "content": "Comparte tus horarios de trabajo o estudio con las personas con las que vives para evitar interrupciones continuas [4]. También puedes acordar con colegas o familiares \"franjas sin interrupciones\" [11]."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Usa una \"lista de distracciones permitidas\"",
+              "content": "Si te surge una idea aleatoria o una distracción mientras trabajas, apúntala en un post-it o en una lista y vuelve inmediatamente a tu tarea, revisándola después en un descanso [12, 13]."
+            },
+            {
+              "type": "paragraph",
+              "boldPrefix": "Aplica la \"regla de los 2 minutos\"",
+              "content": "Si algo que te distrae toma menos de 2 minutos, hazlo de inmediato para que no te siga rondando en la cabeza [9]."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Cambia de escenario ocasionalmente",
+          "content": "Si te sientes estancado o desconcentrado, muévete a otro lugar como otra silla, el sofá, la cocina, una cafetería o la biblioteca, ya que un cambio físico puede renovar tu atención [3, 12]."
+        }
+      ]
+    },
+    {
+      "title": "2. Gestión del Tiempo y Tareas",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Planifica el tiempo de estudio de manera realista",
+          "content": "Es probable que estudiar te lleve más tiempo de lo habitual, así que calcula un tiempo extra para evitar que no te alcance y frustrarte [1-15]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Desarrolla una rutina regular",
+          "content": "Establecer una rutina para tu estudio y tus actividades ayuda a estructurar tu tiempo y evitar sorpresas [2, 16]. Incluye llevar las tareas al día como parte de esta rutina para combatir la procrastinación [17, 18]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Haz listas de tareas y priorízalas",
+          "content": "Inicia tu día elaborando una lista de las tareas a realizar, priorizándolas y definiendo tus objetivos. Esto te dará claridad sobre las actividades en las que debes centrarte [19, 20]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Divide tareas grandes en objetivos pequeños y manejables",
+          "content": "[21, 22]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Utiliza la Técnica Pomodoro",
+          "content": "Divide tus tareas en bloques de tiempo de concentración pura (ej. 25 o 50 minutos) seguidos de descansos cortos (ej. 5 minutos) [5, 6, 17, 20, 23]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Realiza pausas frecuentes y programadas",
+          "content": "Permite que tu mente se distraiga durante los descansos y no mientras estás concentrado en la tarea [16, 17, 20, 21, 24]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Mantente al día con el trabajo",
+          "content": "No dejes el estudio para el último minuto, ya que la procrastinación es tu peor enemigo y dificulta la concentración [17]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Implementa rituales de inicio y cierre",
+          "content": "Diseña una secuencia clara al comenzar (como organizar tu escritorio, revisar tu lista y respirar profundamente) y al finalizar (anotar logros y pendientes) para indicarle a tu mente cuándo concentrarse y cuándo relajarse [11]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Encuentra tu mejor momento de estudio",
+          "content": "Identifica en qué momento del día estás más atento y planifica las tareas de alta demanda mental para esas horas [13, 25, 26]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Espacia el estudio",
+          "content": "Divide tus sesiones largas de estudio en períodos más cortos a lo largo del día (ej. sesiones de una hora en lugar de 3-4 horas) para sacar más provecho de cada sesión [25, 27]."
+        }
+      ]
+    },
+    {
+      "title": "3. Cuidado del Cuerpo y la Salud Mental",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Duerme lo necesario",
+          "content": "Un cuerpo cansado no responde eficazmente. Asegúrate de dormir entre 7 y 9 horas cada noche para optimizar la función cognitiva y permitir que tu cerebro se recupere [20, 24, 28-30]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Cuida tu salud mental",
+          "content": "Procura un estado que no sea excesivamente relajado ni muy activo, ya que ambos extremos pueden reducir tu capacidad de enfoque [19]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Aliméntate saludablemente y mantente hidratado",
+          "content": "Comer poco puede afectar tu atención, mientras que comer en exceso puede causar indigestión o sueño [4]. Ten una botella de agua cerca y toma sorbos regularmente, ya que la deshidratación te puede volver lento [5, 20]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Haz ejercicio físico regularmente",
+          "content": "La actividad física, incluyendo juegos aeróbicos, pausas activas con estiramientos o ejercicios ligeros, puede retrasar el deterioro cognitivo, reducir el estrés, ayudar a dormir mejor y mejorar la atención [20, 24, 30-32]. Incorpora sesiones de entrenamientos de alta intensidad a intervalos (HIIT) para mejorar la concentración inmediata y la calidad del sueño [24, 33, 34]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Opta por snacks inteligentes",
+          "content": "Prefiere frutos secos, fruta o chocolate amargo en lugar de azúcar, que da un subidón rápido seguido de un bajón de energía [9]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Optimiza tu nutrición y energía",
+          "content": "Incluye grasas saludables (aguacate, frutos secos) para el funcionamiento cerebral, consume proteínas magras para estabilizar el azúcar en sangre y prefiere carbohidratos de absorción lenta (avena, legumbres) para una energía sostenida [35]. La colina, que es materia prima de la acetilcolina (un neurotransmisor clave para la atención), también es importante [36]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Practica la respiración 4-7-8",
+          "content": "Inspira durante 4 segundos, aguanta 7 y suelta durante 8 segundos (repite 2-3 veces) para resetear tu mente rápidamente [12]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Mejora tus niveles de energía generales",
+          "content": "ya que la concentración consume una gran cantidad de energía cerebral [36]."
+        }
+      ]
+    },
+    {
+      "title": "4. Entrenamiento Cognitivo y Técnicas de Estudio",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Entrena tu mente activamente",
+          "content": "La concentración es como un músculo que se entrena y se fortalece con la práctica regular [37-40]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Realiza actividades que requieran concentración",
+          "content": "Oblígate a hacer algo que exija mucha energía mental, como leer un libro, estudiar, trabajar, escribir o practicar una habilidad. Estas actividades sirven para ejercitar tu mente [41, 42]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Practica el single-tasking",
+          "content": "Realiza actividades que impliquen hacer una sola tarea a la vez (ej. leer) por periodos de 30 minutos e intenta aumentar el tiempo poco a poco [11, 43]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Usa papel y lápiz para tomar notas",
+          "content": "Escribir a mano ayuda a tu cerebro a concentrarse y a recordar datos a largo plazo [19, 44]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Resalta o colorea la información importante",
+          "content": "en tus textos y notas para mantener la atención y ayudar a tu cerebro a procesar lo relevante [45]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Reescribe tus apuntes",
+          "content": "Escribir tus apuntes sin mirar los originales no solo te ayuda a mantener la concentración, sino que también es una técnica de estudio efectiva, especialmente si necesitas movimiento (verbal o físico) para mantener la atención [46]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Ponte a prueba",
+          "content": "Evalúa tu conocimiento con preguntas de ensayo de práctica o realizando exámenes de la asignatura. Cualquier actividad práctica que suponga un esfuerzo mental ayuda a que tu cerebro trabaje y extraiga información [46, 47]."
+        },
+        {
+          "type": "list",
+          "boldPrefix": "Utiliza técnicas de lectura activa",
+          "listItems": [
+            {
+              "type": "paragraph",
+              "content": "Lee títulos antes de capítulos, hojea el material, toma notas mientras lees, formula preguntas usando los títulos, practica las respuestas y repasa los puntos principales. La Técnica Feynman es un ejemplo de esto [47-50]."
+            },
+            {
+              "type": "list",
+              "boldPrefix": "El Método Feynman consiste en",
+              "listItems": [
+                { "type": "numberedItem", "content": "1) Escribir el nombre del tema." },
+                { "type": "numberedItem", "content": "2) Redactar una explicación sencilla con tus propias palabras." },
+                { "type": "numberedItem", "content": "3) Releer el tema para entender mejor las lagunas y reacomodar tu resumen." },
+                { "type": "numberedItem", "content": "4) Repetir hasta tener un esquema claro [49, 50]." }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Usa un ordenador portátil para tomar notas en clase",
+          "content": "si tienes déficit de atención, ya que facilita la limpieza, evita la pérdida de apuntes y permite transformarlos en formatos más visuales o tarjetas de memorización [27, 48]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Repasa los apuntes lo antes posible",
+          "content": "después de clase para rellenar lagunas, consolidar la información en tu memoria y asegurar que tus apuntes sean útiles [51]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Utiliza el movimiento",
+          "content": "Leer, subrayar, escribir en los márgenes, explicar o recitar la información en voz alta puede ayudarte a mantenerte alerta mientras estudias [52, 53]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Implementa programas estructurados de entrenamiento cognitivo",
+          "content": "con ejercicios específicos para la atención y seguimiento [33, 54]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Practica ejercicios de neuroplasticidad",
+          "content": "que combinen entrenamiento cognitivo, visual y neuromotor para mejorar la concentración y la respuesta reactiva [24, 31, 32]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Utiliza la gamificación y el aprendizaje lúdico",
+          "content": "Emplea juegos y actividades lúdicas para favorecer la atención sostenida, creando entornos seguros y dinámicos que se adapten a diferentes estilos de aprendizaje [21, 22, 24]."
+        }
+      ]
+    },
+    {
+      "title": "5. Estrategias Metacognitivas y de Mentalidad",
+      "items": [
+        {
+          "type": "paragraph",
+          "boldPrefix": "Usa tu atención de manera consciente",
+          "content": "La clave para recuperar o mejorar tu capacidad de atención es usarla de manera consciente, \"apagando el piloto automático\" [55]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Concéntrate en lo significativo",
+          "content": "Enfócate en tareas que sean significativas para ti; cuanto más lo sean, más fácil será concentrarse debido al interés intrínseco [7, 55]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Comprende los ritmos de tu cerebro",
+          "content": "Tu mente tiene un ritmo y no puedes pretender mantener tu máximo nivel de atención todo el día [7]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Determina tu nivel de concentración actual",
+          "content": "Usa un cronómetro para medir cuánto tiempo puedes mantenerte enfocado en una actividad sin distraerte. Este es tu punto de partida para entrenar y aumentar ese tiempo gradualmente [7, 41, 42, 56]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Medita regularmente",
+          "content": "La meditación es una forma básica e inteligente de entrenar la atención, ya que te obliga a enfocarte en algo (como la respiración) que no es inherentemente interesante. Cada vez que tu mente se disperse y la regreses, estás ejercitando tu capacidad de atención [20, 29, 57]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Entrena con repeticiones",
+          "content": "Si puedes concentrarte por 5 minutos, practica 5 series de 5 minutos al día con descansos intermedios, como en un gimnasio. Luego, vuelve a medir tu tiempo de concentración y verás cómo aumenta [42, 56, 57]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Cuida tu \"dieta mental\"",
+          "content": "Minimiza el consumo de \"comida chatarra cognitiva\", que se refiere a contenido corto, extra estimulante y divertido de redes sociales, ya que esto reduce tu capacidad de atención a largo plazo [23, 58, 59]. En su lugar, consume contenido largo y con poca estimulación, como videos educativos, charlas TED, audiolibros, entradas de blogs, podcasts y documentales [59]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Evita hacer varias cosas a la vez (multitasking)",
+          "content": "al consumir contenido, ya que esto anula los beneficios [39]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Adopta el hábito de terminar lo que empiezas",
+          "content": "Intenta leer un artículo completo, ver un video entero o terminar un capítulo. Esto ayuda a entrenar los músculos de la concentración incluso fuera de tus sesiones dedicadas [39]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Reserva tiempo para tareas creativas y flexibles",
+          "content": "No te hiper-enfoques constantemente; dedica momentos a actividades que no requieran tanta concentración para mantener la flexibilidad y creatividad de tu cerebro [23]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Enfócate en lo que disfrutas",
+          "content": "Prestar atención y concentrarse es más fácil en cosas placenteras. Intenta enfocarte en las partes de tu trabajo o estudio que disfrutas, para que tu cerebro asocie la actividad con placer y te mantengas enfocado por más tiempo [36]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "No te desesperes",
+          "content": "Mejorar la concentración es un proceso a largo plazo, una maratón, no un sprint. Es normal fallar de vez en cuando, y es parte del aprendizaje [39, 53]. Si te distraes, no te regañes; simplemente dite \"Ok, volvamos\" y retoma la tarea [12]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Desarrolla estrategias metacognitivas",
+          "content": "Establece metas claras a corto y mediano plazo, controla el tiempo que dedicas y reflexiona sobre la ejecución de tus tareas para fomentar una concentración consciente y voluntaria [22, 31, 34]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Motiva el aprendizaje",
+          "content": "Asegúrate de que los contenidos que estudias o trabajas sean interesantes, ya que esto favorece la concentración [21]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Usa motivadores externos y rendición de cuentas",
+          "content": "Comparte tu plan diario con un compañero para crear compromiso, fija pequeñas recompensas (un café, 5 minutos de redes) después de cada bloque de trabajo, o lleva un registro público de tu progreso para aumentar la presión social positiva [13]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "Adopta una \"postura de poder\"",
+          "content": "Enderezarte y apoyar los pies en el suelo puede ayudar a tu cerebro a entrar en \"modo serio\" [9]."
+        },
+        {
+          "type": "paragraph",
+          "boldPrefix": "No intentes aplicar todos los consejos a la vez",
+          "content": "Prueba 1 o 2 que te resuenen y observa qué tal funcionan para ti [40]."
+        }
+      ]
+    }
+  ]
+}

@@ -11,6 +11,23 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		769E385A43D74B7CA53BE6EB /* 8bit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 654AAF5E69234A76A0C04FD8 /* 8bit.mp3 */; };
+		E9BDC5D902ED4B85AC709F8B /* 8bit02.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 81877423CA5345C6BF013237 /* 8bit02.mp3 */; };
+		975AAFB4438A4608AB26626C /* alarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5346E39212FD486F93D5C76D /* alarm.mp3 */; };
+		79B57D2E235C4C3EA5CCDB93 /* campanas.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F971709177534BCFAC62A421 /* campanas.mp3 */; };
+		2319816674D54CBC8112C17D /* clocktower.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D2976F5917AC46CC999D31F7 /* clocktower.mp3 */; };
+		171D75DC21404E52B2500A75 /* guerra.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36A3C54525FD4D3C87F34AFF /* guerra.mp3 */; };
+		7D2DB7A0557544B0A10DB465 /* guitarra.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BFDC0441876C4724B2D0679E /* guitarra.mp3 */; };
+		4820F84209A54654803A6179 /* hellooooyou.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 138594BF7FB04C78943B0E73 /* hellooooyou.mp3 */; };
+		3AF2E71ECDDE4D29813CFE6F /* nuclearalarm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3FAB1F5F00F44F2E8D75ABB9 /* nuclearalarm.mp3 */; };
+		A342503D4D484B9091E199A3 /* pipipipi.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0DFAF90CC630436AB5AEC98C /* pipipipi.mp3 */; };
+		1894FC2D56E54B8888B98F02 /* pupetfnaf.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3B2CD8D7738D43D79D335C13 /* pupetfnaf.mp3 */; };
+		864E49B0305047C2B54734C1 /* suspenso.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 73649671C0CB4BA8A2F99566 /* suspenso.mp3 */; };
+		2C988474E9BC4682AB12747A /* tuntun.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A065F6C810B84AD9BF530398 /* tuntun.mp3 */; };
+		EDE4A520CC194DE585AACC9A /* vibracion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0CE8D01E312A49B6AB5E359F /* vibracion.mp3 */; };
+		B21824A1A99F465F89226653 /* xilofono.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C77DC4D65228457CBCD472A5 /* xilofono.mp3 */; };
+		D2D568CC861C4D0FA4965147 /* x8bit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B0B57845700045BCBE58109E /* x8bit.mp3 */; };
+		0E8970D68BD949248CFB0827 /* x8bit02.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +39,23 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = fokus/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* fokus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "fokus-Bridging-Header.h"; path = "fokus/fokus-Bridging-Header.h"; sourceTree = "<group>"; };
+		654AAF5E69234A76A0C04FD8 /* 8bit.mp3 */ = {isa = PBXFileReference; name = "8bit.mp3"; path = "fokus/8bit.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		81877423CA5345C6BF013237 /* 8bit02.mp3 */ = {isa = PBXFileReference; name = "8bit02.mp3"; path = "fokus/8bit02.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5346E39212FD486F93D5C76D /* alarm.mp3 */ = {isa = PBXFileReference; name = "alarm.mp3"; path = "fokus/alarm.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F971709177534BCFAC62A421 /* campanas.mp3 */ = {isa = PBXFileReference; name = "campanas.mp3"; path = "fokus/campanas.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D2976F5917AC46CC999D31F7 /* clocktower.mp3 */ = {isa = PBXFileReference; name = "clocktower.mp3"; path = "fokus/clocktower.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		36A3C54525FD4D3C87F34AFF /* guerra.mp3 */ = {isa = PBXFileReference; name = "guerra.mp3"; path = "fokus/guerra.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BFDC0441876C4724B2D0679E /* guitarra.mp3 */ = {isa = PBXFileReference; name = "guitarra.mp3"; path = "fokus/guitarra.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		138594BF7FB04C78943B0E73 /* hellooooyou.mp3 */ = {isa = PBXFileReference; name = "hellooooyou.mp3"; path = "fokus/hellooooyou.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3FAB1F5F00F44F2E8D75ABB9 /* nuclearalarm.mp3 */ = {isa = PBXFileReference; name = "nuclearalarm.mp3"; path = "fokus/nuclearalarm.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0DFAF90CC630436AB5AEC98C /* pipipipi.mp3 */ = {isa = PBXFileReference; name = "pipipipi.mp3"; path = "fokus/pipipipi.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3B2CD8D7738D43D79D335C13 /* pupetfnaf.mp3 */ = {isa = PBXFileReference; name = "pupetfnaf.mp3"; path = "fokus/pupetfnaf.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		73649671C0CB4BA8A2F99566 /* suspenso.mp3 */ = {isa = PBXFileReference; name = "suspenso.mp3"; path = "fokus/suspenso.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A065F6C810B84AD9BF530398 /* tuntun.mp3 */ = {isa = PBXFileReference; name = "tuntun.mp3"; path = "fokus/tuntun.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0CE8D01E312A49B6AB5E359F /* vibracion.mp3 */ = {isa = PBXFileReference; name = "vibracion.mp3"; path = "fokus/vibracion.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C77DC4D65228457CBCD472A5 /* xilofono.mp3 */ = {isa = PBXFileReference; name = "xilofono.mp3"; path = "fokus/xilofono.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B0B57845700045BCBE58109E /* x8bit.mp3 */ = {isa = PBXFileReference; name = "x8bit.mp3"; path = "fokus/x8bit.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */ = {isa = PBXFileReference; name = "x8bit02.mp3"; path = "fokus/x8bit02.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +78,23 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				654AAF5E69234A76A0C04FD8 /* 8bit.mp3 */,
+				81877423CA5345C6BF013237 /* 8bit02.mp3 */,
+				5346E39212FD486F93D5C76D /* alarm.mp3 */,
+				F971709177534BCFAC62A421 /* campanas.mp3 */,
+				D2976F5917AC46CC999D31F7 /* clocktower.mp3 */,
+				36A3C54525FD4D3C87F34AFF /* guerra.mp3 */,
+				BFDC0441876C4724B2D0679E /* guitarra.mp3 */,
+				138594BF7FB04C78943B0E73 /* hellooooyou.mp3 */,
+				3FAB1F5F00F44F2E8D75ABB9 /* nuclearalarm.mp3 */,
+				0DFAF90CC630436AB5AEC98C /* pipipipi.mp3 */,
+				3B2CD8D7738D43D79D335C13 /* pupetfnaf.mp3 */,
+				73649671C0CB4BA8A2F99566 /* suspenso.mp3 */,
+				A065F6C810B84AD9BF530398 /* tuntun.mp3 */,
+				0CE8D01E312A49B6AB5E359F /* vibracion.mp3 */,
+				C77DC4D65228457CBCD472A5 /* xilofono.mp3 */,
+				B0B57845700045BCBE58109E /* x8bit.mp3 */,
+				685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */,
 			);
 			name = fokus;
 			sourceTree = "<group>";
@@ -155,6 +206,23 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				769E385A43D74B7CA53BE6EB /* 8bit.mp3 in Resources */,
+				E9BDC5D902ED4B85AC709F8B /* 8bit02.mp3 in Resources */,
+				975AAFB4438A4608AB26626C /* alarm.mp3 in Resources */,
+				79B57D2E235C4C3EA5CCDB93 /* campanas.mp3 in Resources */,
+				2319816674D54CBC8112C17D /* clocktower.mp3 in Resources */,
+				171D75DC21404E52B2500A75 /* guerra.mp3 in Resources */,
+				7D2DB7A0557544B0A10DB465 /* guitarra.mp3 in Resources */,
+				4820F84209A54654803A6179 /* hellooooyou.mp3 in Resources */,
+				3AF2E71ECDDE4D29813CFE6F /* nuclearalarm.mp3 in Resources */,
+				A342503D4D484B9091E199A3 /* pipipipi.mp3 in Resources */,
+				1894FC2D56E54B8888B98F02 /* pupetfnaf.mp3 in Resources */,
+				864E49B0305047C2B54734C1 /* suspenso.mp3 in Resources */,
+				2C988474E9BC4682AB12747A /* tuntun.mp3 in Resources */,
+				EDE4A520CC194DE585AACC9A /* vibracion.mp3 in Resources */,
+				B21824A1A99F465F89226653 /* xilofono.mp3 in Resources */,
+				D2D568CC861C4D0FA4965147 /* x8bit.mp3 in Resources */,
+				0E8970D68BD949248CFB0827 /* x8bit02.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

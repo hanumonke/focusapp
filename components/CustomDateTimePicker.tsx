@@ -16,6 +16,7 @@ const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Selec
   // Derive Date object from value for DatePickerInput and TimePickerModal
   // If value is undefined, default to current date/time to avoid errors in pickers
   const currentSelectedDate: Date = value ? new Date(value) : new Date();
+  currentSelectedDate.setHours(0, 0, 0, 0); // at midnight
 
   // Handle DatePickerInput change
   const onDateChange = useCallback(
@@ -76,7 +77,7 @@ const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Selec
       <View style={styles.inputRow}>
       
         <DatePickerInput
-          validRange={{startDate: new Date(), endDate: limitDate ? new Date(limitDate) : undefined }}
+          validRange={{startDate: currentSelectedDate, endDate: limitDate ? new Date(limitDate) : undefined }}
           presentationStyle='pageSheet'
           mode='outlined'
           locale="es" // Set locale for language of picker

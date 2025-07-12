@@ -52,7 +52,7 @@ const TaskDetails = () => {
         break;
       case 'weekly':
         details = `Semanal ${reminder.daysOfWeek && reminder.daysOfWeek.length > 0
-          ? ` los ${reminder.daysOfWeek.map(d => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][d]).join(', ')}`
+          ? `los ${reminder.daysOfWeek.map(d => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][d]).join(', ')}`
           : ''} a las ${reminder.timestamp ? new Date(reminder.timestamp).toLocaleTimeString() : 'no time'}`;
         icon = 'calendar-week';
         break;
@@ -73,10 +73,9 @@ const TaskDetails = () => {
             {/* @ts-ignore */}
             <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
             <Text variant="titleMedium" style={styles.reminderTitle}>
-              {reminder.type.charAt(0).toUpperCase() + reminder.type.slice(1)} Recordatorio
+              {reminder.message}
             </Text>
           </View>
-          <Text style={styles.reminderMessage}>{reminder.message}</Text>
           <Text style={styles.reminderDetails}>{details}</Text>
         </Card.Content>
       </Card>

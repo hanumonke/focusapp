@@ -7,6 +7,8 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
+// QUITAR LO DE MEJOR RACHA
+
 const Habits = () => {
   const [habits, setHabits] = useState<HabitsState>([]);
   const [loading, setLoading] = useState(true);
@@ -204,14 +206,14 @@ const Habits = () => {
                   {item.currentStreak}
                 </Badge>
               </View>
-              <View style={styles.streakItem}>
+              {/* <View style={styles.streakItem}>
                 <Text variant="labelSmall" style={styles.streakLabel}>
                   MEJOR
                 </Text>
                 <Badge size={24}>
                   {item.bestStreak}
                 </Badge>
-              </View>
+              </View> */}
             </View>
           </View>
         </Card.Content>

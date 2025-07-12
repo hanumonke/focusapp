@@ -1,4 +1,5 @@
 // notificationService.ts
+import { loadHabits, loadSettings, loadTasks } from '@/db/storage';
 import { IHabit, IReminder, timeToSeconds } from '@/db/types';
 import * as Notifications from 'expo-notifications';
 
@@ -59,6 +60,10 @@ export const scheduleReminders = async (reminders: IReminder[], itemId: string) 
 
 // --- AGENDAR UN SOLO RECORDATORIO ---
 const setSingleReminder = async (reminder: IReminder, itemId: string) => {
+
+  const settingsState = await loadSettings(); 
+  
+
   if (!reminder.timestamp) {
     console.warn('Reminder has no timestamp, skipping');
     return;
@@ -74,7 +79,7 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
     title: reminder.title,
     body: reminder.message,
     data: { itemId, reminderId: reminder.id },
-    sound: reminder.sound || 'default',
+    sound: settingsState.defaultNotificationSound || 'default',
   };
 
   switch (reminder.type) {
@@ -178,6 +183,10 @@ const scheduleHabitSingleReminder = async (
   habit: IHabit,
   type: 'onTime' | 'before'
 ) => {
+
+// SOUND
+  const settingsState = await loadSettings();
+
   const [baseHour, baseMinute] = habit.recurrence.time.split(':').map(Number);
   let hour = baseHour;
   let minute = baseMinute;
@@ -199,7 +208,7 @@ const scheduleHabitSingleReminder = async (
   const content = {
     title: habit.title,
     body: message,
-    sound: 'default',
+    sound: settingsState.defaultNotificationSound || 'default',
     data: { habitId: habit.id, type },
   };
 
@@ -227,4 +236,39 @@ const scheduleHabitSingleReminder = async (
       });
     }
   }
+};
+
+export const rescheduleAllNotifications = async () => {
+    console.log('Iniciando reprogramación de todas las notificaciones...');
+    try {
+        // 1. Cancelar ABSOLUTAMENTE todas las notificaciones programadas
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log('Todas las notificaciones existentes han sido canceladas.');
+
+        // 2. Cargar todos los hábitos y reprogramarlos
+        const habits = await loadHabits();
+        console.log(`Reprogramando ${habits.length} hábitos...`);
+        for (const habit of habits) {
+            // scheduleHabitReminders ya se encarga de programar los recordatorios para cada hábito.
+            await scheduleHabitReminders(habit); 
+        }
+        console.log('Reprogramación de hábitos completada.');
+
+        // 3. Cargar todas las tareas y reprogramar sus recordatorios (si aplica)
+        // Solo si tus tareas también usan el sonido por defecto y necesitan ser actualizadas.
+        const tasks = await loadTasks(); 
+        console.log(`Reprogramando ${tasks.length} tareas...`);
+        for (const task of tasks) {
+            if (task.reminders && task.reminders.length > 0) {
+                // scheduleReminders ya se encarga de programar los recordatorios para cada tarea.
+                await scheduleReminders(task.reminders, task.id);
+            }
+        }
+        console.log('Reprogramación de tareas completada.');
+
+        console.log('Todas las notificaciones han sido reprogramadas exitosamente con el nuevo sonido.');
+
+    } catch (error) {
+        console.error('Error al reprogramar todas las notificaciones:', error);
+    }
 };

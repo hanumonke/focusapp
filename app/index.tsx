@@ -80,6 +80,8 @@ const Pendientes = () => {
       const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
       const newStreak = lastCompleted === yesterday ? habit.currentStreak + 1 : 1;
 
+      cancelNotificationsForItem(habitId); 
+
       return {
         ...habit,
         currentStreak: newStreak,
@@ -187,7 +189,7 @@ const Pendientes = () => {
         onRefresh={handleRefresh}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text variant="titleMedium">No hay tareas o habitos pendientes</Text>
+            <Text variant="titleMedium">No hay tareas o hábitos pendientes</Text>
           </View>
         }
       />

@@ -9,7 +9,7 @@ registerTranslation('es', es)
 export default function RootLayout() {
 
   return (
-    
+
     <PaperProvider theme={MD3LightTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
 
@@ -27,8 +27,10 @@ export default function RootLayout() {
           />
 
 
+
+
           <Drawer.Screen
-          
+
             name="tasks/index" // Corresponde al directorio 'tasks'
             options={{
               drawerLabel: 'Mis Tareas',
@@ -80,7 +82,17 @@ export default function RootLayout() {
               title: 'Ajustes'
             }}
           />
+          <Drawer.Screen
+
+            name="help" // Corresponde al archivo 'Help'
+            options={{
+              drawerLabel: 'Ayuda',
+              title: 'Ayuda', // Título de la cabecera cuando esta pantalla está activa
+            }}
+          />
         </Drawer>
+
+
 
       </GestureHandlerRootView>
     </PaperProvider>
