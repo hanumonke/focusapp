@@ -1,11 +1,11 @@
 // src/app/pendientes/index.tsx
-import { loadHabits, loadTasks, saveHabits, saveTasks } from '@/db/storage';
+import { loadHabits, loadPoints, loadSettings, loadTasks, saveHabits, savePoints, saveTasks } from '@/db/storage';
 import { IHabit, ITask } from '@/db/types';
 import { formatDueDate } from '@/utils/helpers';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { Avatar, Badge, Button, Card, Chip, Modal, Portal, Searchbar, Text, useTheme } from 'react-native-paper';
 
 type IPendingItem = (ITask & { itemType: 'task', isDueToday: boolean, sortKey: string }) | (IHabit & { itemType: 'habit', isDueToday: boolean, sortKey: string });
@@ -29,11 +29,17 @@ const Pendientes = () => {
     return { loadedTasks, loadedHabits };
   }, []);
 
+
+
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
   };
+
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -48,6 +54,63 @@ const Pendientes = () => {
       });
     }, [loadData])
   );
+
+  const askToSaveStreak = async (habit: IHabit) => {
+    Alert.alert(
+      "¿Salvar racha?",
+      `¿Quieres salvar tu racha de ${habit.currentStreak} días para "${habit.title}"?`,
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Sí, salvar",
+          onPress: async () => {
+            // Mark as completed yesterday to maintain the streak
+            const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            const updatedHabits = habits.map(h => 
+              h.id === habit.id ? { ...h, lastCompletedDate: yesterdayStr } : h
+            );
+            await saveHabits(updatedHabits);
+            setHabits(updatedHabits);
+            Alert.alert("¡Racha salvada!", "Tu racha ha sido mantenida.");
+          }
+        }
+      ]
+    );
+  };
+
+
+  // Reset streaks if missed (simple/pragmatic)
+useEffect(() => {
+  const resetStreaksIfMissed = async () => {
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const yesterdayStr = new Date(today.getTime() - 86400000).toISOString().slice(0, 10);
+
+    let updated = false;
+    const updatedHabits = habits.map(habit => {
+      if (!habit.lastCompletedDate) return habit;
+      const last = habit.lastCompletedDate.slice(0, 10);
+      
+      // Check if streak should be reset (missed more than 1 day)
+      if (last !== todayStr && last !== yesterdayStr && habit.currentStreak !== 0) {
+        // Ask user if they want to save the streak
+        askToSaveStreak(habit);
+        return habit; // Don't reset immediately, let user decide
+      }
+      return habit;
+    });
+
+    if (updated) {
+      await saveHabits(updatedHabits);
+      setHabits(updatedHabits);
+    }
+  };
+
+  if (habits.length > 0) resetStreaksIfMissed();
+  
+}, [habits.length]);
+
+
 
   const handleOverdueAction = async (taskId: string, action: 'complete' | 'delete') => {
     let updatedTasks = [...tasks];
@@ -68,6 +131,33 @@ const Pendientes = () => {
     if (overdueTasks.length === 1) setOverdueModalVisible(false);
   };
 
+  
+
+    const handleCompleteTask = async (id: string) => {
+      const updatedTasks = tasks.map(task =>
+        task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
+      );
+      await saveTasks(updatedTasks);
+      setTasks(updatedTasks);
+
+      const {difficulty} = await loadSettings(); 
+  
+      // Sumar puntos solo si la tarea se acaba de completar
+      const completedTask = tasks.find(task => task.id === id);
+      if (completedTask && !completedTask.isCompleted) {
+        const currentPoints = await loadPoints();
+        const add = difficulty[completedTask.difficulty || 'medium'];
+        await savePoints(currentPoints + add);
+      } else {
+       
+        const currentPoints = await loadPoints();
+        const subtract = difficulty[completedTask?.difficulty || 'medium'];
+        await savePoints(currentPoints - subtract);
+      }
+    };
+  
+
+    
   const handleCompleteHabit = async (habitId: string) => {
     const today = new Date().toISOString().slice(0, 10);
 
@@ -118,7 +208,7 @@ const Pendientes = () => {
   };
 
   const renderItem = ({ item }: { item: IPendingItem }) => (
-    <PendingItem item={item} theme={theme} onCompleteHabit={handleCompleteHabit} />
+    <PendingItem item={item} theme={theme} onCompleteHabit={handleCompleteHabit} onCompleteTask={handleCompleteTask}/>
   );
 
   if (loading) {
@@ -202,9 +292,10 @@ type PendingItemProps = {
   item: IPendingItem;
   theme: any;
   onCompleteHabit: (habitId: string) => void;
+  onCompleteTask: (taskId: string) => void;
 };
 
-const PendingItem = ({ item, theme, onCompleteHabit }: PendingItemProps) => {
+const PendingItem = ({ item, theme, onCompleteHabit, onCompleteTask }: PendingItemProps) => {
   const isTask = item.itemType === 'task';
   const isHabit = item.itemType === 'habit';
 
@@ -273,6 +364,14 @@ const PendingItem = ({ item, theme, onCompleteHabit }: PendingItemProps) => {
             compact
           >
             {item.lastCompletedDate?.slice(0, 10) === new Date().toISOString().slice(0, 10) ? "Hecho" : "Completado"}
+          </Button>
+        )}
+        {isTask && (
+          <Button
+           mode='contained'
+           onPress={() => onCompleteTask(item.id)}
+          >
+            Completar
           </Button>
         )}
       </Card.Actions>

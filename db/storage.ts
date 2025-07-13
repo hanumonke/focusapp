@@ -57,6 +57,9 @@ export const loadSettings = async (): Promise<SettingsState> => {
           theme: 'light',
           enableNotifications: true,
           defaultNotificationSound: 'default',
+          difficulty: {
+            hard: 15, medium: 10, easy: 5
+          }
         };
   } catch (e) {
     console.error("Error al cargar configuración:", e);
@@ -64,6 +67,9 @@ export const loadSettings = async (): Promise<SettingsState> => {
       theme: 'light',
       enableNotifications: true,
       defaultNotificationSound: 'default',
+      difficulty: {
+            hard: 15, medium: 10, easy: 5
+          }
     };
   }
 };

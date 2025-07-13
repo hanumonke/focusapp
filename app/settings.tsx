@@ -2,12 +2,13 @@
 //TODO: verificar que se esta guardando la config
 
 import { loadSettings, saveSettings } from '@/db/storage';
+import { ISettingsState, TaskDifficulty } from '@/db/types';
 import { rescheduleAllNotifications } from '@/utils/notificationService';
 import { NOTIFICATION_SOUNDS, NotificationSoundKey } from '@/utils/notificationSoundOptions';
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ScrollView } from 'react-native';
-import { Button, Divider, Switch, useTheme, Text, List, IconButton, Menu } from 'react-native-paper';
+import { Button, Divider, Switch, useTheme, Text, List, IconButton, Menu, TextInput } from 'react-native-paper';
 // import { useAudioPlayer} from "expo-audio"; 
 
 // Implement dark layout
@@ -24,35 +25,83 @@ const SettingsScreen = () => {
     const [soundMenuVisible, setSoundMenuVisible] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [saveButtonActive, setSaveButtonActive] = useState(false);
+    const [hard, setHard] = useState('')
+    const [medium, setMedium] = useState('')
+    const [easy, setEasy] = useState('')
 
     useEffect(() => {
-        const loadSound = async () => {
+
+        const loadSettingsState = async () => {
             try {
-                
-                const settingsState = await loadSettings(); 
-                const defaultSound = settingsState.defaultNotificationSound
-                if (!defaultSound) throw Error("Error cargando el mensaje") ; 
-                console.log("Sonido actual: ", defaultSound);
-                setSound(defaultSound); 
+                const settings = await loadSettings();
+                if (settings) {
+
+                    const defaultSound = settings.defaultNotificationSound
+                    if (defaultSound && defaultSound !== undefined) {
+                        setSound(defaultSound);
+
+                    } else {
+                        throw Error("error al cargar el sonido predeterminado")
+                    }
+
+                    const difficulty = settings.difficulty;
+
+                    if (difficulty && difficulty !== undefined) {
+                        setHard(difficulty.hard.toString());
+                        setMedium(difficulty.medium.toString());
+                        setEasy(difficulty.easy.toString());
+
+
+                    } else {
+                        throw Error("error al cargar el sonido predeterminado")
+                    }
+                } else {
+                    throw Error("error al cargar la configuracion");
+                }
+
             } catch (error) {
-                console.log(error)
+                console.error(error)
             }
 
+
         }
-        loadSound(); 
+        loadSettingsState();
     }, [])
 
-    const handleSetSound = (key: NotificationSoundKey) => {
-    setSaveButtonActive(true); 
-    if (sounds[key] !== undefined || null ) console.log(key)
-    const { uri } = sounds[key]; 
-    console.log("Sonido nuevo: ", uri); 
-    setSound(key); 
 
-    setSoundMenuVisible(false); 
-    
-    // player.replace({uri: sounds[key].uri})
-    // player.play(); 
+    const saveDifficulty = async () => {
+
+        try {
+            const settings = await loadSettings();
+            if (settings) {
+                const newSettings: ISettingsState = { ...settings, 
+                                                        difficulty: { hard: Number(hard), 
+                                                                      medium: Number(medium), 
+                                                                      easy: Number(easy) } 
+                                                    }
+                await saveSettings(newSettings); 
+            }
+
+
+        } catch (error) {
+            console.error(error); 
+        }
+
+    }
+
+
+
+    const handleSetSound = (key: NotificationSoundKey) => {
+        setSaveButtonActive(true);
+        if (sounds[key] !== undefined || null) console.log(key)
+        const { uri } = sounds[key];
+        console.log("Sonido nuevo: ", uri);
+        setSound(key);
+
+        setSoundMenuVisible(false);
+
+        // player.replace({uri: sounds[key].uri})
+        // player.play(); 
 
     };
 
@@ -60,9 +109,9 @@ const SettingsScreen = () => {
     const saveDefaultSound = async (soundUri: string) => {
         // save the sound
         try {
-            const settingsState = await loadSettings(); 
+            const settingsState = await loadSettings();
             await saveSettings({
-                ...settingsState, 
+                ...settingsState,
                 defaultNotificationSound: soundUri
             })
             console.log("SOUND UPDATED")
@@ -75,16 +124,16 @@ const SettingsScreen = () => {
     const handleSaveSound = async () => {
         console.log("SAVING:", sound)
         try {
-            
-            await saveDefaultSound(sound); 
 
-            const settings = await loadSettings(); 
-            console.log(settings.defaultNotificationSound); 
+            await saveDefaultSound(sound);
+
+            const settings = await loadSettings();
+            console.log(settings.defaultNotificationSound);
             setSaveButtonActive(false);
             // UPDATE ALL NOTIFICATION SOUNDS?
-            await rescheduleAllNotifications(); 
-            const notifications = await getAllScheduledNotificationsAsync(); 
-            notifications.forEach(n => console.log(n)); 
+            await rescheduleAllNotifications();
+            const notifications = await getAllScheduledNotificationsAsync();
+            notifications.forEach(n => console.log(n));
         } catch (error) {
             console.error(error);
         }
@@ -128,10 +177,10 @@ const SettingsScreen = () => {
                         />
                     )}
                 /> */}
-        
+
 
                 <Menu
-                    
+
                     visible={soundMenuVisible}
                     onDismiss={() => setSoundMenuVisible(false)}
                     anchor={<List.Item
@@ -140,63 +189,58 @@ const SettingsScreen = () => {
                         left={props => <List.Icon {...props} icon="music" />}
                         right={() => (
                             <>
-                            <Button onPress={() => setSoundMenuVisible(true)}>Custom</Button>
-                            <Button mode='contained' onPress={handleSaveSound} disabled={!saveButtonActive}>Save</Button>
+                                <Button onPress={() => setSoundMenuVisible(true)}>Custom</Button>
+                                <Button mode='contained' onPress={handleSaveSound} disabled={!saveButtonActive}>Save</Button>
                             </>
                         )}
                     />}>
 
-                    <FlatList 
-                        style={{maxHeight: 250}}
+                    <FlatList
+                        style={{ maxHeight: 250 }}
                         data={Object.values(sounds)}
-                        renderItem={({item}) => {
+                        renderItem={({ item }) => {
                             return <Menu.Item onPress={() => handleSetSound(item.name as NotificationSoundKey)} title={item.name} />
                         }}
-                    
+
                     />
 
 
                 </Menu>
 
-   
+
 
 
             </List.Section>
             <Divider />
 
-            {/* <List.Section>
+            <List.Section>
                 <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Data Management
+                    Dificultad
                 </List.Subheader>
 
-                <List.Item
-                    title="Backup & Restore"
-                    description="Save or load your data"
-                    left={props => <List.Icon {...props} icon="cloud-upload" />}
-                    right={props => <List.Icon {...props} icon="chevron-right" />}
-                />
 
                 <View style={styles.buttonContainer}>
+
+
+                    <TextInput label="Dificil" keyboardType='numeric' value={hard} onChangeText={setHard} />
+
+                    <TextInput label="Medio" keyboardType='numeric' value={medium} onChangeText={setMedium} />
+
+
+                    <TextInput label="Facil" keyboardType='numeric' value={easy} onChangeText={setEasy} />
                     <Button
                         mode="contained"
                         icon="content-save"
                         style={styles.button}
-                        onPress={() => console.log('Save backup')}
+                        onPress={saveDifficulty}
                     >
-                        Create Backup
+                        Guardar
                     </Button>
 
-                    <Button
-                        mode="outlined"
-                        icon="cloud-download"
-                        style={styles.button}
-                        onPress={() => console.log('Restore backup')}
-                    >
-                        Restore Backup
-                    </Button>
+
                 </View>
             </List.Section>
-            <Divider /> */}
+            <Divider />
 
             <List.Section>
                 <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>

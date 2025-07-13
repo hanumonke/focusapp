@@ -1,6 +1,6 @@
 import CustomHeader from '@/components/CustomHeader';
 import { loadHabits } from '@/db/storage';
-import { IHabit, IReminder } from '@/db/types';
+import { IHabit } from '@/db/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';

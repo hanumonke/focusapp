@@ -65,6 +65,9 @@ export interface ISettingsState {
     theme: 'light' | 'dark';
     enableNotifications: boolean;
     defaultNotificationSound: string;
+    difficulty: {
+        hard: number, medium: number, easy: number
+    }
 }
 
 // Para separar en AsyncStorage:
