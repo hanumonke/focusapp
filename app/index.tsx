@@ -48,9 +48,21 @@ const Pendientes = () => {
         console.log("Total tasks loaded:", loadedTasks.length);
         
         const overdue = loadedTasks.filter(task => {
-          const isOverdue = !task.isCompleted && 
-                           task.dueDate && 
-                           new Date(task.dueDate) < new Date();
+          if (!task.dueDate || task.isCompleted) {
+            return false;
+          }
+          
+          const dueDate = new Date(task.dueDate);
+          const now = new Date();
+          
+          // Add debugging
+          console.log(`Task: ${task.title}`);
+          console.log(`Due date: ${task.dueDate}`);
+          console.log(`Parsed due date: ${dueDate.toISOString()}`);
+          console.log(`Current time: ${now.toISOString()}`);
+          console.log(`Is overdue: ${dueDate < now}`);
+          
+          const isOverdue = dueDate < now;
           
           if (isOverdue) {
             console.log("Found overdue task:", task.title, "Due:", task.dueDate);

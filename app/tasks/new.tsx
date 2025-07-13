@@ -87,37 +87,45 @@ const CreateTask = () => {
       const settingsState = await loadSettings();
       const now = new Date().toISOString();
 
-    // Generate ID BEFORE saving
-    const id = taskId ? taskId as string : uuid.v4() as string; 
+      // Generate ID BEFORE saving
+      const id = taskId ? taskId as string : uuid.v4() as string; 
 
-    const updatedTask: ITask = {
-      ...data,
-      id: id, // Use generated ID here
-      updatedAt: now,
-      createdAt: taskId ? data.createdAt : now
-    };
+      const updatedTask: ITask = {
+        ...data,
+        id: id, // Use generated ID here
+        updatedAt: now,
+        createdAt: taskId ? data.createdAt : now
+      };
 
-      
-
+      // Fix: Use the correct ID consistently
       const updatedTasks = taskId
         ? tasksState.map(t => t.id === taskId ? updatedTask : t)
-        : [...tasksState, { ...updatedTask, id: uuid.v4() as string }];
+        : [...tasksState, updatedTask]; // Remove the duplicate ID generation
 
       await saveTasks(updatedTasks)
-         // Schedule notifications if enabled
-    if (settingsState.enableNotifications) {
-      // add reminder for due date
-      const dueDateReminder: IReminder = {
-         id: uuid.v4() as string,
-        type: 'date',
-        title: data.title,
-        message: data.description.slice(0, 30) + "...",
-        timestamp: data.dueDate!,
-        sound: 'default'
+      
+      // Schedule notifications if enabled and task has due date
+      if (settingsState.enableNotifications && data.dueDate) {
+        // Cancel existing notifications first
+        // await cancelNotificationsForItem(updatedTask.id); // This function is not defined in the original file
+        
+        // Create due date reminder
+        const dueDateReminder: IReminder = {
+          id: uuid.v4() as string,
+          type: 'date',
+          title: data.title,
+          message: data.description ? data.description.slice(0, 30) + "..." : "Tarea vence pronto",
+          timestamp: data.dueDate,
+          sound: 'default'
+        }
+        
+        // Schedule all reminders (user-created + due date)
+        const allReminders = [...data.reminders, dueDateReminder];
+        await scheduleReminders(allReminders, updatedTask.id);
+        
+        console.log(`Scheduled ${allReminders.length} notifications for task: ${data.title}`);
       }
-      await scheduleReminders([...data.reminders, dueDateReminder], updatedTask.id);
 
-    }
       setLoading(false); 
       console.log("guardado")
       router.push('/tasks');
@@ -258,7 +266,7 @@ const CreateTask = () => {
               <RemindersInput 
                 value={field.value} 
                 onChange={field.onChange} 
-                title={'Recordatorios'} 
+                title={watch('title') || "Tarea"} 
                 dueDate={watch('dueDate')}
               />
             )}

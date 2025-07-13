@@ -29,23 +29,25 @@
       [
         "expo-notifications",
         {
+          "defaultChannel": "default",
+          "color": "#5893ba",
           "sounds": [
             
-            "./assets/sounds/x8bit.mp3",
-            "./assets/sounds/x8bit02.mp3",
-            "./assets/sounds/alarm.mp3",
-            "./assets/sounds/campanas.mp3",
-            "./assets/sounds/clocktower.mp3",
-            "./assets/sounds/guerra.mp3",
-            "./assets/sounds/guitarra.mp3",
-            "./assets/sounds/hellooooyou.mp3",
-            "./assets/sounds/nuclearalarm.mp3",
-            "./assets/sounds/pipipipi.mp3",
-            "./assets/sounds/pupetfnaf.mp3",
-            "./assets/sounds/suspenso.mp3",
-            "./assets/sounds/tuntun.mp3",
-            "./assets/sounds/vibracion.mp3",
-            "./assets/sounds/xilofono.mp3"
+            "./assets/sounds/x8bit.wav",
+            "./assets/sounds/x8bit02.wav",
+            "./assets/sounds/alarm.wav",
+            "./assets/sounds/campanas.wav",
+            "./assets/sounds/clocktower.wav",
+            "./assets/sounds/guerra.wav",
+            "./assets/sounds/guitarra.wav",
+            "./assets/sounds/hellooooyou.wav",
+            "./assets/sounds/nuclearalarm.wav",
+            "./assets/sounds/pipipipi.wav",
+            "./assets/sounds/pupetfnaf.wav",
+            "./assets/sounds/suspenso.wav",
+            "./assets/sounds/tuntun.wav",
+            "./assets/sounds/vibracion.wav",
+            "./assets/sounds/xilofono.wav"
           ]
         }
       ],

@@ -95,8 +95,8 @@ const Tasks = () => {
   );
 
   console.log('tasks:', tasks);
-  console.log('filteredTasks:', filteredTasks);
-  console.log('searchQuery:', searchQuery);
+  // console.log('filteredTasks:', filteredTasks);
+  // console.log('searchQuery:', searchQuery);
 
   if (loading) {
     return (

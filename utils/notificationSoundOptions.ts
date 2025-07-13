@@ -5,64 +5,70 @@ export const NOTIFICATION_SOUNDS = {
     },
     'x8bit': {
         name: 'x8bit',
-        uri: require('../assets/sounds/x8bit.mp3')
+        uri: 'x8bit.wav' // Solo el nombre del archivo, no require()
     },
     'x8bit02': {
         name: 'x8bit02',
-        uri: require('../assets/sounds/x8bit02.mp3')
+        uri: 'x8bit02.wav'
     },
     'alarm': {
         name: 'alarm',
-        uri: require('../assets/sounds/alarm.mp3')
+        uri: 'alarm.wav'
     },
     'campanas': {
         name: 'campanas',
-        uri: require('../assets/sounds/campanas.mp3')
+        uri: 'campanas.wav'
     },
     'clocktower': {
         name: 'clocktower',
-        uri: require('../assets/sounds/clocktower.mp3')
+        uri: 'clocktower.wav'
     },
     'guerra': {
         name: 'guerra',
-        uri: require('../assets/sounds/guerra.mp3')
+        uri: 'guerra.wav'
     },
     'guitarra': {
         name: 'guitarra',
-        uri: require('../assets/sounds/guitarra.mp3')
+        uri: 'guitarra.wav'
     },
     'hellooooyou': {
         name: 'hellooooyou',
-        uri: require('../assets/sounds/hellooooyou.mp3')
+        uri: 'hellooooyou.wav'
     },
     'nuclearalarm': {
         name: 'nuclearalarm',
-        uri: require('../assets/sounds/nuclearalarm.mp3')
+        uri: 'nuclearalarm.wav'
     },
     'pipipipi': {
         name: 'pipipipi',
-        uri: require('../assets/sounds/pipipipi.mp3')
+        uri: 'pipipipi.wav'
     },
     'pupetfnaf': {
         name: 'pupetfnaf',
-        uri: require('../assets/sounds/pupetfnaf.mp3')
+        uri: 'pupetfnaf.wav'
     },
     'suspenso': {
         name: 'suspenso',
-        uri: require('../assets/sounds/suspenso.mp3')
+            uri: 'suspenso.wav'
     },
     'tuntun': {
         name: 'tuntun',
-        uri: require('../assets/sounds/tuntun.mp3')
+        uri: 'tuntun.wav'
     },
     'vibracion': {
         name: 'vibracion',
-        uri: require('../assets/sounds/vibracion.mp3')
+        uri: 'vibracion.wav'
     },
     'xilofono': {
         name: 'xilofono',
-        uri: require('../assets/sounds/xilofono.mp3')
+        uri: 'xilofono.wav'
     },
 };
 
 export type NotificationSoundKey = keyof typeof NOTIFICATION_SOUNDS;
+
+// Función helper para obtener el URI del sonido
+export const getSoundUri = (soundKey: string): string => {
+    if (soundKey === 'default') return 'default';
+    return NOTIFICATION_SOUNDS[soundKey as NotificationSoundKey]?.uri || 'default';
+};

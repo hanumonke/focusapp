@@ -2,18 +2,20 @@
 //TODO: verificar que se esta guardando la config
 
 import { loadSettings, saveSettings } from '@/db/storage';
-import { ISettingsState, TaskDifficulty } from '@/db/types';
+import { ISettingsState } from '@/db/types';
 import { rescheduleAllNotifications } from '@/utils/notificationService';
-import { NOTIFICATION_SOUNDS, NotificationSoundKey } from '@/utils/notificationSoundOptions';
+import { NOTIFICATION_SOUNDS, NotificationSoundKey, getSoundUri } from '@/utils/notificationSoundOptions';
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView } from 'react-native';
-import { Button, Divider, Switch, useTheme, Text, List, IconButton, Menu, TextInput } from 'react-native-paper';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Divider, List, Menu, Switch, Text, TextInput, useTheme } from 'react-native-paper';
 // import { useAudioPlayer} from "expo-audio"; 
 
 // Implement dark layout
 // delete backup section
 // Create user info section
+
+import { getScheduledNotifications } from '@/utils/notificationService';
 
 const SettingsScreen = () => {
     // const audioSource = require("../assets/sounds/hello.mp3")
@@ -95,11 +97,8 @@ const SettingsScreen = () => {
 
     const handleSetSound = (key: NotificationSoundKey) => {
         setSaveButtonActive(true);
-        if (sounds[key] !== undefined || null) console.log(key)
-        const { uri } = sounds[key];
-        console.log("Sonido nuevo: ", uri);
+        console.log(`Selected sound key: ${key}`);
         setSound(key);
-
         setSoundMenuVisible(false);
 
         // player.replace({uri: sounds[key].uri})
@@ -108,15 +107,15 @@ const SettingsScreen = () => {
     };
 
 
-    const saveDefaultSound = async (soundUri: string) => {
+    const saveDefaultSound = async (soundKey: string) => {
         // save the sound
         try {
             const settingsState = await loadSettings();
             await saveSettings({
                 ...settingsState,
-                defaultNotificationSound: soundUri
+                defaultNotificationSound: soundKey // Guardar la clave, no el URI
             })
-            console.log("SOUND UPDATED")
+            console.log(`Sound updated to: ${soundKey}`);
         } catch (error) {
             console.error(error)
         }
@@ -141,6 +140,40 @@ const SettingsScreen = () => {
         }
     }
 
+    const checkScheduledNotifications = async () => {
+      try {
+        const notifications = await getScheduledNotifications();
+        console.log('=== SCHEDULED NOTIFICATIONS ===');
+        console.log(`Total: ${notifications.length}`);
+        notifications.forEach((notification, index) => {
+          console.log(`${index + 1}. ID: ${notification.identifier}`);
+          console.log(`   Title: ${notification.content.title}`);
+          console.log(`   Body: ${notification.content.body}`);
+          console.log(`   Trigger: ${JSON.stringify(notification.trigger)}`);
+          console.log('---');
+        });
+      } catch (error) {
+        console.error('Error checking notifications:', error);
+      }
+    };
+
+    const debugSoundSettings = async () => {
+        try {
+            const settings = await loadSettings();
+            console.log('=== SOUND SETTINGS DEBUG ===');
+            console.log(`Default sound key: ${settings.defaultNotificationSound}`);
+            console.log(`Sound URI: ${getSoundUri(settings.defaultNotificationSound || 'default')}`);
+            
+            // Verificar notificaciones programadas
+            const notifications = await getScheduledNotifications();
+            console.log(`Scheduled notifications: ${notifications.length}`);
+            notifications.forEach((notification, index) => {
+                console.log(`${index + 1}. Sound: ${notification.content.sound}`);
+            });
+        } catch (error) {
+            console.error('Error debugging sound settings:', error);
+        }
+    };
 
 
     return (
@@ -199,9 +232,10 @@ const SettingsScreen = () => {
 
                     <FlatList
                         style={{ maxHeight: 250 }}
-                        data={Object.values(sounds)}
+                        data={Object.entries(sounds)}
                         renderItem={({ item }) => {
-                            return <Menu.Item onPress={() => handleSetSound(item.name as NotificationSoundKey)} title={item.name} />
+                            const [key, soundData] = item;
+                            return <Menu.Item onPress={() => handleSetSound(key as NotificationSoundKey)} title={soundData.name} />
                         }}
 
                     />
@@ -267,6 +301,20 @@ const SettingsScreen = () => {
             <View style={styles.footer}>
                 <Text style={styles.versionText}>Versión de la app 1.0.0</Text>
             </View>
+            <Button 
+              mode="outlined" 
+              onPress={checkScheduledNotifications}
+              style={{ marginTop: 16 }}
+            >
+              Debug: Check Notifications
+            </Button>
+            <Button 
+              mode="outlined" 
+              onPress={debugSoundSettings}
+              style={{ marginTop: 16 }}
+            >
+              Debug: Check Sound Settings
+            </Button>
         </ScrollView>
     );
 }

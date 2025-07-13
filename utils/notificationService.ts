@@ -1,6 +1,7 @@
 // notificationService.ts
 import { loadHabits, loadSettings, loadTasks } from '@/db/storage';
 import { IHabit, IReminder, timeToSeconds } from '@/db/types';
+import { getSoundUri } from '@/utils/notificationSoundOptions';
 import * as Notifications from 'expo-notifications';
 
 // --- CONFIGURACIÓN GLOBAL ---
@@ -75,12 +76,18 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
 
   const date = new Date(reminder.timestamp);
   const notificationId = `${itemId}-${reminder.id}`;
+  
+  // Usar la función helper para obtener el URI correcto del sonido
+  const soundUri = getSoundUri(settingsState.defaultNotificationSound || 'default');
+  
   const notificationContent = {
     title: reminder.title,
     body: reminder.message,
-    data: { itemId, reminderId: reminder.id },
-    sound: settingsState.defaultNotificationSound || 'default',
+    data: { itemId, reminderId: reminder.id }, // Solo usar data, no dataString
+    sound: soundUri,
   };
+
+  console.log(`Scheduling notification with sound: ${soundUri}`);
 
   switch (reminder.type) {
     case 'date':
@@ -183,8 +190,6 @@ const scheduleHabitSingleReminder = async (
   habit: IHabit,
   type: 'onTime' | 'before'
 ) => {
-
-// SOUND
   const settingsState = await loadSettings();
 
   const [baseHour, baseMinute] = habit.recurrence.time.split(':').map(Number);
@@ -205,12 +210,17 @@ const scheduleHabitSingleReminder = async (
     if (minute < 0) minute = 0;
   }
 
+  // Usar la función helper para obtener el URI correcto del sonido
+  const soundUri = getSoundUri(settingsState.defaultNotificationSound || 'default');
+
   const content = {
     title: habit.title,
     body: message,
-    sound: settingsState.defaultNotificationSound || 'default',
-    data: { habitId: habit.id, type },
+    sound: soundUri,
+    data: { habitId: habit.id, type }, // Solo usar data, no dataString
   };
+
+  console.log(`Scheduling habit notification with sound: ${soundUri}`);
 
   if (habit.recurrence.type === 'daily') {
     await Notifications.scheduleNotificationAsync({
