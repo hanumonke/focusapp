@@ -38,6 +38,7 @@ const SettingsScreen = () => {
 
                     const defaultSound = settings.defaultNotificationSound
                     if (defaultSound && defaultSound !== undefined) {
+                        console.log("defaultSound: ", defaultSound);
                         setSound(defaultSound);
 
                     } else {
@@ -47,13 +48,14 @@ const SettingsScreen = () => {
                     const difficulty = settings.difficulty;
 
                     if (difficulty && difficulty !== undefined) {
+                        console.log("difficulty: ", difficulty);
                         setHard(difficulty.hard.toString());
                         setMedium(difficulty.medium.toString());
                         setEasy(difficulty.easy.toString());
 
 
                     } else {
-                        throw Error("error al cargar el sonido predeterminado")
+                        throw Error("error al cargar las dificultades")
                     }
                 } else {
                     throw Error("error al cargar la configuracion");

@@ -1,9 +1,9 @@
-import { loadHabits, saveHabits } from '@/db/storage';
+import { loadHabits, loadPoints, saveHabits, savePoints } from '@/db/storage';
 import { HabitsState, IHabit } from '@/db/types';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
@@ -59,6 +59,40 @@ const Habits = () => {
 
   const handleDetails = (id: string) => router.push(`/habits/${id}`);
 
+  const askToSaveStreak = async (habit: IHabit) => {
+    const streakSaveCost = 50; // Cost in points
+    const currentPoints = await loadPoints();
+    
+    if (currentPoints < streakSaveCost) {
+      Alert.alert("Puntos insuficientes", `Necesitas ${streakSaveCost} puntos para salvar tu racha. Tienes ${currentPoints} puntos.`);
+      return;
+    }
+
+    Alert.alert(
+      "¿Salvar racha?",
+      `¿Quieres gastar ${streakSaveCost} puntos para salvar tu racha de ${habit.currentStreak} días para "${habit.title}"?`,
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Sí, salvar",
+          onPress: async () => {
+            // Deduct points first
+            await savePoints(currentPoints - streakSaveCost);
+            
+            // Mark as completed yesterday to maintain the streak
+            const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            const updatedHabits = habits.map(h => 
+              h.id === habit.id ? { ...h, lastCompletedDate: yesterdayStr } : h
+            );
+            await saveHabits(updatedHabits);
+            setHabits(updatedHabits);
+            Alert.alert("¡Racha salvada!", "Tu racha ha sido mantenida.");
+          }
+        }
+      ]
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       loadData();
@@ -76,9 +110,12 @@ const Habits = () => {
       const updatedHabits = habits.map(habit => {
         if (!habit.lastCompletedDate) return habit;
         const last = habit.lastCompletedDate.slice(0, 10);
+        
+        // Check if streak should be reset (missed more than 1 day)
         if (last !== todayStr && last !== yesterdayStr && habit.currentStreak !== 0) {
-          updated = true;
-          return { ...habit, currentStreak: 0 };
+          // Ask user if they want to save the streak
+          askToSaveStreak(habit);
+          return habit; // Don't reset immediately, let user decide
         }
         return habit;
       });

@@ -3,13 +3,13 @@ export const NOTIFICATION_SOUNDS = {
         name: 'predeterminado',
         uri: 'default' // Expo usa 'default' para el sonido del sistema
     },
-    '8bit': {
-        name: '8bit',
-        uri: require('../assets/sounds/8bit.mp3')
+    'x8bit': {
+        name: 'x8bit',
+        uri: require('../assets/sounds/x8bit.mp3')
     },
-    '8bit02': {
-        name: '8bit02',
-        uri: require('../assets/sounds/8bit02.mp3')
+    'x8bit02': {
+        name: 'x8bit02',
+        uri: require('../assets/sounds/x8bit02.mp3')
     },
     'alarm': {
         name: 'alarm',

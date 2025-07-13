@@ -5,7 +5,7 @@ import { formatDueDate } from '@/utils/helpers';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, View } from 'react-native';
 import { Avatar, Badge, Button, Card, Chip, Modal, Portal, Searchbar, Text, useTheme } from 'react-native-paper';
 
 type IPendingItem = (ITask & { itemType: 'task', isDueToday: boolean, sortKey: string }) | (IHabit & { itemType: 'habit', isDueToday: boolean, sortKey: string });
@@ -44,26 +44,52 @@ const Pendientes = () => {
   useFocusEffect(
     useCallback(() => {
       loadData().then(({ loadedTasks }) => {
-        const overdue = loadedTasks.filter(task =>
-          !task.isCompleted &&
-          task.dueDate &&
-          new Date(task.dueDate) < new Date()
-        );
+        console.log("Checking for overdue tasks...");
+        console.log("Total tasks loaded:", loadedTasks.length);
+        
+        const overdue = loadedTasks.filter(task => {
+          const isOverdue = !task.isCompleted && 
+                           task.dueDate && 
+                           new Date(task.dueDate) < new Date();
+          
+          if (isOverdue) {
+            console.log("Found overdue task:", task.title, "Due:", task.dueDate);
+          }
+          
+          return isOverdue;
+        });
+        
+        console.log("Overdue tasks found:", overdue.length);
         setOverdueTasks(overdue);
-        if (overdue.length > 0) setOverdueModalVisible(true);
+        
+        if (overdue.length > 0) {
+          console.log("Setting modal visible");
+          setOverdueModalVisible(true);
+        }
       });
     }, [loadData])
   );
 
   const askToSaveStreak = async (habit: IHabit) => {
+    const streakSaveCost = 50; // Cost in points
+    const currentPoints = await loadPoints();
+    
+    if (currentPoints < streakSaveCost) {
+      Alert.alert("Puntos insuficientes", `Necesitas ${streakSaveCost} puntos para salvar tu racha. Tienes ${currentPoints} puntos.`);
+      return;
+    }
+
     Alert.alert(
       "¿Salvar racha?",
-      `¿Quieres salvar tu racha de ${habit.currentStreak} días para "${habit.title}"?`,
+      `¿Quieres gastar ${streakSaveCost} puntos para salvar tu racha de ${habit.currentStreak} días para "${habit.title}"?`,
       [
         { text: "No", style: "cancel" },
         {
           text: "Sí, salvar",
           onPress: async () => {
+            // Deduct points first
+            await savePoints(currentPoints - streakSaveCost);
+            
             // Mark as completed yesterday to maintain the streak
             const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
             const updatedHabits = habits.map(h => 
@@ -79,35 +105,28 @@ const Pendientes = () => {
   };
 
 
-  // Reset streaks if missed (simple/pragmatic)
+  // Separate useEffect for streak management
 useEffect(() => {
-  const resetStreaksIfMissed = async () => {
+  const checkStreaks = async () => {
+    if (habits.length === 0) return;
+    
     const today = new Date();
     const todayStr = today.toISOString().slice(0, 10);
     const yesterdayStr = new Date(today.getTime() - 86400000).toISOString().slice(0, 10);
 
-    let updated = false;
-    const updatedHabits = habits.map(habit => {
-      if (!habit.lastCompletedDate) return habit;
+    habits.forEach(habit => {
+      if (!habit.lastCompletedDate) return;
       const last = habit.lastCompletedDate.slice(0, 10);
       
       // Check if streak should be reset (missed more than 1 day)
       if (last !== todayStr && last !== yesterdayStr && habit.currentStreak !== 0) {
         // Ask user if they want to save the streak
         askToSaveStreak(habit);
-        return habit; // Don't reset immediately, let user decide
       }
-      return habit;
     });
-
-    if (updated) {
-      await saveHabits(updatedHabits);
-      setHabits(updatedHabits);
-    }
   };
 
-  if (habits.length > 0) resetStreaksIfMissed();
-  
+  checkStreaks();
 }, [habits.length]);
 
 
@@ -126,9 +145,15 @@ useEffect(() => {
 
     await saveTasks(updatedTasks);
     setTasks(updatedTasks);
-    setOverdueTasks(prev => prev.filter(task => task.id !== taskId));
-
-    if (overdueTasks.length === 1) setOverdueModalVisible(false);
+    
+    // Remove the task from overdue list
+    const newOverdueTasks = overdueTasks.filter(task => task.id !== taskId);
+    setOverdueTasks(newOverdueTasks);
+    
+    // Close modal only when no more overdue tasks
+    if (newOverdueTasks.length === 0) {
+      setOverdueModalVisible(false);
+    }
   };
 
   
@@ -269,6 +294,19 @@ useEffect(() => {
         value={searchQuery}
         style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
       />
+
+      <Button 
+        onPress={() => {
+          console.log("Test button pressed");
+          console.log("Overdue tasks:", overdueTasks.length);
+          console.log("Modal visible:", overdueModalVisible);
+          setOverdueModalVisible(true);
+        }}
+        mode="outlined"
+        style={{ marginBottom: 10 }}
+      >
+        Test Overdue Modal
+      </Button>
 
       <FlatList
         data={filteredItems}
