@@ -8,19 +8,22 @@ import { NOTIFICATION_SOUNDS, NotificationSoundKey, getSoundUri } from '@/utils/
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Divider, List, Menu, Switch, Text, TextInput, useTheme } from 'react-native-paper';
+import { Button, Divider, List, Menu, Switch, TextInput, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useAudioPlayer} from "expo-audio"; 
 
 // Implement dark layout
 // delete backup section
 // Create user info section
 
+import { useGlobalStyles } from '@/utils/globalStyles';
 import { getScheduledNotifications } from '@/utils/notificationService';
 
 const SettingsScreen = () => {
     // const audioSource = require("../assets/sounds/hello.mp3")
     // const player = useAudioPlayer(audioSource); 
     const theme = useTheme();
+    const global = useGlobalStyles();
     const [notificationsMode, setNotificationsMode] = useState('quiet');
     const [sound, setSound] = useState('default');
     const [sounds, setSounds] = useState(NOTIFICATION_SOUNDS)
@@ -177,145 +180,122 @@ const SettingsScreen = () => {
 
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-            <List.Section>
-                <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Apariencia
-                </List.Subheader>
-
-                <List.Item
-                    title="Modo oscuro"
-                    left={props => <List.Icon {...props} icon="theme-light-dark" />}
-                    right={() => (
-                        <Switch
-                            value={isDarkMode}
-                            onValueChange={() => setIsDarkMode(!isDarkMode)}
-                        />
-                    )}
-                />
-            </List.Section>
-            <Divider />
-
-            <List.Section>
-                <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Notifications
-                </List.Subheader>
-
-                {/* <List.Item
-                    title="Alarming notifications"
-                    description="Play sound even when device is silent"
-                    left={props => <List.Icon {...props} icon="bell-alert" />}
-                    right={() => (
-                        <Switch
-                            value={notificationsMode !== 'quiet'}
-                            onValueChange={() => setNotificationsMode(notificationsMode === 'quiet' ? 'alarm' : 'quiet')}
-                        />
-                    )}
-                /> */}
-
-
-                <Menu
-
-                    visible={soundMenuVisible}
-                    onDismiss={() => setSoundMenuVisible(false)}
-                    anchor={<List.Item
-                        title="Default Sound"
-                        description={sound}
-                        left={props => <List.Icon {...props} icon="music" />}
+        <SafeAreaView edges={['bottom']} style={global.container}>
+            <ScrollView contentContainerStyle={[global.container, { paddingBottom: 32 }]}
+              keyboardShouldPersistTaps="handled"
+            >
+                <List.Section>
+                    <List.Subheader style={[styles.subheader, { color: '#666666' }]}>Apariencia</List.Subheader>
+                    <List.Item
+                        title="Modo oscuro"
+                        left={props => <List.Icon {...props} icon="theme-light-dark" />}
                         right={() => (
-                            <>
-                                <Button onPress={() => setSoundMenuVisible(true)}>Custom</Button>
-                                <Button mode='contained' onPress={handleSaveSound} disabled={!saveButtonActive}>Save</Button>
-                            </>
+                            <Switch
+                                value={isDarkMode}
+                                onValueChange={() => setIsDarkMode(!isDarkMode)}
+                            />
                         )}
-                    />}>
-
-                    <FlatList
-                        style={{ maxHeight: 250 }}
-                        data={Object.entries(sounds)}
-                        renderItem={({ item }) => {
-                            const [key, soundData] = item;
-                            return <Menu.Item onPress={() => handleSetSound(key as NotificationSoundKey)} title={soundData.name} />
-                        }}
-
                     />
+                </List.Section>
+                <Divider />
 
+                <List.Section>
+                    <List.Subheader style={[styles.subheader, { color: '#666666' }]}>Notificationes</List.Subheader>
+                    <Menu
+                        visible={soundMenuVisible}
+                        onDismiss={() => setSoundMenuVisible(false)}
+                        anchor={<List.Item
+                            title="Sonido por defecto"
+                            description={sound}
+                            left={props => <List.Icon {...props} icon="music" />}
+                            right={() => (
+                                <>
+                                    <Button 
+                                      mode="outlined"
+                                      onPress={() => setSoundMenuVisible(true)}
+                                      textColor={theme.colors.onSurface}
+                                      style={{ borderColor: theme.colors.outline }}
+                                    >
+                                      Seleccionar
+                                    </Button>
+                                    <Button 
+                                      mode="contained" 
+                                      onPress={handleSaveSound} 
+                                      disabled={!saveButtonActive}
+                                      buttonColor={theme.colors.primary}
+                                      textColor={theme.colors.onPrimary}
+                                    >
+                                      Guardar
+                                    </Button>
+                                </>
+                            )}
+                        />}>
+                        <FlatList
+                            style={{ maxHeight: 250 }}
+                            data={Object.keys(sounds)}
+                            renderItem={({ item }) => {
+                                return <Menu.Item onPress={() => handleSetSound(item as NotificationSoundKey)} title={item} />
+                            }}
+                        />
+                    </Menu>
+                </List.Section>
+                <Divider />
 
-                </Menu>
+                <List.Section>
+                    <List.Subheader style={[styles.subheader, { color: '#666666' }]}>Dificultad</List.Subheader>
+                    <View style={{ gap: 12, padding: 16 }}>
+                        <TextInput label="Dificil" keyboardType='numeric' value={hard} onChangeText={setHard} style={global.input} mode="outlined" />
+                        <TextInput label="Medio" keyboardType='numeric' value={medium} onChangeText={setMedium} style={global.input} mode="outlined" />
+                        <TextInput label="Facil" keyboardType='numeric' value={easy} onChangeText={setEasy} style={global.input} mode="outlined" />
+                        <Button
+                            mode="contained"
+                            icon="content-save"
+                            style={[global.button, { alignSelf: 'center', minWidth: 160, justifyContent: 'center' }]}
+                            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                            labelStyle={{ textAlign: 'center', width: '100%' }}
+                            onPress={saveDifficulty}
+                            buttonColor={theme.colors.secondary}
+                            textColor={theme.colors.onSecondary}
+                        >
+                            Guardar
+                        </Button>
+                    </View>
+                </List.Section>
+                <Divider />
 
+                {/*
+                <List.Section>
+                    <List.Subheader style={[styles.subheader, { color: '#666666' }]}>Cuenta</List.Subheader>
+                    <List.Item
+                        title="Información de usuario"
+                        description="Ver y editar tu perfil"
+                        left={props => <List.Icon {...props} icon="account" />}
+                        right={props => <List.Icon {...props} icon="chevron-right" />}
+                    />
+                </List.Section>
 
-
-
-            </List.Section>
-            <Divider />
-
-            <List.Section>
-                <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Dificultad
-                </List.Subheader>
-
-
-                <View style={styles.buttonContainer}>
-
-
-                    <TextInput label="Dificil" keyboardType='numeric' value={hard} onChangeText={setHard} />
-
-                    <TextInput label="Medio" keyboardType='numeric' value={medium} onChangeText={setMedium} />
-
-
-                    <TextInput label="Facil" keyboardType='numeric' value={easy} onChangeText={setEasy} />
-                    <Button
-                        mode="contained"
-                        icon="content-save"
-                        style={styles.button}
-                        onPress={saveDifficulty}
-                    >
-                        Guardar
-                    </Button>
-
-
+                <View style={styles.footer}>
+                    <Text style={styles.versionText}>Versión de la app 1.0.0</Text>
                 </View>
-            </List.Section>
-            <Divider />
-
-            <List.Section>
-                <List.Subheader style={[styles.subheader, { color: theme.colors.primary }]}>
-                    Cuenta
-                </List.Subheader>
-
-                <List.Item
-                    title="Información de usuario"
-                    description="Ver y editar tu perfil"
-                    left={props => <List.Icon {...props} icon="account" />}
-                    right={props => <List.Icon {...props} icon="chevron-right" />}
-                />
-
-                {/* <List.Item
-                    title="Privacy Settings"
-                    description="Manage your privacy preferences"
-                    left={props => <List.Icon {...props} icon="lock" />}
-                    right={props => <List.Icon {...props} icon="chevron-right" />}
-                /> */}
-            </List.Section>
-
-            <View style={styles.footer}>
-                <Text style={styles.versionText}>Versión de la app 1.0.0</Text>
-            </View>
-            <Button 
-              mode="outlined" 
-              onPress={checkScheduledNotifications}
-              style={{ marginTop: 16 }}
-            >
-              Debug: Check Notifications
-            </Button>
-            <Button 
-              mode="outlined" 
-              onPress={debugSoundSettings}
-              style={{ marginTop: 16 }}
-            >
-              Debug: Check Sound Settings
-            </Button>
-        </ScrollView>
+                <Button 
+                  mode="outlined" 
+                  onPress={checkScheduledNotifications}
+                  style={[{ marginTop: 16 }, { borderColor: theme.colors.outline }]}
+                  textColor={theme.colors.onSurface}
+                >
+                  Debug: Check Notifications
+                </Button>
+                <Button 
+                  mode="outlined" 
+                  onPress={debugSoundSettings}
+                  style={[{ marginTop: 16 }, { borderColor: theme.colors.outline }]}
+                  textColor={theme.colors.onSurface}
+                >
+                  Debug: Check Sound Settings
+                </Button>
+                */}
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 

@@ -1,6 +1,6 @@
+import globalStyles from '@/utils/globalStyles';
 import { Href, useRouter } from 'expo-router';
-import { BackHandler } from 'react-native';
-import { Appbar, IconButtonProps } from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
 
 type CustomHeaderProps = {
   title: string;
@@ -13,13 +13,13 @@ type CustomHeaderProps = {
 const CustomHeader = ({ title, backRoute, addAction, materialIcon, refreshAction }: CustomHeaderProps) => {
   const router = useRouter();
   return (
-    <Appbar.Header>
-      <Appbar.BackAction onPress={() => router.push(backRoute as Href)} />
-      <Appbar.Content title={title} />
+    <Appbar.Header style={globalStyles.header}>
+      <Appbar.BackAction onPress={() => router.push(backRoute as Href)} style={globalStyles.headerBackAction} />
+      <Appbar.Content title={title} style={globalStyles.headerTitle} />
        {refreshAction && (
-        <Appbar.Action icon="refresh" onPress={refreshAction} />
+        <Appbar.Action icon="refresh" onPress={refreshAction} style={globalStyles.headerRefreshAction} />
       )}
-      <Appbar.Action mode='outlined' icon={materialIcon} onPress={addAction} />
+      <Appbar.Action mode='outlined' icon={materialIcon} onPress={addAction} style={globalStyles.headerAddAction} />
     </Appbar.Header>
   );
 };

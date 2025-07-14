@@ -4,13 +4,15 @@ import RemindersInput from '@/components/RemindersInput';
 import TagsInput from '@/components/TagsInput';
 import { loadSettings, loadTasks, saveTasks } from '@/db/storage';
 import { IReminder, ITask } from '@/db/types';
+import { useGlobalStyles } from '@/utils/globalStyles';
 import { scheduleReminders } from '@/utils/notificationService';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from "react-hook-form";
-import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button, Divider, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import uuid from 'react-native-uuid';
 
 
@@ -21,6 +23,7 @@ const CreateTask = () => {
   const router = useRouter();
   const { id: taskId  } = useLocalSearchParams();
   const theme = useTheme();
+  const global = useGlobalStyles();
    const [loading, setLoading] = useState(false);
 
   const {
@@ -77,6 +80,23 @@ const CreateTask = () => {
 
     fetchTaskData();
   }, [taskId, reset, router]);
+
+  // Limpiar el formulario cada vez que la pantalla se enfoca y no hay taskId
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!taskId) {
+        reset({
+          title: "",
+          description: "",
+          dueDate: undefined,
+          tags: [],
+          reminders: [],
+          isCompleted: false,
+          difficulty: 'easy'
+        });
+      }
+    }, [taskId, reset])
+  );
 
   const onSubmit = async (data: ITask) => {
     try {
@@ -145,137 +165,123 @@ const CreateTask = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <SafeAreaView edges={['bottom']} style={global.container}>
       <CustomHeader 
         materialIcon='check' 
-        title={taskId ? "Editar" : "Nueva"} 
+        title={taskId ? "Editar Tarea" : "Nueva Tarea"} 
         backRoute='/tasks' 
         addAction={handleSubmit(onSubmit)} 
       />
-      
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.container}>
-
-
-
-          {/* Title */}
-          <Controller
-            control={control}
-            name="title"
-            rules={{ required: "El titulo es obligatorio" }}
-            render={({ field, fieldState }) => (
-              <>
-                <TextInput
-                  mode="outlined"
-                  label="Title"
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  error={!!fieldState.error}
-                  style={styles.input}
-                />
-                {fieldState.error && (
-                  <Text style={styles.error}>{fieldState.error.message}</Text>
-                )}
-              </>
-            )}
-          />
-
-          {/* Description */}
-          <Controller
-            control={control}
-            name="description"
-           
-            render={({ field }) => (
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+        {/* Title */}
+        <Controller
+          control={control}
+          name="title"
+          rules={{ required: "El titulo es obligatorio" }}
+          render={({ field, fieldState }) => (
+            <>
               <TextInput
                 mode="outlined"
-                label="Descripción"
+                label="Title"
                 value={field.value}
                 onChangeText={field.onChange}
-                multiline
-                numberOfLines={4}
-                style={styles.input}
+                error={!!fieldState.error}
+                style={global.input}
               />
-            )}
-          />
-
-          {/* Tags */}
-          <Controller
-            control={control}
-            name="tags"
-            rules={{  }}
-            render={({ field }) => (
-              <TagsInput value={field.value} onChange={field.onChange} />
-            )}
-          />
-
-          <Divider style={styles.divider} />
-
-          {/* Due Date */}
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Vencimiento
-          </Text>
-          <Controller
-            control={control}
-            name="dueDate"
-            rules={{ required: "La fecha es obligatoria"}}
-            render={({ field }) => (
-              <CustomDateTimePicker 
-                value={field.value} 
-                onChange={field.onChange} 
-                label="Fecha"
-              />
-              
-            )}
-          />
-
-            
-          {errors.dueDate && (
-            <Text style={styles.error}>{errors.dueDate.message}</Text>
+              {fieldState.error && (
+                <Text style={styles.error}>{fieldState.error.message}</Text>
+              )}
+            </>
           )}
-          <Divider style={styles.divider} />
-
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Dificultad
-          </Text>
-
-          {/* Difficulty Level */}
-          <Controller
-            control={control}
-            name="difficulty"
-            defaultValue="medium"
-            render={({ field }) => (
-              <SegmentedButtons
-                value={field.value}
-                onValueChange={field.onChange}
-                buttons={[
-                  { value: 'easy', label: 'Fácil' },
-                  { value: 'medium', label: 'Medio' },
-                  { value: 'hard', label: 'Difícil' },
-                ]}
-                style={{ marginBottom: 16 }}
-              />
-            )}
-          />
-
-          {/* Reminders */}
-          
-          <Controller
-            control={control}
-            name="reminders"
-            render={({ field }) => (
-              <RemindersInput 
-                value={field.value} 
-                onChange={field.onChange} 
-                title={watch('title') || "Tarea"} 
-                dueDate={watch('dueDate')}
-              />
-            )}
-          />
-
-          
-        </View>
-
-        <Button onPress={() => reset()} mode="contained">Limpiar campos</Button>
+        />
+        {/* Description */}
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <TextInput
+              mode="outlined"
+              label="Descripción"
+              value={field.value}
+              onChangeText={field.onChange}
+              multiline
+              numberOfLines={4}
+              style={global.input}
+            />
+          )}
+        />
+        {/* Tags */}
+        <Controller
+          control={control}
+          name="tags"
+          rules={{  }}
+          render={({ field }) => (
+            <TagsInput value={field.value} onChange={field.onChange} />
+          )}
+        />
+        <Divider style={styles.divider} />
+        {/* Due Date */}
+        <Text variant="titleMedium" style={styles.sectionTitle}>
+          Vencimiento
+        </Text>
+        <Controller
+          control={control}
+          name="dueDate"
+          rules={{ required: "La fecha es obligatoria"}}
+          render={({ field }) => (
+            <CustomDateTimePicker 
+              value={field.value} 
+              onChange={field.onChange} 
+              label="Fecha"
+            />
+          )}
+        />
+        {errors.dueDate && (
+          <Text style={styles.error}>{errors.dueDate.message}</Text>
+        )}
+        <Divider style={styles.divider} />
+        <Text variant="titleMedium" style={styles.sectionTitle}>
+          Dificultad
+        </Text>
+        {/* Difficulty Level */}
+        <Controller
+          control={control}
+          name="difficulty"
+          defaultValue="medium"
+          render={({ field }) => (
+            <SegmentedButtons
+              value={field.value}
+              onValueChange={field.onChange}
+              buttons={[
+                { value: 'easy', label: 'Fácil' },
+                { value: 'medium', label: 'Medio' },
+                { value: 'hard', label: 'Difícil' },
+              ]}
+              style={{ marginBottom: 16 }}
+            />
+          )}
+        />
+        {/* Reminders */}
+        <Controller
+          control={control}
+          name="reminders"
+          render={({ field }) => (
+            <RemindersInput 
+              value={field.value} 
+              onChange={field.onChange} 
+              title={watch('title') || "Tarea"} 
+              dueDate={watch('dueDate')}
+            />
+          )}
+        />
+        <Button 
+          onPress={() => reset()} 
+          mode="outlined"
+          textColor={theme.colors.onSurface}
+          style={global.button}
+        >
+          Limpiar campos
+        </Button>
       </ScrollView>
     </SafeAreaView>
   );

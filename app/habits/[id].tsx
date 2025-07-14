@@ -92,7 +92,7 @@ const renderHabitReminder = (
       <Card.Content>
         <View style={styles.reminderHeader}>
           {/* @ts-ignore */}
-          <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
+          <MaterialCommunityIcons name={icon} size={24} color="#666666" />
           <Text variant="titleMedium" style={styles.reminderTitle}>
             {label}
           </Text>
@@ -164,7 +164,7 @@ const renderHabitReminder = (
 
             <Text variant="labelLarge" style={styles.sectionLabel}>Horario</Text>
             <View style={styles.scheduleRow}>
-              <MaterialCommunityIcons name="calendar-clock" size={20} color="#6200ee" />
+              <MaterialCommunityIcons name="calendar-clock" size={20} color="#666666" />
               <Text style={styles.scheduleText}>
                 {getRecurrenceText(habit.recurrence)}
               </Text>
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     marginBottom: 8,
-    color: '#6200ee',
+    color: '#666666',
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   streakNumber: {
-    color: '#6200ee',
+    color: '#666666',
     fontWeight: 'bold',
   },
   metaInfo: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   },
   remindersTitle: {
     marginBottom: 16,
-    color: '#6200ee',
+    color: '#666666',
   },
   reminderCard: {
     marginBottom: 12,

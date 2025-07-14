@@ -1,6 +1,7 @@
+import { useGlobalStyles } from '@/utils/globalStyles';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Chip, IconButton, Text, TextInput } from 'react-native-paper';
+import { Chip, IconButton, Text, TextInput, useTheme } from 'react-native-paper';
 
 type TagsInputProps = {
   value: string[];
@@ -10,6 +11,8 @@ type TagsInputProps = {
 
 const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, label = "Etiquetas" }) => {
   const [newTag, setNewTag] = useState('');
+  const global = useGlobalStyles();
+  const theme = useTheme();
 
   const handleAddTag = () => {
     const trimmedTag = newTag.trim();
@@ -25,7 +28,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, label = "Etiquet
 
   return (
     <View style={styles.container}>
-      <Text variant="titleMedium" style={styles.label}>{label}</Text>
+      <Text variant="titleMedium" style={global.sectionTitle}>{label}</Text>
       <View style={styles.inputRow}>
         <TextInput
           value={newTag}
@@ -34,7 +37,13 @@ const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, label = "Etiquet
           placeholder='ej: colegio'
           style={styles.textInput}
         />
-        <IconButton icon="plus" mode='contained' onPress={handleAddTag} style={styles.addButton} />
+        <IconButton 
+          icon="plus" 
+          mode='contained' 
+          onPress={handleAddTag} 
+          style={[styles.addButton, { backgroundColor: theme.colors.primary }]} 
+          iconColor={theme.colors.onPrimary}
+        />
       </View>
       {value.length > 0 && (
         <View style={styles.chipRow}>

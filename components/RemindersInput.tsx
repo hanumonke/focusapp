@@ -176,7 +176,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                             );
                         })}
                         <Button onPress={() => setIsTimePickerVisible(true)} mode='outlined' icon='clock-edit'>
-                            {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "Time"}
+                            {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "HOra"}
                         </Button>
                     </View>
                 );
@@ -184,7 +184,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                 return (
                     <View style={styles.dailyDailyContainer}>
                         <Button onPress={() => setIsTimePickerVisible(true)} mode='outlined' icon='clock-edit'>
-                            {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "Time"}
+                            {timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { timeStyle: "short" }) : "Hora"}
                         </Button>
                     </View>
                 );
@@ -195,7 +195,7 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
 
     return (
         <>
-            <View style={{ flexGrow: 1 }}>
+            <View>
                 <Text variant="titleMedium">{label}</Text>
 
                 <View style={styles.container}>
@@ -237,43 +237,42 @@ const RemindersInput: React.FC<RemindersInputProps> = ({ value, onChange, label 
                             minutes={timestamp ? new Date(timestamp).getMinutes() : 0}
                         />
                     </View>
-
-                    <IconButton style={styles.addButton} icon="plus" mode='contained' onPress={handleAddReminder} />
-                    {value.length > 0 && (
-                        <View style={styles.remindersList}>
-                            {value.map((reminder) => (
-                                <Card key={reminder.id} contentStyle={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-                                    <Card.Content style={{ padding: 15, }}>
-                                        <Text>
-                                            <Text style={{ fontWeight: 'bold' }}>Type:</Text>{' '}
-                                            {
-                                                reminder.type === 'date' ? 'One-time' :
-                                                    reminder.type === 'weekly' ? `Weekly` :
-                                                        'Daily'}
-                                        </Text>
-                                        <Text>
-                                            <Text style={{ fontWeight: 'bold' }}>Message:</Text> {reminder.message}
-                                        </Text>
-                                        {(reminder.type === 'date' || reminder.type === 'daily' || reminder.type === 'weekly') && reminder.timestamp && (
-                                            <Text>
-                                                <Text style={{ fontWeight: 'bold' }}>Date/Time:</Text> {new Date(reminder.timestamp).toLocaleString()}
-                                            </Text>
-                                        )}
-                                        {reminder.type === 'weekly' && reminder.daysOfWeek && (
-                                            <Text>
-                                                <Text style={{ fontWeight: 'bold' }}>Days:</Text> {reminder.daysOfWeek.map(d => daysInOrder[d].label).join(', ')}
-                                            </Text>
-                                        )}
-                                    </Card.Content>
-
-                                    <Card.Actions>
-                                        <IconButton icon="delete" mode='outlined' onPress={() => handleDeleteReminder(reminder.id)} />
-                                    </Card.Actions>
-                                </Card>
-                            ))}
-                        </View>
-                    )}
                 </View>
+                <IconButton style={styles.addButton} icon="plus" mode='contained' onPress={handleAddReminder} />
+                {value.length > 0 && (
+                    <View style={styles.remindersList}>
+                        {value.map((reminder) => (
+                            <Card key={reminder.id} contentStyle={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+                                <Card.Content style={{ padding: 15, }}>
+                                    <Text>
+                                        <Text style={{ fontWeight: 'bold' }}>Type:</Text>{' '}
+                                        {
+                                            reminder.type === 'date' ? 'One-time' :
+                                                reminder.type === 'weekly' ? `Weekly` :
+                                                    'Daily'}
+                                    </Text>
+                                    <Text>
+                                        <Text style={{ fontWeight: 'bold' }}>Message:</Text> {reminder.message}
+                                    </Text>
+                                    {(reminder.type === 'date' || reminder.type === 'daily' || reminder.type === 'weekly') && reminder.timestamp && (
+                                        <Text>
+                                            <Text style={{ fontWeight: 'bold' }}>Date/Time:</Text> {new Date(reminder.timestamp).toLocaleString()}
+                                        </Text>
+                                    )}
+                                    {reminder.type === 'weekly' && reminder.daysOfWeek && (
+                                        <Text>
+                                            <Text style={{ fontWeight: 'bold' }}>Days:</Text> {reminder.daysOfWeek.map(d => daysInOrder[d].label).join(', ')}
+                                        </Text>
+                                    )}
+                                </Card.Content>
+
+                                <Card.Actions>
+                                    <IconButton icon="delete" mode='outlined' onPress={() => handleDeleteReminder(reminder.id)} />
+                                </Card.Actions>
+                            </Card>
+                        ))}
+                    </View>
+                )}
             </View>
         </>
     );

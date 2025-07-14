@@ -28,6 +28,21 @@
 		B21824A1A99F465F89226653 /* xilofono.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C77DC4D65228457CBCD472A5 /* xilofono.mp3 */; };
 		D2D568CC861C4D0FA4965147 /* x8bit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B0B57845700045BCBE58109E /* x8bit.mp3 */; };
 		0E8970D68BD949248CFB0827 /* x8bit02.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */; };
+		A7DE17E18AF74F2BB3077384 /* x8bit.wav in Resources */ = {isa = PBXBuildFile; fileRef = A78871BB5B2E48E1892F67E0 /* x8bit.wav */; };
+		0E5E0155CE414FA49001283E /* x8bit02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 518047EDEEFC4CFBBD18B713 /* x8bit02.wav */; };
+		EC36C8AFA5A74331895D59DD /* alarm.wav in Resources */ = {isa = PBXBuildFile; fileRef = C8530324D37E410DA4C8CA66 /* alarm.wav */; };
+		4D9A616AD33843E085812E77 /* campanas.wav in Resources */ = {isa = PBXBuildFile; fileRef = D311925F2F51496D9C2D555A /* campanas.wav */; };
+		DC3E328162774FFDA6830E9B /* clocktower.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9715E2334E4341F39FF11E02 /* clocktower.wav */; };
+		45F3FAF580244982A63DD83A /* guerra.wav in Resources */ = {isa = PBXBuildFile; fileRef = E4F14279E57E48D4886BAF3F /* guerra.wav */; };
+		B7B9563EA06041829EDE514C /* guitarra.wav in Resources */ = {isa = PBXBuildFile; fileRef = A4039A0BFA6746ABBA456662 /* guitarra.wav */; };
+		9CECE6BE4913412AA9A50868 /* hellooooyou.wav in Resources */ = {isa = PBXBuildFile; fileRef = 4750EAD527454818B510822F /* hellooooyou.wav */; };
+		107E7B42927444559291FB19 /* nuclearalarm.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2DF5E69AFDA0498B8D737B40 /* nuclearalarm.wav */; };
+		BE3567FD0AEF435BA0D8BEA1 /* pipipipi.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2B2FC86BC5144FCEA4F33E0E /* pipipipi.wav */; };
+		022162F89ADA481E90478F5F /* pupetfnaf.wav in Resources */ = {isa = PBXBuildFile; fileRef = 77C23613B17B44BEB303EC0F /* pupetfnaf.wav */; };
+		BEDD71FFC0EE4C929ED8BEC6 /* suspenso.wav in Resources */ = {isa = PBXBuildFile; fileRef = B655BD8ACF50413E858A9859 /* suspenso.wav */; };
+		D5BA80E5C93C4496835A11F7 /* tuntun.wav in Resources */ = {isa = PBXBuildFile; fileRef = 34B70AB21DA746F89603E688 /* tuntun.wav */; };
+		001685AC40BB4FB7BF954D2C /* vibracion.wav in Resources */ = {isa = PBXBuildFile; fileRef = 884B08CC8EA942B2A90D8788 /* vibracion.wav */; };
+		D5BFB8534FF7409CB08B227E /* xilofono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2E89A79B1D8F4FA0B6A534B1 /* xilofono.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +71,21 @@
 		C77DC4D65228457CBCD472A5 /* xilofono.mp3 */ = {isa = PBXFileReference; name = "xilofono.mp3"; path = "fokus/xilofono.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		B0B57845700045BCBE58109E /* x8bit.mp3 */ = {isa = PBXFileReference; name = "x8bit.mp3"; path = "fokus/x8bit.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */ = {isa = PBXFileReference; name = "x8bit02.mp3"; path = "fokus/x8bit02.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A78871BB5B2E48E1892F67E0 /* x8bit.wav */ = {isa = PBXFileReference; name = "x8bit.wav"; path = "fokus/x8bit.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		518047EDEEFC4CFBBD18B713 /* x8bit02.wav */ = {isa = PBXFileReference; name = "x8bit02.wav"; path = "fokus/x8bit02.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C8530324D37E410DA4C8CA66 /* alarm.wav */ = {isa = PBXFileReference; name = "alarm.wav"; path = "fokus/alarm.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D311925F2F51496D9C2D555A /* campanas.wav */ = {isa = PBXFileReference; name = "campanas.wav"; path = "fokus/campanas.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9715E2334E4341F39FF11E02 /* clocktower.wav */ = {isa = PBXFileReference; name = "clocktower.wav"; path = "fokus/clocktower.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E4F14279E57E48D4886BAF3F /* guerra.wav */ = {isa = PBXFileReference; name = "guerra.wav"; path = "fokus/guerra.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A4039A0BFA6746ABBA456662 /* guitarra.wav */ = {isa = PBXFileReference; name = "guitarra.wav"; path = "fokus/guitarra.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4750EAD527454818B510822F /* hellooooyou.wav */ = {isa = PBXFileReference; name = "hellooooyou.wav"; path = "fokus/hellooooyou.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2DF5E69AFDA0498B8D737B40 /* nuclearalarm.wav */ = {isa = PBXFileReference; name = "nuclearalarm.wav"; path = "fokus/nuclearalarm.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2B2FC86BC5144FCEA4F33E0E /* pipipipi.wav */ = {isa = PBXFileReference; name = "pipipipi.wav"; path = "fokus/pipipipi.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		77C23613B17B44BEB303EC0F /* pupetfnaf.wav */ = {isa = PBXFileReference; name = "pupetfnaf.wav"; path = "fokus/pupetfnaf.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B655BD8ACF50413E858A9859 /* suspenso.wav */ = {isa = PBXFileReference; name = "suspenso.wav"; path = "fokus/suspenso.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		34B70AB21DA746F89603E688 /* tuntun.wav */ = {isa = PBXFileReference; name = "tuntun.wav"; path = "fokus/tuntun.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		884B08CC8EA942B2A90D8788 /* vibracion.wav */ = {isa = PBXFileReference; name = "vibracion.wav"; path = "fokus/vibracion.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2E89A79B1D8F4FA0B6A534B1 /* xilofono.wav */ = {isa = PBXFileReference; name = "xilofono.wav"; path = "fokus/xilofono.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +125,21 @@
 				C77DC4D65228457CBCD472A5 /* xilofono.mp3 */,
 				B0B57845700045BCBE58109E /* x8bit.mp3 */,
 				685C55AD0FB34B4C99233EE2 /* x8bit02.mp3 */,
+				A78871BB5B2E48E1892F67E0 /* x8bit.wav */,
+				518047EDEEFC4CFBBD18B713 /* x8bit02.wav */,
+				C8530324D37E410DA4C8CA66 /* alarm.wav */,
+				D311925F2F51496D9C2D555A /* campanas.wav */,
+				9715E2334E4341F39FF11E02 /* clocktower.wav */,
+				E4F14279E57E48D4886BAF3F /* guerra.wav */,
+				A4039A0BFA6746ABBA456662 /* guitarra.wav */,
+				4750EAD527454818B510822F /* hellooooyou.wav */,
+				2DF5E69AFDA0498B8D737B40 /* nuclearalarm.wav */,
+				2B2FC86BC5144FCEA4F33E0E /* pipipipi.wav */,
+				77C23613B17B44BEB303EC0F /* pupetfnaf.wav */,
+				B655BD8ACF50413E858A9859 /* suspenso.wav */,
+				34B70AB21DA746F89603E688 /* tuntun.wav */,
+				884B08CC8EA942B2A90D8788 /* vibracion.wav */,
+				2E89A79B1D8F4FA0B6A534B1 /* xilofono.wav */,
 			);
 			name = fokus;
 			sourceTree = "<group>";
@@ -223,6 +268,21 @@
 				B21824A1A99F465F89226653 /* xilofono.mp3 in Resources */,
 				D2D568CC861C4D0FA4965147 /* x8bit.mp3 in Resources */,
 				0E8970D68BD949248CFB0827 /* x8bit02.mp3 in Resources */,
+				A7DE17E18AF74F2BB3077384 /* x8bit.wav in Resources */,
+				0E5E0155CE414FA49001283E /* x8bit02.wav in Resources */,
+				EC36C8AFA5A74331895D59DD /* alarm.wav in Resources */,
+				4D9A616AD33843E085812E77 /* campanas.wav in Resources */,
+				DC3E328162774FFDA6830E9B /* clocktower.wav in Resources */,
+				45F3FAF580244982A63DD83A /* guerra.wav in Resources */,
+				B7B9563EA06041829EDE514C /* guitarra.wav in Resources */,
+				9CECE6BE4913412AA9A50868 /* hellooooyou.wav in Resources */,
+				107E7B42927444559291FB19 /* nuclearalarm.wav in Resources */,
+				BE3567FD0AEF435BA0D8BEA1 /* pipipipi.wav in Resources */,
+				022162F89ADA481E90478F5F /* pupetfnaf.wav in Resources */,
+				BEDD71FFC0EE4C929ED8BEC6 /* suspenso.wav in Resources */,
+				D5BA80E5C93C4496835A11F7 /* tuntun.wav in Resources */,
+				001685AC40BB4FB7BF954D2C /* vibracion.wav in Resources */,
+				D5BFB8534FF7409CB08B227E /* xilofono.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,8 +1,10 @@
 // notificationService.ts
 import { loadHabits, loadSettings, loadTasks } from '@/db/storage';
 import { IHabit, IReminder, timeToSeconds } from '@/db/types';
-import { getSoundUri } from '@/utils/notificationSoundOptions';
+import { getSoundUri, NOTIFICATION_SOUNDS } from '@/utils/notificationSoundOptions';
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
+
 
 // --- CONFIGURACIÓN GLOBAL ---
 Notifications.setNotificationHandler({
@@ -13,6 +15,28 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
+// CANALES
+
+// Efficiently create notification channels only if they don't exist
+export const createNotificationChannels = async () => {
+  if (Platform.OS !== 'android') return;
+
+  for (const [soundKey, soundData] of Object.entries(NOTIFICATION_SOUNDS)) {
+    const existingChannel = await Notifications.getNotificationChannelAsync(soundKey);
+    if (!existingChannel) {
+      await Notifications.setNotificationChannelAsync(soundKey, {
+        name: soundData.name,
+        importance: Notifications.AndroidImportance.HIGH,
+        sound: soundData.uri, // e.g., 'x8bit.wav'
+      });
+      console.log(`Created notification channel: ${soundKey}`);
+    } else {
+      console.log(`Channel already exists: ${soundKey}`);
+    }
+  }
+};
+
 
 // --- PERMISOS ---
 export const requestNotificationPermissions = async () => {
@@ -97,6 +121,7 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: date,
+          channelId: settingsState.defaultNotificationSound || 'default'
         },
       });
       break;
@@ -113,6 +138,7 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: reminder.interval * timeToSeconds[reminder.unit],
           repeats: true,
+          channelId: settingsState.defaultNotificationSound || 'default'
         },
       });
       break;
@@ -125,6 +151,7 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
           hour: date.getHours(),
           minute: date.getMinutes(),
+          channelId: settingsState.defaultNotificationSound || 'default'
         },
       });
       break;
@@ -143,6 +170,7 @@ const setSingleReminder = async (reminder: IReminder, itemId: string) => {
             weekday: day + 1, // Expo: 1=Domingo
             hour: date.getHours(),
             minute: date.getMinutes(),
+            channelId: settingsState.defaultNotificationSound || 'default'
           },
         });
       }
@@ -230,6 +258,7 @@ const scheduleHabitSingleReminder = async (
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour,
         minute,
+        channelId: settingsState.defaultNotificationSound || 'default'
       },
     });
   } else if (habit.recurrence.type === 'weekly' && habit.recurrence.daysOfWeek) {
@@ -242,6 +271,7 @@ const scheduleHabitSingleReminder = async (
           weekday: day + 1,
           hour,
           minute,
+          channelId: settingsState.defaultNotificationSound || 'default'
         },
       });
     }

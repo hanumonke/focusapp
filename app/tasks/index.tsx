@@ -1,12 +1,12 @@
 import { loadPoints, loadTasks, savePoints, saveTasks } from '@/db/storage';
 import { ITask, TasksState } from '@/db/types';
+import { useGlobalStyles } from '@/utils/globalStyles';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Avatar, Badge, Button, Card, Chip, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
-
 
 
 const difficultyPoints: Record<'easy' | 'medium' | 'hard', number> = {
@@ -21,6 +21,7 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const theme = useTheme();
+  const global = useGlobalStyles();
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -100,7 +101,7 @@ const Tasks = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View style={global.centered}>
         <ActivityIndicator size="large" />
         <Text>Cargando tareas...</Text>
       </View>
@@ -118,9 +119,9 @@ const Tasks = () => {
       : 'Sin fecha límite';
 
     return (
-      <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-        <Card.Content style={styles.cardContent}>
-          <View style={styles.taskHeader}>
+      <Card style={global.card}>
+        <Card.Content style={global.cardContent}>
+          <View style={global.taskHeader}>
             <Avatar.Icon
               size={44}
               icon={item.isCompleted ? 'check' : 'format-list-checks'}
@@ -130,18 +131,18 @@ const Tasks = () => {
                   : theme.colors.surfaceVariant
               }}
             />
-            <View style={styles.taskInfo}>
+            <View style={global.taskInfo}>
               <Text
                 variant="titleMedium"
                 numberOfLines={1}
                 style={[
-                  styles.taskTitle,
-                  item.isCompleted && styles.completedTask
+                  global.taskTitle,
+                  item.isCompleted && global.completedTask
                 ]}
               >
                 {item.title}
               </Text>
-              <Text variant="bodySmall" style={styles.dueDateText}>
+              <Text variant="bodySmall" style={global.dueDateText}>
                 {dueDateText}
               </Text>
             </View>
@@ -151,24 +152,24 @@ const Tasks = () => {
             <Text
               variant="bodyMedium"
               numberOfLines={2}
-              style={styles.taskDescription}
+              style={global.taskDescription}
             >
               {item.description}
             </Text>
           )}
 
           {item.tags && item.tags.length > 0 && (
-            <View style={styles.tagsSection}>
-              <Text variant="labelSmall" style={styles.sectionLabel}>
+            <View style={global.tagsSection}>
+              <Text variant="labelSmall" style={global.sectionLabel}>
                 ETIQUETAS
               </Text>
-              <View style={styles.tagsContainer}>
+              <View style={global.tagsContainer}>
                 {item.tags.map((tag, idx) => (
                   <Chip
                     key={idx}
                     mode="outlined"
-                    style={styles.tag}
-                    textStyle={styles.tagText}
+                    style={global.tag}
+                   
                   >
                     {tag}
                   </Chip>
@@ -177,15 +178,15 @@ const Tasks = () => {
             </View>
           )}
 
-          <View style={styles.statsContainer}>
+          <View style={global.statsContainer}>
             {item.reminders && item.reminders.length > 0 && (
-              <View style={styles.remindersIndicator}>
+              <View style={global.remindersIndicator}>
                 <IconButton
                   icon="bell"
                   size={16}
                   iconColor={theme.colors.primary}
                 />
-                <Text variant="labelSmall">
+                <Text variant="labelSmall" style={{ color: '#666666' }}>
                   {item.reminders.length} recordatorio{item.reminders.length !== 1 ? 's' : ''}
                 </Text>
               </View>
@@ -194,7 +195,7 @@ const Tasks = () => {
             <Badge
               size={24}
               style={[
-                styles.statusBadge,
+                global.statusBadge,
                 item.isCompleted
                   ? { backgroundColor: theme.colors.primary }
                   : { backgroundColor: theme.colors.error }
@@ -204,19 +205,21 @@ const Tasks = () => {
             </Badge>
           </View>
         </Card.Content>
-        <Card.Actions style={styles.cardActions}>
+        <Card.Actions style={global.cardActions}>
           <Button
-            mode="text"
+            mode="outlined"
             onPress={() => toggleTaskCompletion(item.id)}
-            textColor={theme.colors.primary}
+            textColor={theme.colors.onSurface}
+            style={{ borderColor: theme.colors.outline }}
             compact
           >
             {item.isCompleted ? 'Deshacer' : 'Completar'}
           </Button>
           <Button
-            mode="text"
+            mode="outlined"
             onPress={() => handleDetails(item.id)}
-            textColor={theme.colors.primary}
+            textColor={theme.colors.onSurface}
+            style={{ borderColor: theme.colors.outline }}
             compact
           >
             Detalles
@@ -232,12 +235,12 @@ const Tasks = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={global.container}>
       <Searchbar
         placeholder="Buscar tareas..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
+        style={global.input}
         iconColor={theme.colors.primary}
         inputStyle={{ color: theme.colors.onSurface }}
       />
@@ -245,9 +248,11 @@ const Tasks = () => {
       <Button
         mode="contained"
         onPress={handleCreateTask}
-        style={styles.addButton}
+        style={global.button}
         icon="plus"
-        contentStyle={styles.addButtonContent}
+        contentStyle={global.addButtonContent}
+        buttonColor={theme.colors.primary}
+        textColor={theme.colors.onPrimary}
       >
         Agregar Tareas
       </Button>
@@ -257,24 +262,26 @@ const Tasks = () => {
           data={filteredTasks}
           renderItem={renderTaskItem}
           keyExtractor={item => item.id}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={global.list}
           refreshing={refreshing}
           onRefresh={handleRefresh}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <View style={global.emptyContainer}>
               <Text variant="titleMedium">Sin coincidencias</Text>
             </View>
           }
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text variant="titleMedium" style={styles.emptyText}>
+        <View style={global.emptyContainer}>
+          <Text variant="titleMedium" style={global.emptyText}>
             No hay tareas todavía
           </Text>
           <Button
             mode="contained"
             onPress={handleCreateTask}
-            style={styles.emptyButton}
+            style={global.emptyButton}
+            buttonColor={theme.colors.secondary}
+            textColor={theme.colors.onSecondary}
           >
             Crea tu primera tarea
           </Button>

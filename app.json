@@ -30,6 +30,7 @@
         "expo-notifications",
         {
           "defaultChannel": "default",
+          "icon": "./assets/images/fokus-logo.png",
           "color": "#5893ba",
           "sounds": [
             

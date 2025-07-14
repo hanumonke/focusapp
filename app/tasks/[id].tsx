@@ -71,7 +71,7 @@ const TaskDetails = () => {
         <Card.Content>
           <View style={styles.reminderHeader}>
             {/* @ts-ignore */}
-            <MaterialCommunityIcons name={icon} size={24} color="#6200ee" />
+            <MaterialCommunityIcons name={icon} size={24} color="#666666" />
             <Text variant="titleMedium" style={styles.reminderTitle}>
               {reminder.message}
             </Text>
@@ -116,7 +116,7 @@ const TaskDetails = () => {
               <>
                 <Text variant="labelLarge" style={styles.sectionLabel}>Vencimiento</Text>
                 <View style={styles.dueDateRow}>
-                  <MaterialCommunityIcons name="calendar-clock" size={20} color="#6200ee" />
+                  <MaterialCommunityIcons name="calendar-clock" size={20} color="#666666" />
                   <Text style={styles.dueDateText}>
                     {new Date(task.dueDate).toLocaleString()}
                   </Text>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     marginBottom: 8,
-    color: '#6200ee',
+    color: '#666666',
   },
   dueDateRow: {
     flexDirection: 'row',
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   remindersTitle: {
     marginBottom: 16,
-    color: '#6200ee',
+    color: '#666666',
   },
   reminderCard: {
     marginBottom: 12,

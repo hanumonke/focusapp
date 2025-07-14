@@ -1,7 +1,8 @@
+import articleData from "@/db/tips.json";
+import { useGlobalStyles } from '@/utils/globalStyles';
 import React from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
-import { Text, Divider, useTheme } from 'react-native-paper';
-import articleData from "@/db/tips.json"
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Divider, Text, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // The structured JSON data based on the article content
 
@@ -81,29 +82,30 @@ const ArticleItem = ({ item, level = 0 }) => {
 
 const ArticlePage = () => {
   const theme = useTheme();
+  const global = useGlobalStyles();
 
   return (
-      <ScrollView style={styles.container}>
-        <SafeAreaView edges={["bottom"]}>
-      <Text style={[styles.introText, { color: theme.colors.onSurface }]}>
-        {articleData.introText}
-      </Text>
+    <SafeAreaView edges={['bottom']} style={global.container}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
+        <Text style={[styles.introText, { color: theme.colors.onSurface }]}>
+          {articleData.introText}
+        </Text>
 
-      {articleData.sections.map((section, index) => (
-        <View key={index} style={styles.sectionWrapper}>
-          <Divider style={[styles.sectionDivider, { backgroundColor: theme.colors.outline }]} />
-          <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>
-            {section.title}
-          </Text>
-          <View style={styles.sectionContent}>
-            {section.items.map((item, itemIndex) => (
-              <ArticleItem key={itemIndex} item={item} />
-            ))}
+        {articleData.sections.map((section, index) => (
+          <View key={index} style={styles.sectionWrapper}>
+            <Divider style={[styles.sectionDivider, { backgroundColor: theme.colors.outline }]} />
+            <Text style={[styles.sectionTitle, { color: '#666666' }]}>
+              {section.title}
+            </Text>
+            <View style={styles.sectionContent}>
+              {section.items.map((item, itemIndex) => (
+                <ArticleItem key={itemIndex} item={item} />
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </ScrollView>
     </SafeAreaView>
-    </ScrollView>
   );
 };
 

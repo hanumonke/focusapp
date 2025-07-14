@@ -5,13 +5,15 @@ import CustomHeader from '@/components/CustomHeader';
 import TagsInput from '@/components/TagsInput';
 import { loadHabits, saveHabits } from '@/db/storage';
 import { DayNumber, HabitsState, IHabit } from '@/db/types';
+import { useGlobalStyles } from '@/utils/globalStyles';
 import { scheduleHabitReminders } from '@/utils/notificationService';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Button, Divider, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Divider, SegmentedButtons, Text, TextInput, useTheme } from 'react-native-paper';
 import { TimePickerModal } from 'react-native-paper-dates';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import uuid from 'react-native-uuid';
 
 const defaultReminderConfig = {
@@ -26,6 +28,8 @@ const CreateHabit = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const global = useGlobalStyles();
 
   const { control, handleSubmit, setValue, reset } = useForm<IHabit>({
     defaultValues: {
@@ -36,7 +40,10 @@ const CreateHabit = () => {
       recurrence: {
         type: "daily",
         daysOfWeek: [],
-        time: new Date().toLocaleTimeString(), // "YYYY-MM-DDTHH:mm"
+        time: (() => {
+          const now = new Date();
+          return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        })(),
       },
       reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
       reminderBefore: { ...defaultReminderConfig },
@@ -81,7 +88,10 @@ const CreateHabit = () => {
       recurrence: {
         type: "daily",
         daysOfWeek: [],
-        time: new Date().toLocaleTimeString("es-VE", {timeStyle: "short"}), // "YYYY-MM-DDTHH:mm"
+        time: (() => {
+          const now = new Date();
+          return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        })(),
       },
       reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
       reminderBefore: { ...defaultReminderConfig },
@@ -98,6 +108,36 @@ const CreateHabit = () => {
     loadHabit();
   }, [habitId, reset]);
 
+  // Limpiar el formulario cada vez que la pantalla se enfoca y no hay habitId
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!habitId) {
+        reset({
+          id: '',
+          title: "",
+          description: "",
+          tags: [],
+          recurrence: {
+            type: "daily",
+            daysOfWeek: [],
+            time: (() => {
+              const now = new Date();
+              return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            })(),
+          },
+          reminderOnTime: { ...defaultReminderConfig, enabled: true, message: '' },
+          reminderBefore: { ...defaultReminderConfig },
+          currentStreak: 0,
+          bestStreak: 0,
+          lastCompletedDate: null,
+          completionHistory: [],
+          createdAt: '',
+          updatedAt: ''
+        });
+      }
+    }, [habitId, reset])
+  );
+
   // Toggle day selection
   const toggleDay = (dayIndex: DayNumber) => {
     const newDays = recurrenceDaysOfWeek?.includes(dayIndex)
@@ -110,11 +150,9 @@ const CreateHabit = () => {
   const onDismiss = useCallback(() => setVisible(false), []);
   const onConfirm = useCallback(({ hours, minutes }: { hours: number; minutes: number }) => {
     setVisible(false);
-    const newDate = new Date();
-    newDate.setHours(hours);
-    newDate.setMinutes(minutes);
-    // Store only the time as "HH:mm"
-    setValue("recurrence.time", newDate.toLocaleTimeString("es-VE", {timeStyle: "short"} ));
+    // Formato consistente: "HH:mm"
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    setValue("recurrence.time", timeString);
   }, [setValue]);
 
   // Submit handler
@@ -156,22 +194,21 @@ const CreateHabit = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={global.loadingContainer}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['bottom']} style={global.container}>
       <CustomHeader
         title={habitId ? "Editar hábito" : "Nuevo hábito"}
         backRoute="/habits"
         addAction={handleSubmit(onSubmit)}
         materialIcon="check"
       />
-
-      <ScrollView key={habitId ? `edit-${habitId}` : `create`} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
         {/* Title */}
         <Controller
           control={control}
@@ -181,19 +218,18 @@ const CreateHabit = () => {
             <>
               <TextInput
                 mode="outlined"
-                label="Title"
+                label="Título"
                 value={field.value}
                 onChangeText={field.onChange}
                 error={!!fieldState.error}
-                style={styles.input}
+                style={global.input}
               />
               {fieldState.error && (
-                <Text style={styles.error}>{fieldState.error.message}</Text>
+                <Text style={{ color: 'red', marginTop: -12, marginBottom: 8, marginLeft: 4 }}>{fieldState.error.message}</Text>
               )}
             </>
           )}
         />
-
         {/* Description */}
         <Controller
           control={control}
@@ -206,11 +242,10 @@ const CreateHabit = () => {
               onChangeText={field.onChange}
               multiline
               numberOfLines={4}
-              style={styles.input}
+              style={global.input}
             />
           )}
         />
-
         {/* Tags */}
         <Controller
           control={control}
@@ -219,12 +254,9 @@ const CreateHabit = () => {
             <TagsInput value={field.value} onChange={field.onChange} />
           )}
         />
-
+        <Divider style={global.divider} />
         {/* Recurrence */}
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          Recurrencia
-        </Text>
-
+        <Text variant="titleMedium" style={global.sectionTitle}>Recurrencia</Text>
         <Controller
           control={control}
           name="recurrence.type"
@@ -236,36 +268,51 @@ const CreateHabit = () => {
                 { value: 'daily', label: 'Diario' },
                 { value: 'weekly', label: 'Semanal' },
               ]}
+              style={{ marginBottom: 8 }}
             />
           )}
         />
-
         {recurrenceType === 'weekly' && (
-          <View style={styles.weekDaysContainer}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
             {(['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'] as const).map((day, index) => (
               <Button
                 key={day}
                 mode={recurrenceDaysOfWeek?.includes(index as DayNumber) ? 'contained' : 'outlined'}
                 onPress={() => toggleDay(index as DayNumber)}
-                style={styles.dayButton}
+                style={global.button}
+                buttonColor={recurrenceDaysOfWeek?.includes(index as DayNumber) ? theme.colors.primary : undefined}
+                textColor={recurrenceDaysOfWeek?.includes(index as DayNumber) ? theme.colors.onPrimary : theme.colors.onSurface}
               >
                 {day}
               </Button>
             ))}
           </View>
         )}
-
+        {/* Hora programada */}
         <Button
           onPress={handleRecurrenceTimeBtn}
           mode="outlined"
           icon="clock"
-          style={styles.timeButton}
+          style={global.button}
+          textColor={theme.colors.onSurface}
         >
           {recurrenceTime
-            ? recurrenceTime
-            : "Hora"}
+            ? (() => {
+                try {
+                  const [hours, minutes] = recurrenceTime.split(':').map(Number);
+                  const date = new Date();
+                  date.setHours(hours, minutes);
+                  return date.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: true 
+                  });
+                } catch {
+                  return "Seleccionar hora";
+                }
+              })()
+            : "Seleccionar hora"}
         </Button>
-
         <TimePickerModal
           visible={visible}
           onDismiss={onDismiss}
@@ -273,116 +320,91 @@ const CreateHabit = () => {
           hours={recurrenceTime ? Number(recurrenceTime.split(':')[0]) : 12}
           minutes={recurrenceTime ? Number(recurrenceTime.split(':')[1]) : 0}
         />
-
-        <Divider style={styles.divider} />
-
-        {/* Reminder On Time */}
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          Recordatorio a la hora programada
-        </Text>
-        <Controller
-          control={control}
-          name="reminderOnTime.enabled"
-          render={({ field }) => (
-            <Button
-              mode={field.value ? "contained" : "outlined"}
-              onPress={() => field.onChange(!field.value)}
-              style={styles.input}
-            >
-              {field.value ? "Activado" : "Desactivado"}
-            </Button>
-          )}
-        />
-        <Controller
-          control={control}
-          name="reminderOnTime.message"
-          render={({ field }) => (
-            <TextInput
-              mode="outlined"
-              label="Mensaje de recordatorio"
-              value={field.value}
-              onChangeText={field.onChange}
-              style={styles.input}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="reminderOnTime.snoozeMinutes"
-          render={({ field }) => (
-            <TextInput
-              mode="outlined"
-              label="Posponer (minutos)"
-              value={field.value?.toString()}
-              onChangeText={v => field.onChange(Number(v) || 0)}
-              keyboardType="numeric"
-              style={styles.input}
-            />
-          )}
-        />
-
-        <Divider style={styles.divider} />
-
-        {/* Reminder Before */}
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          Recordatorio antes
-        </Text>
-        <Controller
-          control={control}
-          name="reminderBefore.enabled"
-          render={({ field }) => (
-            <Button
-              mode={field.value ? "contained" : "outlined"}
-              onPress={() => field.onChange(!field.value)}
-              style={styles.input}
-            >
-              {field.value ? "Activado" : "Desactivado"}
-            </Button>
-          )}
-        />
-
-        
-        <Controller
-          control={control}
-          name="reminderBefore.minutesBefore"
-          render={({ field }) => (
-            <TextInput
-              mode="outlined"
-              label="Minutos antes"
-              value={field.value?.toString()}
-              onChangeText={v => field.onChange(Number(v) || 0)}
-              keyboardType="numeric"
-              style={styles.input}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="reminderBefore.message"
-          render={({ field }) => (
-            <TextInput
-              mode="outlined"
-              label="Mensaje"
-              value={field.value}
-              onChangeText={field.onChange}
-              style={styles.input}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="reminderBefore.snoozeMinutes"
-          render={({ field }) => (
-            <TextInput
-              mode="outlined"
-              label="Posponer (minutos)"
-              value={field.value?.toString()}
-              onChangeText={v => field.onChange(Number(v) || 0)}
-              keyboardType="numeric"
-              style={styles.input}
-            />
-          )}
-        />
+        <Divider style={global.divider} />
+        {/* Recordatorios (bloque compacto) */}
+        <Text variant="titleMedium" style={global.sectionTitle}>Recordatorios</Text>
+        <View style={{ gap: 4 }}>
+          {/* Recordatorio a la hora programada */}
+          <Controller
+            control={control}
+            name="reminderOnTime.enabled"
+            render={({ field }) => (
+              <Button
+                mode={field.value ? "contained" : "outlined"}
+                onPress={() => field.onChange(!field.value)}
+                style={global.button}
+                buttonColor={field.value ? theme.colors.primary : undefined}
+                textColor={field.value ? theme.colors.onPrimary : theme.colors.onSurface}
+              >
+                {field.value ? "Recordatorio activado a la hora" : "Recordatorio desactivado a la hora"}
+              </Button>
+            )}
+          />
+          <Controller
+            control={control}
+            name="reminderOnTime.message"
+            render={({ field }) => (
+              <TextInput
+                mode="outlined"
+                label="Mensaje de recordatorio"
+                value={field.value}
+                onChangeText={field.onChange}
+                style={global.input}
+              />
+            )}
+          />
+          {/* Recordatorio antes */}
+          <Controller
+            control={control}
+            name="reminderBefore.enabled"
+            render={({ field }) => (
+              <Button
+                mode={field.value ? "contained" : "outlined"}
+                onPress={() => field.onChange(!field.value)}
+                style={global.button}
+                buttonColor={field.value ? theme.colors.primary : undefined}
+                textColor={field.value ? theme.colors.onPrimary : theme.colors.onSurface}
+              >
+                {field.value ? "Recordatorio activado antes" : "Recordatorio desactivado antes"}
+              </Button>
+            )}
+          />
+          <Controller
+            control={control}
+            name="reminderBefore.minutesBefore"
+            render={({ field }) => (
+              <TextInput
+                mode="outlined"
+                label="Minutos antes"
+                value={field.value?.toString()}
+                onChangeText={v => field.onChange(Number(v) || 0)}
+                keyboardType="numeric"
+                style={global.input}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="reminderBefore.message"
+            render={({ field }) => (
+              <TextInput
+                mode="outlined"
+                label="Mensaje antes"
+                value={field.value}
+                onChangeText={field.onChange}
+                style={global.input}
+              />
+            )}
+          />
+        </View>
+        <Button
+          onPress={() => reset()}
+          mode="outlined"
+          textColor={theme.colors.onSurface}
+          style={global.button}
+        >
+          Limpiar campos
+        </Button>
       </ScrollView>
     </SafeAreaView>
   );

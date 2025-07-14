@@ -1,5 +1,6 @@
 import { loadHabits, loadPoints, saveHabits, savePoints } from '@/db/storage';
 import { HabitsState, IHabit } from '@/db/types';
+import { useGlobalStyles } from '@/utils/globalStyles';
 import { cancelNotificationsForItem } from '@/utils/notificationService';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ const Habits = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const theme = useTheme();
+  const global = useGlobalStyles();
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -155,7 +157,7 @@ const Habits = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View style={global.centered}>
         <ActivityIndicator size="large" />
         <Text>Cargando hábitos...</Text>
       </View>
@@ -177,26 +179,26 @@ const Habits = () => {
     const hasReminders = item.reminderOnTime?.enabled || item.reminderBefore?.enabled;
 
     return (
-      <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-        <Card.Content style={styles.cardContent}>
-          <View style={styles.habitHeader}>
+      <Card style={global.card}>
+        <Card.Content style={global.cardContent}>
+          <View style={global.habitHeader}>
             <Avatar.Icon 
               size={44} 
               icon={getRecurrenceIcon()} 
               style={{ backgroundColor: theme.colors.primaryContainer }}
             />
-            <View style={styles.habitInfo}>
-              <Text variant="titleMedium" numberOfLines={1} style={styles.habitTitle}>
+            <View style={global.habitInfo}>
+              <Text variant="titleMedium" numberOfLines={1} style={global.habitTitle}>
                 {item.title}
               </Text>
-              <Text variant="bodySmall" style={styles.recurrenceText}>
+              <Text variant="bodySmall" style={global.recurrenceText}>
                 {getRecurrenceText(item.recurrence)}
               </Text>
             </View>
             {hasReminders && (
-              <View style={styles.remindersIndicator}>
+              <View style={global.remindersIndicator}>
                 <IconButton icon="bell" size={20} iconColor={theme.colors.primary} />
-                <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+                <Text variant="labelSmall" style={{ color: '#666666' }}>
                   Recordatorios
                 </Text>
               </View>
@@ -207,24 +209,24 @@ const Habits = () => {
             <Text 
               variant="bodyMedium" 
               numberOfLines={2} 
-              style={styles.habitDescription}
+              style={global.habitDescription}
             >
               {item.description}
             </Text>
           )}
 
           {item.tags && item.tags.length > 0 && (
-            <View style={styles.tagsSection}>
-              <Text variant="labelSmall" style={styles.sectionLabel}>
+            <View style={global.tagsSection}>
+              <Text variant="labelSmall" style={global.sectionLabel}>
                 ETIQUETAS
               </Text>
-              <View style={styles.tagsContainer}>
+              <View style={global.tagsContainer}>
                 {item.tags.map((tag, idx) => (
                   <Chip 
                     key={idx} 
                     mode="outlined" 
-                    style={styles.tag}
-                    textStyle={styles.tagText}
+                    style={global.tag}
+                    
                   >
                     {tag}
                   </Chip>
@@ -233,18 +235,18 @@ const Habits = () => {
             </View>
           )}
 
-          <View style={styles.statsContainer}>
-            <View style={styles.streakContainer}>
-              <View style={styles.streakItem}>
-                <Text variant="labelSmall" style={styles.streakLabel}>
+          <View style={global.statsContainer}>
+            <View style={global.streakContainer}>
+              <View style={global.streakItem}>
+                <Text variant="labelSmall" style={global.streakLabel}>
                   RACHA
                 </Text>
                 <Badge size={24}>
                   {item.currentStreak}
                 </Badge>
               </View>
-              {/* <View style={styles.streakItem}>
-                <Text variant="labelSmall" style={styles.streakLabel}>
+              {/* <View style={global.streakItem}>
+                <Text variant="labelSmall" style={global.streakLabel}>
                   MEJOR
                 </Text>
                 <Badge size={24}>
@@ -254,11 +256,12 @@ const Habits = () => {
             </View>
           </View>
         </Card.Content>
-        <Card.Actions style={styles.cardActions}>
+        <Card.Actions style={global.cardActions}>
           <Button 
-            mode="text" 
+            mode="outlined" 
             onPress={() => handleDetails(item.id)}
-            textColor={theme.colors.primary}
+            textColor={theme.colors.onSurface}
+            style={{ borderColor: theme.colors.outline }}
             compact
           >
             Detalles
@@ -279,12 +282,12 @@ const Habits = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={global.container}>
       <Searchbar
         placeholder="Buscar hábitos..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={[styles.searchbar, { backgroundColor: theme.colors.surface }]}
+        style={global.input}
         iconColor={theme.colors.primary}
         inputStyle={{ color: theme.colors.onSurface }}
       />
@@ -292,9 +295,11 @@ const Habits = () => {
       <Button 
         mode="contained" 
         onPress={handleCreateHabit} 
-        style={styles.addButton}
+        style={global.button}
         icon="plus"
-        contentStyle={styles.addButtonContent}
+        contentStyle={global.addButtonContent}
+        buttonColor={theme.colors.primary}
+        textColor={theme.colors.onPrimary}
       >
         Agregar hábito
       </Button>
@@ -304,24 +309,26 @@ const Habits = () => {
           data={filteredHabits}
           renderItem={renderHabitItem}
           keyExtractor={item => item.id}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={global.list}
           refreshing={refreshing}
           onRefresh={handleRefresh}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <View style={global.emptyContainer}>
               <Text variant="titleMedium">Ningún hábito coincide con tu búsqueda</Text>
             </View>
           }
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text variant="titleMedium" style={styles.emptyText}>
+        <View style={global.emptyContainer}>
+          <Text variant="titleMedium" style={global.emptyText}>
             Aún no tienes hábitos
           </Text>
           <Button 
             mode="contained" 
             onPress={handleCreateHabit}
-            style={styles.emptyButton}
+            style={global.emptyButton}
+            buttonColor={theme.colors.secondary}
+            textColor={theme.colors.onSecondary}
           >
             Crea tu primer hábito
           </Button>

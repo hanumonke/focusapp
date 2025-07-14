@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import { useGlobalStyles } from '@/utils/globalStyles';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
-import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates'; // Import DatePickerInput
+import { Button, useTheme } from 'react-native-paper';
+import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 
 type Props = {
   value: string | null; // ISO string for the combined date and time
@@ -12,11 +13,16 @@ type Props = {
 
 const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Seleccionar fecha", limitDate }) => {
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+  const theme = useTheme();
+  const global = useGlobalStyles();
 
   // Derive Date object from value for DatePickerInput and TimePickerModal
   // If value is undefined, default to current date/time to avoid errors in pickers
   const currentSelectedDate: Date = value ? new Date(value) : new Date();
-  currentSelectedDate.setHours(0, 0, 0, 0); // at midnight
+
+  // Calcular minDate (hoy, sin horas)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   // Handle DatePickerInput change
   const onDateChange = useCallback(
@@ -72,26 +78,41 @@ const CustomDateTimePicker: React.FC<Props> = ({ value, onChange, label = "Selec
     setIsTimePickerVisible(true);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.inputRow}>
-      
         <DatePickerInput
-          validRange={{startDate: currentSelectedDate, endDate: limitDate ? new Date(limitDate) : undefined }}
-          presentationStyle='pageSheet'
-          mode='outlined'
-          locale="es" // Set locale for language of picker
-          value={value ? new Date(value) : undefined} // Pass Date object or undefined
+          locale="es"
+          label={label}
+          value={value ? new Date(value) : undefined}
           onChange={onDateChange}
-          inputMode="start" // Opens calendar on focus
-          
+          inputMode="start"
+          mode="outlined"
+          validRange={{ startDate: today }}
+          style={[global.input, { flex: 1 }]}
         />
-
-        <Button mode="contained" onPress={handleOpenTimePicker} icon="clock-edit-outline" style={{alignSelf: 'center'}}>
-          {value ? currentSelectedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Hora"}
+        <Button 
+          mode="contained" 
+          onPress={handleOpenTimePicker} 
+          icon="clock-edit-outline" 
+          style={{alignSelf: 'center'}}
+          buttonColor={theme.colors.secondary}
+          textColor={theme.colors.onSecondary}
+        >
+          {value
+            ? new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+            : "Hora"}
         </Button>
       </View>
-
       {/* TimePickerModal */}
       <TimePickerModal
         visible={isTimePickerVisible}
@@ -113,6 +134,9 @@ const styles = StyleSheet.create({
     gap: 10, 
     justifyContent: 'center', 
     alignItems: 'center'
+  },
+  dateInput: {
+    flex: 1,
   },
 });
 
