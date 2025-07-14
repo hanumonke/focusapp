@@ -386,7 +386,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.hanumonke.fokus";
-				PRODUCT_NAME = "fokus";
+				PRODUCT_NAME = "focusapp";
 				SWIFT_OBJC_BRIDGING_HEADER = "fokus/fokus-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -415,7 +415,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.hanumonke.fokus";
-				PRODUCT_NAME = "fokus";
+				PRODUCT_NAME = "focusapp";
 				SWIFT_OBJC_BRIDGING_HEADER = "fokus/fokus-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
